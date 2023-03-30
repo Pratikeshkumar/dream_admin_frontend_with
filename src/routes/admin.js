@@ -8,7 +8,7 @@ const adminValidation = require('../validations/admin');
 
 /************************************* CONTROLLER VERSION 2.0 */
 // ADMIN AUTH
-router.post('/signup', validate(adminValidation.signup), adminApis2.signUp);
+router.post('/signup', validate(adminValidation.signup), adminApis2.signup);
 router.post('/login', validate(adminValidation.login), adminApis2.login);
 router.put('/admin', adminAuth, validate(adminValidation.updateAdmin), adminApis2.updateAdmin);
 

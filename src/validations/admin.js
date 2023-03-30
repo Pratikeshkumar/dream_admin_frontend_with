@@ -7,7 +7,7 @@ const signup = {
         last_name: joi.string().required(),
         email: joi.string().email().required(),
         password: joi.string().required(),
-        profileUrl: joi.string().optional(),
+        profile_image: joi.string().optional(),
     }),
 };
 
@@ -24,7 +24,7 @@ const updateAdmin = {
         last_name: joi.string().optional(),
         role: joi.string().optional(),
         active: joi.boolean().optional(),
-        profileUrl: joi.string().optional(),
+        profile_image: joi.string().optional(),
     })
 };
 

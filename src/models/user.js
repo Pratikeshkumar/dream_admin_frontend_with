@@ -10,18 +10,35 @@ const User = sq.define(
       allowNull: false,
       primaryKey: true,
     },
+    user_name: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    first_name: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    last_name: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     email: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    firbase_uid: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true
     },
-    first_name: {
+    token: {
       type: DataTypes.STRING,
-      allowNull: false
-    },
-    last_name: {
-      type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     role: {
       type: DataTypes.ENUM,
@@ -30,9 +47,41 @@ const User = sq.define(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
-    profileUrl: {
+    profile_image: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    intro_video: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    id_type: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    id_number: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    id_attachement: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    secret_sign: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    id_verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
+    },
+    language: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    avatar: {
       type: DataTypes.STRING,
       allowNull: true
     },
@@ -40,6 +89,46 @@ const User = sq.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    countryCode: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lat: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+    lng: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+    DOB: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    gender: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    allowedToSendGift: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    isPremiumUser: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    isProfileCrownEnabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    verificationStatus: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
     },
     active: {
       type: DataTypes.INTEGER,

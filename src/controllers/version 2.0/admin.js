@@ -5,12 +5,12 @@ const logger = require('../../utils/logger')
 const errorHandler = require('../../utils/apiError');
 const { JWT_KEY } = process.env;
 
-const signUp = async (req, res, next) => {
+const signup = async (req, res, next) => {
   logger.info("VERSION 2.0 -> ADMIN: ADMIN SIGNUP API CALLED");
   try {
     const {
       email, first_name, last_name,
-      password, profileUrl
+      password, profile_image
     } = req.body;
 
     let admin = await Admin.findOne({
@@ -27,7 +27,7 @@ const signUp = async (req, res, next) => {
       last_name,
       password: await bcrypt.hash(password, 10),
       role: "admin",
-      profileUrl
+      profile_image
     });
 
     if (!createdAdmin) throw new errorHandler("Unexpected error occured while signing up!", "badRequest");
@@ -63,7 +63,7 @@ const login = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Logged-in  successfully!",
-      token: jwt.sign({ email: admin.email }, JWT_KEY),
+      token: jwt.sign({ email: admin.email, id: admin.id }, JWT_KEY),
     });
   } catch (error) {
     logger.error(error);
@@ -143,7 +143,7 @@ const awardDiamonds = async (req, res, next) => {
 };
 
 module.exports = {
-  signUp,
+  signup,
   login,
   updateAdmin,
   getUsers,

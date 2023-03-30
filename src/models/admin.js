@@ -26,7 +26,7 @@ const Admin = sq.define(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    profileUrl: {
+    profile_image: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },

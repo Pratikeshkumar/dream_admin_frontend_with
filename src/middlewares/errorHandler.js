@@ -7,6 +7,8 @@ module.exports = (err, req, res, next) => {
     logger.error("Error MIDDLEWARE Triggered");
     logger.error("**********************************************");
 
+    console.log(err);
+
     if (err.name === 'badRequest') {
         return res.status(400).send({
             success: false,
@@ -46,7 +48,7 @@ module.exports = (err, req, res, next) => {
     if (err.isOperational) {
         return res.status(400).send({
             success: false,
-            message: err.message
+            message: err.statusCode
         }).end();
     }
 
