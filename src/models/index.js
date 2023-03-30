@@ -18,10 +18,6 @@ const Document = require("./document");
     User.hasMany(Like, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
     Like.belongsTo(User, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
 
-    // User Bio
-    User.hasMany(Bio, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
-    Bio.belongsTo(User, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
-
     // User Document
     User.hasMany(Document, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
     Document.belongsTo(User, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
