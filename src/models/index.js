@@ -6,7 +6,6 @@ const Like = require("./video_like");
 const Comment = require("./video_comment");
 const Post = require("./post");
 const Document = require("./document");
-const Bio = require("./bio");
 
 
 /************************* USER ASSOCIATION **********/
@@ -65,6 +64,5 @@ module.exports = {
     Comment,
     UserFriend,
     Post,
-    Bio,
     Document
 };
