@@ -1,18 +1,22 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const { userAuth } = require("../middlewares/auth");
-const upload = require("../utils/imageUpload");
+const { userAuth } = require('../middlewares/auth');
+const upload = require('../middlewares/uploadData');
 const videoApis2 = require('../controllers/version 2.0/videos');
 const validate = require('../middlewares/validate');
 const videoValidation = require('../validations/video');
 
 /************************************* CONTROLLER VERSION 2.0 */
-router.post("/video", userAuth, upload.single("postVideo"), validate(videoValidation.createVideo), videoApis2.createVideo);
+router.post("/video", userAuth, upload.fields([{ name: 'source', maxCount: 1, optional: true }, { name: 'cover', maxCount: 1, optional: true }]), validate(videoValidation.uploadVideo), videoApis2.uploadVideo);
 router.get("/userAllVideos", userAuth, videoApis2.getAllUserVideos);
-router.get("/video", userAuth, validate(videoValidation.getVideos), videoApis2.getVideos);
+router.get("/allVideos", userAuth, videoApis2.allVideos);
+router.get("/video", userAuth, validate(videoValidation.getVideo), videoApis2.getVideo);
 router.patch("/video/:videoId", userAuth, validate(videoValidation.updateVideo), videoApis2.updateVideo);
 router.delete("/video", userAuth, validate(videoValidation.deleteVideo), videoApis2.deleteVideo);
 
+router.post("/like", userAuth, validate(videoValidation.likeVideo), videoApis2.likeVideo);
+router.post("/comment", userAuth, validate(videoValidation.commentVideo), videoApis2.commentVideo);
+router.post("/replyComment", userAuth, validate(videoValidation.replyComment), videoApis2.replyComment);
 
 module.exports = router;

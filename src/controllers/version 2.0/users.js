@@ -8,7 +8,7 @@ const signup = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: SIGN UP API CALLED");
   try {
     let {
-      user_name, email, firbase_uid,
+      user_name, email, firebase_uid,
       token, profile_image, bio,
       intro_video, id_type, id_number,
       language, avatar, country,
@@ -17,7 +17,7 @@ const signup = async (req, res, next) => {
     } = req.body;
 
     let user = await User.findOne({
-      where: { firbase_uid }
+      where: { firebase_uid }
     });
 
     !language && (language = "EN");
@@ -25,7 +25,7 @@ const signup = async (req, res, next) => {
     if (user) throw new errorHandler("User already exists!", "duplication");
 
     let createUser = await User.create({
-      user_name, email, firbase_uid, bio,
+      user_name, email, firebase_uid, bio,
       token, lat, lng, DOB, countryCode,
       intro_video, id_type, id_number,
       language, avatar, country, gender,
@@ -50,10 +50,10 @@ const login = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: LOGIN UP API CALLED");
   try {
     let {
-      email, firbase_uid, token,
+      email, firebase_uid, token,
     } = req.body,
       condition = {
-        firbase_uid, token,
+        firebase_uid, token,
       };
 
     email && (condition.email = email);
@@ -70,10 +70,10 @@ const login = async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message: "user created successfully",
+      message: "Logged-in successfully",
       payload: {
         ...user,
-        auth_token: jwt.sign({ firebase_uid: user.firebase_uid, token: user.token }, JWT_KEY),
+        auth_token: jwt.sign({ user_id: user.id, firebase_uid: user.firebase_uid, token: user.token }, JWT_KEY),
       }
     });
   } catch (error) {
@@ -100,7 +100,7 @@ const userInfo = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "User info updated successfully!",
+      message: "User info fetched successfully!",
       payload: user
     });
   } catch (error) {
@@ -123,9 +123,20 @@ const updateUser = async (req, res, next) => {
 
     if (updatedUser[0] !== 1) throw new errorHandler("Unexpected error occured while updating user info", "badRequest");
 
+    let user = await User.findOne({
+      attributes: {
+        exclude: ['first_name', 'last_name', 'password']
+      },
+      where: {
+        firebase_uid, token
+      }
+    });
+    user = JSON.parse(JSON.stringify(user));
+
     return res.status(200).json({
       success: true,
-      message: "User info updated successfully!"
+      message: "User info updated successfully!",
+      payload: user
     });
   } catch (error) {
     logger.error(error);

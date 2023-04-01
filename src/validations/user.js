@@ -6,7 +6,7 @@ const signup = {
         email: joi.string().optional(),
         phone: joi.string().optional(),
         bio: joi.string().optional(),
-        firbase_uid: joi.string().required(),
+        firebase_uid: joi.string().required(),
         token: joi.string().required(),
         profile_image: joi.string().optional(),
         intro_video: joi.string().optional(),
@@ -29,7 +29,7 @@ const signup = {
 const login = {
     body: joi.object({
         email: joi.string().optional(),
-        firbase_uid: joi.string().required(),
+        firebase_uid: joi.string().required(),
         token: joi.string().required(),
     }),
 };
@@ -40,7 +40,7 @@ const updateUser = {
         email: joi.string().optional(),
         phone: joi.string().optional(),
         bio: joi.string().optional(),
-        firbase_uid: joi.string().optional(),
+        firebase_uid: joi.string().optional(),
         token: joi.string().required(),
         profile_image: joi.string().optional(),
         intro_video: joi.string().optional(),

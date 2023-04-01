@@ -13,12 +13,11 @@ exports.userAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, JWT_KEY);
 
     let userData = await User.findOne({
-      where: { email: decoded.email },
-      attributes: ["id", "email", "first_name", "last_name", "active"],
+      where: { id: decoded.user_id, firebase_uid: decoded.firebase_uid, token: decoded.token }
     });
     userData = JSON.parse(JSON.stringify(userData));
 
-    if (userData.email && userData.active) throw new errorHandler("Account is deactivated!", "unAuthorized");
+    if (!userData.active) throw new errorHandler("Account is deactivated!", "unAuthorized");
 
     req.userData = userData;
     next();

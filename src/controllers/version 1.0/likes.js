@@ -1,4 +1,4 @@
-const { Video, User, Like } = require("../../models");
+const { Video, User, VideoLike } = require("../../models");
 
 const like = async (req, res, next) => {
   logger.info("LIKE: LIKE API CALLED");
@@ -8,17 +8,17 @@ const like = async (req, res, next) => {
     if (videoId) {
       const checkVideo = await Video.findOne({ where: { id: videoId } });
       if (checkVideo) {
-        const checkLike = await Like.findOne({
+        const checkLike = await VideoLike.findOne({
           where: { user_id: userId, video_id: videoId },
         });
         if (checkLike) {
-          await Like.destroy({ where: { user_id: userId, video_id: videoId } });
+          await VideoLike.destroy({ where: { user_id: userId, video_id: videoId } });
           res.status(200).json({
             response: "success",
             likeState: false,
           });
         } else {
-          await Like.create({ user_id: userId, video_id: videoId });
+          await VideoLike.create({ user_id: userId, video_id: videoId });
           res.status(200).json({
             response: "success",
             likeState: true,

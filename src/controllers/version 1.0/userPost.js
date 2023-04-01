@@ -1,4 +1,4 @@
-const { User, Post, Comment, Like } = require('../../models');
+const { User, Post, VideoComment, VideoLike } = require('../../models');
 const logger = require('../../utils/logger');
 
 const getAllPosts = async (req, res, next) => {
@@ -43,9 +43,9 @@ const getFeeds = async (req, res, next) => {
             {
               model: Post,
               include: [
-                { model: Comment, attributes: { exclude: ['postId'] } },
+                { model: VideoComment, attributes: { exclude: ['postId'] } },
                 {
-                  model: Like,
+                  model: VideoLike,
                   attributes: { exclude: ['postId'] },
                 },
               ],

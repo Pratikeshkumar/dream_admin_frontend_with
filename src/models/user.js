@@ -30,7 +30,7 @@ const User = sq.define(
       type: DataTypes.STRING,
       allowNull: true
     },
-    firbase_uid: {
+    firebase_uid: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true

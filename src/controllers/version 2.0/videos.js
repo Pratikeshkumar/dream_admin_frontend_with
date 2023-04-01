@@ -1,48 +1,56 @@
-const { Video, Comment, Post } = require("../../models");
+const { Video, VideoComment, Post, Tag } = require("../../models");
 const cloudinary = require("../../config/cloudinary");
 const fs = require("fs");
 const logger = require("../../utils/logger");
 const errorHandler = require("../../utils/apiError");
+const { Op } = require('sequelize');
 
-const createVideo = async (req, res, next) => {
+const uploadVideo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: CREATE VIDEO API CALLED");
   try {
     let {
-      description,
-      section,
-      privacy_type,
-      allow_comments,
-      allow_duet,
-      duet_video_id,
-      duration,
+      mediaType, postedDateTime,
+      commentsEnabled, cover, tags,
     } = req.body,
-      { path } = req.file,
-      { id } = req.userData;
+      { id } = req.userData,
+      video = req.files.source ? req.files.source[0] : null,
+      image = req.files.cover ? req.files.cover[0] : null,
+      videoPath = video?.path, imagePath = image?.path;
 
-    if (!path) throw new errorHandler("image not present in body", "badRequest");
+    if (!videoPath || !imagePath) throw new errorHandler("data is not present in body", "badRequest");
 
-    const { url } = await cloudinary.uploads(path, "SocialMedia");
+    const uploadedVideo = await cloudinary.uploads(videoPath, "SocialMedia");
+    const uploadedImage = await cloudinary.uploads(imagePath, "SocialMedia");
 
-    fs.unlinkSync(path);
-
-    let video = await Video.create({
-      video: url,
-      description,
-      section,
-      privacy_type,
-      sound_id,
-      allow_comments,
-      allow_duet,
-      duet_video_id,
-      duration,
-      user_id: id
+    let addVideo = await Video.create({
+      mediaType, postedDateTime,
+      commentsEnabled, cover: uploadedImage.url,
+      video: uploadedVideo.url, user_id: id
     });
-    video = JSON.parse(JSON.stringify(video));
+    addVideo = JSON.parse(JSON.stringify(addVideo));
+
+    if (tags) {
+      let allTags = tags.split(','),
+        dbObjectForTags = [];
+
+      for (let i = 0; i < allTags?.length; i++) {
+        dbObjectForTags.push({
+          video_id: addVideo.id,
+          title: allTags[i]
+        });
+      }
+
+    }
+    let videoTags = await Tag.bulkCreate(dbObjectForTags);
+    videoTags = JSON.parse(JSON.stringify(videoTags));
 
     res.status(201).json({
       success: true,
       message: "Video posted successfully!",
-      video: video
+      payload: {
+        ...video,
+        tags: videoTags
+      }
     });
   } catch (error) {
     logger.error(error);
@@ -51,19 +59,50 @@ const createVideo = async (req, res, next) => {
   }
 };
 
-const getVideos = async (req, res, next) => {
+const allVideos = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GET SINGLE VIDEO API CALLED");
   try {
-    let { videoId } = req.query,
-      condition = {};
-
-    videoId && (condition.id = videoId);
+    let { user_id } = req.userData;
 
     const videos = await Video.findAll({
-      condition,
+      where: {
+        user_id: {
+          [Op.ne]: user_id
+        }
+      },
       include: [
         {
-          model: Comment,
+          model: VideoComment,
+          attributes: ["id", "comment", "created"],
+        },
+      ],
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Videos fetched successfully",
+      videos
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
+const getVideo = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: GET SINGLE VIDEO API CALLED");
+  try {
+    let { video_id } = req.query,
+      condition = {};
+
+    video_id && (condition.id = video_id);
+
+    const videos = await Video.findAll({
+      where: condition,
+      include: [
+        {
+          model: VideoComment,
           attributes: ["id", "comment", "created"],
         },
       ],
@@ -90,7 +129,7 @@ const getAllUserVideos = async (req, res, next) => {
       where: { user_id: id },
       include: [
         {
-          model: Comment,
+          model: VideoComment,
           attributes: ["id", "comment", "created"],
         },
       ],
@@ -118,7 +157,7 @@ const updateVideo = (req, res, next) => {
 };
 
 const deleteVideo = async (req, res, next) => {
-  logger.info("VIDEO: DELETE VIDEO API CALLED");
+  logger.info("VERSION 2.0 -> VIDEO: DELETE VIDEO API CALLED");
   try {
     let { id } = req.params;
 
@@ -139,10 +178,80 @@ const deleteVideo = async (req, res, next) => {
   }
 };
 
+const likeVideo = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: LIKE VIDEO API CALLED");
+  try {
+    let { id } = req.params;
+
+    const video = await Video.destroy({
+      where: { id },
+    });
+
+    if (!video) throw new errorHandler("Video not found!", "notFound");
+
+    return res.status(200).json({
+      success: true,
+      message: "Liked video successfully!"
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
+const commentVideo = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: COMMENT VIDEO API CALLED");
+  try {
+    let { id } = req.params;
+
+    const video = await Video.destroy({
+      where: { id },
+    });
+
+    if (!video) throw new errorHandler("Video not found!", "notFound");
+
+    return res.status(200).json({
+      success: true,
+      message: "Commented on video successfully!"
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
+const replyComment = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: REPLY COMMENT VIDEO API CALLED");
+  try {
+    let { id } = req.params;
+
+    const video = await Video.destroy({
+      where: { id },
+    });
+
+    if (!video) throw new errorHandler("Video not found!", "notFound");
+
+    return res.status(200).json({
+      success: true,
+      message: "Replied comment successfully!"
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
 module.exports = {
-  createVideo,
-  getVideos,
+  uploadVideo,
+  allVideos,
+  getVideo,
   updateVideo,
   getAllUserVideos,
-  deleteVideo
+  deleteVideo,
+  likeVideo,
+  commentVideo,
+  replyComment,
 };

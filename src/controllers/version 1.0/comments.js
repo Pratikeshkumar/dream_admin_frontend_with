@@ -1,7 +1,7 @@
-// const { Video, User, Comment } = require("../models");
+// const { Video, User, VideoComment } = require("../models");
 const Video = require("../../models/video");
 const User = require("../../models/user");
-const Comment = require("../../models/video_comment");
+const VideoComment = require("../../models/video_comment");
 const logger = require("../../utils/logger");
 
 const createComment = async (req, res, next) => {
@@ -11,7 +11,7 @@ const createComment = async (req, res, next) => {
     const findVideo = await Video.findOne({ where: { id: video_id } });
     if (findVideo) {
       if (comment) {
-        const commentCreated = await Comment.create({
+        const commentCreated = await VideoComment.create({
           comment,
           video_id,
           user_id: req.userData.id,
@@ -41,7 +41,7 @@ const createComment = async (req, res, next) => {
 const editComment = async (req, res, next) => {
   logger.info("COMMENT: EDIT COMMENT API CALLED");
   try {
-    const [updateComment] = await Comment.update(
+    const [updateComment] = await VideoComment.update(
       { comment: req.body.comment },
       { where: { id: req.params.commentId, user_id: req.userData.id } }
     );
@@ -51,7 +51,7 @@ const editComment = async (req, res, next) => {
       });
     } else {
       res.status(404).json({
-        response: "Comment not found.",
+        response: "VideoComment not found.",
       });
     }
   } catch (error) {
