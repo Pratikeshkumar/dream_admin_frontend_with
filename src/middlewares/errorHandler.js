@@ -5,6 +5,7 @@ module.exports = (err, req, res, next) => {
 
     logger.error("**********************************************");
     logger.error("Error MIDDLEWARE Triggered");
+    console.log("ERROR: ", err);
     logger.error("**********************************************");
 
     if (err.name === 'badRequest') {
@@ -52,7 +53,7 @@ module.exports = (err, req, res, next) => {
 
     return res.status(500).send({
         success: false,
-        message: err
+        message: "Unexpected internal server error!"
     }).end();
 };
 

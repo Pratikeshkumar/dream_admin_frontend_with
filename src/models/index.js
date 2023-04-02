@@ -10,6 +10,8 @@ const VideoLike = require("./video_like");
 const Like = require("./like");
 const Comment = require("./comment");
 const CommentReply = require("./commentReply");
+const Gift = require("./gift");
+
 
 
 /************************* USER ASSOCIATION **********/
@@ -40,13 +42,22 @@ const CommentReply = require("./commentReply");
     User.hasMany(UserFriend, { as: "friendUser", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "friend_id", allowNull: true } });
     UserFriend.belongsTo(User, { as: "friend", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "friend_id", allowNull: true } });
 
+    // Gift
+    User.belongsToMany(Video, { as: "sender", through: Gift, foreignKey: { name: "sender_id", allowNull: true } });
+    User.belongsToMany(Video, { as: "reciever", through: Gift, foreignKey: { name: "reciever_id", allowNull: true } });
+
+    User.hasMany(Gift, { as: "sender_gifts", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "sender_id", allowNull: true } });
+    Gift.belongsTo(User, { as: "sender_user", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "sender_id", allowNull: true } });
+    
+    User.hasMany(Gift, { as: "reciever_gifts", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "reciever_id", allowNull: true } });
+    Gift.belongsTo(User, { as: "reciever_user", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "reciever_id", allowNull: true } });
+
     // Video
     User.hasMany(Video, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
     Video.belongsTo(User, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
 }
 
 /************************* VIDEO ASSOCIATION **********/
-
 {
     // Tags
     Video.hasMany(Tag, { as: "tags", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "video_id", allowNull: true } });
@@ -71,6 +82,10 @@ const CommentReply = require("./commentReply");
     // Video Comments
     Video.hasMany(Comment, { as: "comments", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "video_id", allowNull: true } });
     Comment.belongsTo(Video, { as: "video", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "video_id", allowNull: true } });
+
+    // Gifts
+    Video.hasMany(Gift, { as: "gifts", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "video_id", allowNull: true } });
+    Gift.belongsTo(Video, { as: "video", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "video_id", allowNull: true } });
 }
 
 {
@@ -91,5 +106,6 @@ module.exports = {
     Tag,
     Like,
     Comment,
-    CommentReply
+    CommentReply,
+    Gift
 };

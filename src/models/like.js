@@ -13,11 +13,7 @@ const VideoLike = sq.define(
     status: {
       type: DataTypes.BOOLEAN,
       allowNull: true
-    },
-    date: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
+    }
   },
   {
     freezeTableName: true,

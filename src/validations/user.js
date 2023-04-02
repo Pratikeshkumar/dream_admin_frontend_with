@@ -63,5 +63,5 @@ const updateUser = {
 module.exports = {
     signup,
     login,
-    updateUser
+    updateUser,
 }

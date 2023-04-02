@@ -1,15 +1,26 @@
 const { sq } = require("../config/db");
 const { DataTypes } = require("sequelize");
 
-const User_Friend = sq.define("user_friend", {
-  user_id: {
+const Gift = sq.define(
+  "gift", {
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  diamonds: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  reciever_id: {
     type: DataTypes.INTEGER,
     references: {
       model: 'user',
       key: "id",
     },
   },
-  friend_id: {
+  sender_id: {
     type: DataTypes.INTEGER,
     references: {
       model: 'user',
@@ -18,4 +29,4 @@ const User_Friend = sq.define("user_friend", {
   },
 });
 
-module.exports = User_Friend;
+module.exports = Gift;

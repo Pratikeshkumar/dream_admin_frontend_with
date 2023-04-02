@@ -7,7 +7,7 @@ const logger = require('../utils/logger');
 exports.userAuth = async (req, res, next) => {
   logger.info("AUTH: USER AUTH MIDDLEWARE CALLED");
   try {
-    if (!req.headers.authorization) throw new errorHandler("Token not found in header!", "notFound");
+    if (!req.headers.authorization) throw errorHandler("Token not found in header!", "notFound");
 
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, JWT_KEY);
@@ -17,7 +17,7 @@ exports.userAuth = async (req, res, next) => {
     });
     userData = JSON.parse(JSON.stringify(userData));
 
-    if (!userData.active) throw new errorHandler("Account is deactivated!", "unAuthorized");
+    if (!userData) throw errorHandler("Token expired!", "unAuthorized");
 
     req.userData = userData;
     next();
@@ -31,7 +31,7 @@ exports.userAuth = async (req, res, next) => {
 exports.adminAuth = async (req, res, next) => {
   logger.info("AUTH: ADMIN AUTH MIDDLEWARE CALLED");
   try {
-    if (!req.headers.authorization) throw new errorHandler("Token not found in header!", "notFound");
+    if (!req.headers.authorization) throw errorHandler("Token not found in header!", "notFound");
 
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, JWT_KEY);
@@ -42,7 +42,7 @@ exports.adminAuth = async (req, res, next) => {
     });
     userData = JSON.parse(JSON.stringify(userData));
 
-    if (!userData && !userData.active) throw new errorHandler("Account is deactivated!", "unAuthorized");
+    if (!userData && !userData.active) throw errorHandler("Account is deactivated!", "unAuthorized");
 
     req.userData = userData;
     next();

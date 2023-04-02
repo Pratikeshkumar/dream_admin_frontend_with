@@ -15,8 +15,11 @@ router.get("/video", userAuth, validate(videoValidation.getVideo), videoApis2.ge
 router.patch("/video/:videoId", userAuth, validate(videoValidation.updateVideo), videoApis2.updateVideo);
 router.delete("/video", userAuth, validate(videoValidation.deleteVideo), videoApis2.deleteVideo);
 
-router.post("/like", userAuth, validate(videoValidation.likeVideo), videoApis2.likeVideo);
-router.post("/comment", userAuth, validate(videoValidation.commentVideo), videoApis2.commentVideo);
-router.post("/replyComment", userAuth, validate(videoValidation.replyComment), videoApis2.replyComment);
+router.post("/like/:video_id", userAuth, validate(videoValidation.likeVideo), videoApis2.likeVideo);
+router.post("/comment/:video_id", userAuth, validate(videoValidation.commentVideo), videoApis2.commentVideo);
+router.post("/replyComment/:comment_id", userAuth, validate(videoValidation.replyComment), videoApis2.replyComment);
+router.get("/involvedVideos", userAuth, videoApis2.userInvolvedVideos);
+router.get("/allComments/:video_id", userAuth, validate(videoValidation.allComments), videoApis2.allComments);
+router.post('/giftVideo', userAuth, validate(videoValidation.giftVideo), videoApis2.giftVideo);
 
 module.exports = router;

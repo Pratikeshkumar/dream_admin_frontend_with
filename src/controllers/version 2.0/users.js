@@ -22,7 +22,7 @@ const signup = async (req, res, next) => {
 
     !language && (language = "EN");
 
-    if (user) throw new errorHandler("User already exists!", "duplication");
+    if (user) throw errorHandler("User already exists!", "duplication");
 
     let createUser = await User.create({
       user_name, email, firebase_uid, bio,
@@ -33,7 +33,7 @@ const signup = async (req, res, next) => {
       role: "user", active: true, profile_image
     });
 
-    if (!createUser) throw new errorHandler("Unexpected error occured while creating user!", "badRequest");
+    if (!createUser) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
 
     return res.status(201).json({
       success: true,
@@ -66,7 +66,7 @@ const login = async (req, res, next) => {
     });
     user = JSON.parse(JSON.stringify(user));
 
-    if (!user) throw new errorHandler("User not found!", "notFound");
+    if (!user) throw errorHandler("User not found!", "notFound");
 
     return res.status(201).json({
       success: true,
@@ -96,7 +96,7 @@ const userInfo = async (req, res, next) => {
     });
     user = JSON.parse(JSON.stringify(user));
 
-    if (!user) throw new errorHandler("User not found", "notFound");
+    if (!user) throw errorHandler("User not found", "notFound");
 
     return res.status(200).json({
       success: true,
@@ -121,7 +121,7 @@ const updateUser = async (req, res, next) => {
       { where: { firebase_uid, token } }
     );
 
-    if (updatedUser[0] !== 1) throw new errorHandler("Unexpected error occured while updating user info", "badRequest");
+    if (updatedUser[0] !== 1) throw errorHandler("Unexpected error occured while updating user info", "badRequest");
 
     let user = await User.findOne({
       attributes: {
@@ -144,7 +144,6 @@ const updateUser = async (req, res, next) => {
     return next(error);
   }
 };
-
 
 module.exports = {
   signup,

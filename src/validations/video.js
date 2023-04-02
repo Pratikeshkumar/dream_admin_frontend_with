@@ -44,6 +44,9 @@ const likeVideo = {
     params: joi.object({
         video_id: joi.number().optional(),
     }),
+    body: joi.object({
+        status: joi.boolean().optional(),
+    }),
 };
 
 const commentVideo = {
@@ -54,6 +57,7 @@ const commentVideo = {
         video_id: joi.number().optional(),
     }),
 };
+
 const replyComment = {
     body: joi.object({
         comment_id: joi.number().optional(),
@@ -64,7 +68,19 @@ const replyComment = {
     }),
 };
 
+const allComments = {
+    params: joi.object({
+        video_id: joi.number().optional(),
+    }),
+};
 
+const giftVideo = {
+    body: joi.object({
+        to_user_id: joi.number().optional(),
+        to_video_id: joi.number().required(),
+        num_of_diamonds: joi.number().required(),
+    }),
+};
 
 module.exports = {
     uploadVideo,
@@ -74,4 +90,6 @@ module.exports = {
     likeVideo,
     commentVideo,
     replyComment,
+    allComments,
+    giftVideo
 }

@@ -19,7 +19,7 @@ const signup = async (req, res, next) => {
     });
     admin = JSON.parse(JSON.stringify(admin));
 
-    if (admin) throw new errorHandler("Admin already exists!", "duplication");
+    if (admin) throw errorHandler("Admin already exists!", "duplication");
 
     let createdAdmin = await Admin.create({
       email,
@@ -30,7 +30,7 @@ const signup = async (req, res, next) => {
       profile_image
     });
 
-    if (!createdAdmin) throw new errorHandler("Unexpected error occured while signing up!", "badRequest");
+    if (!createdAdmin) throw errorHandler("Unexpected error occured while signing up!", "badRequest");
 
     res.status(201).json({
       success: true,
@@ -54,11 +54,11 @@ const login = async (req, res, next) => {
     });
     admin = JSON.parse(JSON.stringify(admin));
 
-    if (!admin) throw new errorHandler("Admin not found!", "notFound");
+    if (!admin) throw errorHandler("Admin not found!", "notFound");
 
     let success = await bcrypt.compare(password, admin.password);
 
-    if (!success) throw new errorHandler("Incorrect password!", "badRequest");
+    if (!success) throw errorHandler("Incorrect password!", "badRequest");
 
     res.status(200).json({
       success: true,
@@ -81,7 +81,7 @@ const updateAdmin = async (req, res, next) => {
       { where: { email } }
     );
 
-    if (updatedUser[0] !== 1) throw new errorHandler("Unexpected error occured while updating admin info", "badRequest");
+    if (updatedUser[0] !== 1) throw errorHandler("Unexpected error occured while updating admin info", "badRequest");
 
     return res.status(200).json({
       success: true,
