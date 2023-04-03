@@ -79,8 +79,8 @@ const allVideos = async (req, res, next) => {
       },
       include: [
         {
-          model: VideoComment,
-          attributes: ["id", "comment", "created"],
+          as: "comments",
+          model: Comment,
         },
       ],
     });
@@ -109,8 +109,8 @@ const getVideo = async (req, res, next) => {
       where: condition,
       include: [
         {
-          model: VideoComment,
-          attributes: ["id", "comment", "created"],
+          as: "comments",
+          model: Comment,
         },
       ],
     });
@@ -136,8 +136,8 @@ const getAllUserVideos = async (req, res, next) => {
       where: { user_id: id },
       include: [
         {
-          model: VideoComment,
-          attributes: ["id", "comment", "created"],
+          as: "comments",
+          model: Comment,
         },
       ],
     });
