@@ -18,19 +18,21 @@ const uploadVideo = async (req, res, next) => {
       video = req.files.source ? req.files.source[0] : null,
       image = req.files.cover ? req.files.cover[0] : null,
       videoPath = video?.path, imagePath = image?.path,
-      promises = [];
+      promises = [], uploadedVideo, uploadedImage;
 
-    if (!videoPath || !imagePath) throw errorHandler("data is not present in body", "badRequest");
+    if (!videoPath) throw errorHandler("data is not present in body", "badRequest");
 
-    const uploadedVideo = await cloudinary.uploads(videoPath, "SocialMedia");
-    const uploadedImage = await cloudinary.uploads(imagePath, "SocialMedia");
-
+    uploadedVideo = await cloudinary.uploads(videoPath, "SocialMedia");
     promises.push(fs.unlinkSync(videoPath));
-    promises.push(fs.unlinkSync(imagePath));
+
+    if (imagePath) {
+      uploadedImage = await cloudinary.uploads(imagePath, "SocialMedia");
+      promises.push(fs.unlinkSync(imagePath));
+    }
 
     let addVideo = await Video.create({
-      mediaType, postedDateTime,
-      commentsEnabled, cover: uploadedImage.url,
+      type: mediaType, postedDateTime,
+      commentsEnabled, cover: uploadedImage?.url || null,
       video: uploadedVideo.url, user_id: id
     });
     addVideo = JSON.parse(JSON.stringify(addVideo));
@@ -69,13 +71,9 @@ const uploadVideo = async (req, res, next) => {
 const allVideos = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GET SINGLE VIDEO API CALLED");
   try {
-    let user_id = req.userData.id;
-
     const videos = await Video.findAll({
       where: {
-        user_id: {
-          [Op.ne]: user_id
-        }
+        status: "public"
       },
       include: [
         {
@@ -100,10 +98,12 @@ const allVideos = async (req, res, next) => {
 const getVideo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GET SINGLE VIDEO API CALLED");
   try {
-    let { video_id } = req.query,
+    let { video_id, user_id, status } = req.query,
       condition = {};
 
     video_id && (condition.id = video_id);
+    user_id && (condition.user_id = user_id);
+    status && (condition.status = status);
 
     const videos = await Video.findAll({
       where: condition,
@@ -128,7 +128,7 @@ const getVideo = async (req, res, next) => {
 };
 
 const getAllUserVideos = async (req, res, next) => {
-  logger.info("VERSION 2.0 -> VIDEO: GET ALL User VIDEOS API CALLED");
+  logger.info("VERSION 2.0 -> VIDEO: GET ALL USER VIDEOS API CALLED");
   try {
     let { id } = req.userData;
 
@@ -145,6 +145,30 @@ const getAllUserVideos = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Successfully fetched videos!",
+      videos
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
+const getUserPostedImages = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: GET ALL USER POSTED IMAGES API CALLED");
+  try {
+    let { status } = req.query,
+      condition = {};
+
+    condition.status = status;
+
+    const videos = await Video.findAll({
+      where: condition,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully fetched images!",
       videos
     });
   } catch (error) {
@@ -463,5 +487,6 @@ module.exports = {
   replyComment,
   userInvolvedVideos,
   allComments,
-  giftVideo
+  giftVideo,
+  getUserPostedImages
 };

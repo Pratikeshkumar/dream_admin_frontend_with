@@ -34,6 +34,14 @@ const getVideo = {
     }),
 };
 
+const getUserPostedImages = {
+    query: joi.object({
+        limit: joi.number().optional(),
+        page: joi.number().optional(),
+        status: joi.string().optional(),
+    }),
+};
+
 const deleteVideo = {
     params: joi.object({
         id: joi.number().required(),
@@ -91,5 +99,6 @@ module.exports = {
     commentVideo,
     replyComment,
     allComments,
-    giftVideo
+    giftVideo,
+    getUserPostedImages
 }

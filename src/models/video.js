@@ -10,37 +10,22 @@ const Video = sq.define(
       allowNull: false,
       primaryKey: true,
     },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
     video: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    thum: {
+    cover: {
       type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: "///////////",
+      allowNull: true
     },
-    gif: {
+    status: {
       type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: "///////////",
-    },
-    view: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0
-    },
-    section: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
-    },
-    privacy_type: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       defaultValue: "public",
+    },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     allow_comments: {
       type: DataTypes.STRING,

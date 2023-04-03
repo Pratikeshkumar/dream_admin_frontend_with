@@ -47,7 +47,7 @@ module.exports = (err, req, res, next) => {
     if (err.isOperational) {
         return res.status(400).send({
             success: false,
-            message: err.message
+            message: err.statusCode
         }).end();
     }
 

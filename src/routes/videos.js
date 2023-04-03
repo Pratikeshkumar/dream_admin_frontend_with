@@ -10,7 +10,8 @@ const videoValidation = require('../validations/video');
 /************************************* CONTROLLER VERSION 2.0 */
 router.post("/video", userAuth, upload.fields([{ name: 'source', maxCount: 1, optional: true }, { name: 'cover', maxCount: 1, optional: true }]), validate(videoValidation.uploadVideo), videoApis2.uploadVideo);
 router.get("/userAllVideos", userAuth, videoApis2.getAllUserVideos);
-router.get("/allVideos", userAuth, videoApis2.allVideos);
+router.get("/userPostedImages", validate(videoValidation.getUserPostedImages), videoApis2.getUserPostedImages);
+router.get("/allVideos", videoApis2.allVideos);
 router.get("/video", userAuth, validate(videoValidation.getVideo), videoApis2.getVideo);
 router.patch("/video/:videoId", userAuth, validate(videoValidation.updateVideo), videoApis2.updateVideo);
 router.delete("/video", userAuth, validate(videoValidation.deleteVideo), videoApis2.deleteVideo);
