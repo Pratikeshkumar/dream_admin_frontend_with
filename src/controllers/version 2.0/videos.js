@@ -12,7 +12,7 @@ const uploadVideo = async (req, res, next) => {
   try {
     let {
       mediaType, postedDateTime,
-      commentsEnabled, tags,
+      commentsEnabled, tags, status
     } = req.body, dbObjectForTags = [],
       { id } = req.userData,
       video = req.files.source ? req.files.source[0] : null,
@@ -33,7 +33,7 @@ const uploadVideo = async (req, res, next) => {
     let addVideo = await Video.create({
       type: mediaType, postedDateTime,
       commentsEnabled, cover: uploadedImage?.url || null,
-      video: uploadedVideo.url, user_id: id
+      video: uploadedVideo.url, user_id: id, status
     });
     addVideo = JSON.parse(JSON.stringify(addVideo));
 

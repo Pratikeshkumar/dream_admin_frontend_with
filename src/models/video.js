@@ -12,7 +12,7 @@ const Video = sq.define(
     },
     video: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     cover: {
       type: DataTypes.STRING,

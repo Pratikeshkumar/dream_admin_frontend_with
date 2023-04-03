@@ -7,6 +7,7 @@ const uploadVideo = {
         commentsEnabled: joi.string().optional(),
         cover: joi.string().optional(),
         tags: joi.string().optional(),
+        status: joi.string().required(),
         postedDateTime: joi.date().optional(),
 
     }),
@@ -14,6 +15,7 @@ const uploadVideo = {
 
 const updateVideo = {
     body: joi.object({
+        status: joi.string().optional(),
         mediaType: joi.string().optional(),
         postedDateTime: joi.string().optional(),
         commentsEnabled: joi.string().optional(),
