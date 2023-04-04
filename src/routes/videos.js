@@ -23,5 +23,6 @@ router.get("/involvedVideos", userAuth, videoApis2.userInvolvedVideos);
 router.get("/allComments/:video_id", userAuth, validate(videoValidation.allComments), videoApis2.allComments);
 router.post('/giftVideo', userAuth, validate(videoValidation.giftVideo), videoApis2.giftVideo);
 router.get("/searchAllVideos", userAuth, validate(videoValidation.searchAllVideos), videoApis2.searchAllVideos);
+router.get("/searchVideosFromProfile", userAuth, validate(videoValidation.searchVideosFromProfile), videoApis2.searchVideosFromProfile);
 
 module.exports = router;

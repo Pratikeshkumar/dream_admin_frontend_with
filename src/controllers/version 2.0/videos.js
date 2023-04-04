@@ -479,16 +479,38 @@ const searchAllVideos = async (req, res, next) => {
     let { keyword } = req.query;
 
     const videos = await Video.findAll({
+      attributes: ['id', 'video'],
       where: {
         status: "public",
         // keyword filter has to be added
       },
-      include: [
-        {
-          as: "comments",
-          model: Comment,
-        },
-      ],
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Videos fetched successfully",
+      videos
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
+const searchVideosFromProfile = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: SEARCH PROFILE VIDEOS BY KEYWORD API CALLED");
+  try {
+    let { keyword, status } = req.query,
+      user_id = req.userData.id,
+      condition = {};
+
+    status && (condition.status = status);
+    condition.user_id = user_id;
+
+    const videos = await Video.findAll({
+      attributes: ['id', 'video'],
+      where: condition,
     });
 
     return res.status(200).json({
@@ -517,5 +539,6 @@ module.exports = {
   allComments,
   giftVideo,
   getUserPostedImages,
-  searchAllVideos
+  searchAllVideos,
+  searchVideosFromProfile
 };
