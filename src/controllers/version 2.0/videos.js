@@ -3,7 +3,6 @@ const cloudinary = require("../../config/cloudinary");
 const fs = require("fs");
 const logger = require("../../utils/logger");
 const errorHandler = require("../../utils/errorObject");
-const { Op } = require('sequelize');
 const sequelize = require('sequelize');
 const { sq } = require('../../config/db');
 
@@ -69,7 +68,7 @@ const uploadVideo = async (req, res, next) => {
 };
 
 const allVideos = async (req, res, next) => {
-  logger.info("VERSION 2.0 -> VIDEO: GET SINGLE VIDEO API CALLED");
+  logger.info("VERSION 2.0 -> VIDEO: GET ALL VIDEOS API CALLED");
   try {
     const videos = await Video.findAll({
       where: {
@@ -338,10 +337,9 @@ const userInvolvedVideos = async (req, res, next) => {
 
     let userLikedVideos = await Video.findAll({
       attributes: ['id', 'video'],
-      where: { user_id },
       include: [
         {
-          required: true,
+          where: { user_id },
           model: Like,
           as: "likes"
         },
@@ -349,9 +347,9 @@ const userInvolvedVideos = async (req, res, next) => {
     });
     let userCommentedVideos = await Video.findAll({
       attributes: ['id', 'video'],
-      where: { user_id },
       include: [
         {
+          where: { user_id },
           required: true,
           model: Comment,
           as: "comments"
@@ -475,6 +473,36 @@ const giftVideo = async (req, res, next) => {
   }
 };
 
+const searchAllVideos = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: SEARCH ALL VIDEOS BY KEYWORD API CALLED");
+  try {
+    let { keyword } = req.query;
+
+    const videos = await Video.findAll({
+      where: {
+        status: "public",
+        // keyword filter has to be added
+      },
+      include: [
+        {
+          as: "comments",
+          model: Comment,
+        },
+      ],
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Videos fetched successfully",
+      videos
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
 module.exports = {
   uploadVideo,
   allVideos,
@@ -488,5 +516,6 @@ module.exports = {
   userInvolvedVideos,
   allComments,
   giftVideo,
-  getUserPostedImages
+  getUserPostedImages,
+  searchAllVideos
 };

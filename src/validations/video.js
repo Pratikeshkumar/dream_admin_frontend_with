@@ -93,6 +93,11 @@ const giftVideo = {
         num_of_diamonds: joi.number().required(),
     }),
 };
+const searchAllVideos = {
+    query: joi.object({
+        keyword: joi.number().optional(),
+    }),
+};
 
 module.exports = {
     uploadVideo,
@@ -104,5 +109,6 @@ module.exports = {
     replyComment,
     allComments,
     giftVideo,
-    getUserPostedImages
+    getUserPostedImages,
+    searchAllVideos
 }
