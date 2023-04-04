@@ -96,7 +96,7 @@ const allVideos = async (req, res, next) => {
 };
 
 const getVideo = async (req, res, next) => {
-  logger.info("VERSION 2.0 -> VIDEO: GET SINGLE VIDEO API CALLED");
+  logger.info("VERSION 2.0 -> VIDEO: GET VIDEO BY FILTERS API CALLED");
   try {
     let { video_id, user_id, status } = req.query,
       condition = {};

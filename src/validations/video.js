@@ -33,6 +33,8 @@ const getVideo = {
         limit: joi.number().optional(),
         page: joi.number().optional(),
         video_id: joi.number().optional(),
+        user_id: joi.number().optional(),
+        status: joi.string().optional(),
     }),
 };
 
