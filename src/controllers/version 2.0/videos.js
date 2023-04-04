@@ -240,7 +240,7 @@ const likeVideo = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "Liked video successfully!",
+      message: status === true ? "Liked video successfully!" : "Disliked video successfully!",
       payload: {
         liked,
         totalVideoLikes: totalVideoLikes[0]?.total_likes
@@ -366,8 +366,8 @@ const userInvolvedVideos = async (req, res, next) => {
       success: true,
       message: "User Involved videos fetched successfully!",
       payload: {
-        ...userLikedVideos,
-        ...userCommentedVideos
+        userLikedVideos,
+        userCommentedVideos
       }
     });
   } catch (error) {
