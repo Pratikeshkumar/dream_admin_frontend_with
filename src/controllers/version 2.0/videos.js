@@ -352,6 +352,7 @@ const userInvolvedVideos = async (req, res, next) => {
         },
       ]
     });
+
     let userCommentedVideos = await Video.findAll({
       attributes: ['id', 'video'],
       include: [
@@ -363,6 +364,54 @@ const userInvolvedVideos = async (req, res, next) => {
         },
       ]
     });
+
+    userLikedVideos = JSON.parse(JSON.stringify(userLikedVideos));
+    userCommentedVideos = JSON.parse(JSON.stringify(userCommentedVideos));
+
+
+    return res.status(200).json({
+      success: true,
+      message: "User Involved videos fetched successfully!",
+      payload: {
+        userLikedVideos,
+        userCommentedVideos
+      }
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
+const userInvolvedVideosById = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: USER INVOLVED VIDEOS BY ID API CALLED");
+  try {
+    let { user_id } = req.params;
+
+    let userLikedVideos = await Video.findAll({
+      attributes: ['id', 'video'],
+      include: [
+        {
+          where: { user_id },
+          model: Like,
+          as: "likes"
+        },
+      ]
+    });
+
+    let userCommentedVideos = await Video.findAll({
+      attributes: ['id', 'video'],
+      include: [
+        {
+          where: { user_id },
+          required: true,
+          model: Comment,
+          as: "comments"
+        },
+      ]
+    });
+
     userLikedVideos = JSON.parse(JSON.stringify(userLikedVideos));
     userCommentedVideos = JSON.parse(JSON.stringify(userCommentedVideos));
 
@@ -549,5 +598,6 @@ module.exports = {
   giftVideo,
   getUserPostedImages,
   searchAllVideos,
-  searchVideosFromProfile
+  searchVideosFromProfile,
+  userInvolvedVideosById
 };

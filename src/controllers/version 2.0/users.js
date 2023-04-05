@@ -138,6 +138,7 @@ const userInfoById = async (req, res, next) => {
     return next(error);
   }
 };
+
 const updateUser = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: USER UPDATE API CALLED");
   try {
