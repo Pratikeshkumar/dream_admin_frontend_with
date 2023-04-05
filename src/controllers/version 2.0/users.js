@@ -26,7 +26,7 @@ const signup = async (req, res, next) => {
 
     if (user) throw errorHandler("User already exists!", "duplication");
 
-    let createUser = await User.create({
+    let created_user = await User.create({
       user_name, email, firebase_uid, bio,
       token, lat, lng, DOB, countryCode,
       intro_video, id_type, id_number,
@@ -34,12 +34,17 @@ const signup = async (req, res, next) => {
       id_attachement, secret_sign, id_verified,
       role: "user", active: true, profile_image
     });
+    created_user = JSON.parse(JSON.stringify(created_user));
 
-    if (!createUser) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
+    if (!created_user) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
 
     return res.status(201).json({
       success: true,
-      message: "user created successfully"
+      message: "user created successfully",
+      payload: {
+        ...created_user,
+        auth_token: jwt.sign({ user_id: created_user.id, firebase_uid: created_user.firebase_uid, token: created_user.token }, JWT_KEY),
+      }
     });
   } catch (error) {
     logger.error(error);
