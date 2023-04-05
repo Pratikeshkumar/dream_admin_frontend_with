@@ -11,6 +11,7 @@ const Like = require("./like");
 const Comment = require("./comment");
 const CommentReply = require("./commentReply");
 const Gift = require("./gift");
+const FollowerAndFollowing = require('./followerAndFollowing');
 
 
 
@@ -48,13 +49,24 @@ const Gift = require("./gift");
 
     User.hasMany(Gift, { as: "sender_gifts", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "sender_id", allowNull: true } });
     Gift.belongsTo(User, { as: "sender_user", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "sender_id", allowNull: true } });
-    
+
     User.hasMany(Gift, { as: "reciever_gifts", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "reciever_id", allowNull: true } });
     Gift.belongsTo(User, { as: "reciever_user", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "reciever_id", allowNull: true } });
 
     // Video
     User.hasMany(Video, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
     Video.belongsTo(User, { onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: "user_id" });
+
+    // Follow and Following
+    User.belongsToMany(User, { as: "follower", through: FollowerAndFollowing, foreignKey: { name: "following_id", allowNull: true } });
+    User.belongsToMany(User, { as: "following", through: FollowerAndFollowing, foreignKey: { name: "follower_id", allowNull: true } });
+
+    User.hasMany(FollowerAndFollowing, { as: "followers", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "follower_id", allowNull: true } });
+    FollowerAndFollowing.belongsTo(User, { as: "following", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "follower_id", allowNull: true } });
+
+    User.hasMany(FollowerAndFollowing, { as: "followings", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "following_id", allowNull: true } });
+    FollowerAndFollowing.belongsTo(User, { as: "follower", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "following_id", allowNull: true } });
+
 }
 
 /************************* VIDEO ASSOCIATION **********/
@@ -107,5 +119,6 @@ module.exports = {
     Like,
     Comment,
     CommentReply,
-    Gift
+    Gift,
+    FollowerAndFollowing
 };

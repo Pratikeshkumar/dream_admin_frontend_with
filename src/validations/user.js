@@ -60,8 +60,15 @@ const updateUser = {
     }),
 };
 
+const userInfoById = {
+    params: joi.object({
+        user_id: joi.number().optional(),
+    }),
+};
+
 module.exports = {
     signup,
     login,
     updateUser,
+    userInfoById
 }

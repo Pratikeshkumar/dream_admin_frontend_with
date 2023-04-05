@@ -1,8 +1,10 @@
 const { User } = require("../../models");
-const logger = require('../../utils/logger');
+const fs = require('fs');
 const errorHandler = require("../../utils/errorObject");
-const jwt = require("jsonwebtoken");
 const { JWT_KEY } = process.env;
+const logger = require('../../utils/logger');
+const jwt = require("jsonwebtoken");
+const cloudinary = require('../../config/cloudinary');
 
 const signup = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: SIGN UP API CALLED");
@@ -110,6 +112,32 @@ const userInfo = async (req, res, next) => {
   }
 };
 
+const userInfoById = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> USER: GET OTHER USER INFO BY ID API CALLED");
+  try {
+    let { user_id } = req.params;
+
+    let user = await User.findOne({
+      attributes: {
+        exclude: ['first_name', 'last_name', 'password']
+      },
+      where: { id: user_id }
+    });
+    user = JSON.parse(JSON.stringify(user));
+
+    if (!user) throw errorHandler("User not found", "notFound");
+
+    return res.status(200).json({
+      success: true,
+      message: "User info fetched successfully!",
+      payload: user
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
 const updateUser = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: USER UPDATE API CALLED");
   try {
@@ -145,9 +173,37 @@ const updateUser = async (req, res, next) => {
   }
 };
 
+const uploadData = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> USER: UPLOAD DATA API CALLED");
+  try {
+    let path = req?.files?.source[0]?.path;
+
+    if (!path) throw errorHandler("data is not present in body", "badRequest");
+
+    let uploadedVideo = await cloudinary.uploads(path, "SocialMedia"),
+      url = uploadedVideo.url;
+
+    fs.unlinkSync(path);
+
+    res.status(201).json({
+      success: true,
+      message: "Data uploaded successfully!",
+      payload: {
+        url
+      }
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
 module.exports = {
   signup,
   login,
   updateUser,
-  userInfo
+  userInfo,
+  userInfoById,
+  uploadData
 };
