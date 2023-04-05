@@ -76,9 +76,16 @@ const allVideos = async (req, res, next) => {
       },
       include: [
         {
-          as: "comments",
           model: Comment,
+          as: "comments",
         },
+        {
+          attributes: {
+            exclude: ["first_name", "last_name", "password"]
+          },
+          model: User,
+          as: "user"
+        }
       ],
     });
 
@@ -396,6 +403,8 @@ const allComments = async (req, res, next) => {
     });
     videoComments = JSON.parse(JSON.stringify(videoComments));
 
+    if (!videoComments) throw errorHandler("Video does not exist!", "notFound");
+
     let totalComments = await Comment.findAll({
       attributes: [
         [sequelize.fn('COUNT', sequelize.col('id')), 'total_comments']
@@ -405,7 +414,7 @@ const allComments = async (req, res, next) => {
       distinct: true
     });
     totalComments = JSON.parse(JSON.stringify(totalComments));
-    videoComments.totalComments = totalComments[0].total_comments;
+    videoComments.totalComments = totalComments[0]?.total_comments || 0;
 
 
     return res.status(200).json({
