@@ -31,12 +31,12 @@ const User = sq.define(
       allowNull: true
     },
     firebase_uid: {
-      type: DataTypes.TEXT,
-      allowNull: true,
+      type: DataTypes.STRING,
+      allowNull: false,
       unique: true
     },
     token: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true
     },
