@@ -15,6 +15,7 @@ const Gift = sq.define(
   },
   reciever_id: {
     type: DataTypes.INTEGER,
+    unique: false,
     references: {
       model: 'user',
       key: "id",
@@ -22,6 +23,7 @@ const Gift = sq.define(
   },
   sender_id: {
     type: DataTypes.INTEGER,
+    unique: false,
     references: {
       model: 'user',
       key: "id",

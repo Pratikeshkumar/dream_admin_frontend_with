@@ -28,9 +28,14 @@ const Video = sq.define(
       allowNull: true,
     },
     allow_comments: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: "true",
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: true,
+    },
+    allow_gifts: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: true,
     },
     allow_duet: {
       type: DataTypes.INTEGER,

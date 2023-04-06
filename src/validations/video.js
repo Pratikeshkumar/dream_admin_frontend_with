@@ -107,6 +107,12 @@ const searchVideosFromProfile = {
     }),
 };
 
+const videoStats = {
+    params: joi.object({
+        video_id: joi.number().required(),
+    }),
+};
+
 module.exports = {
     uploadVideo,
     getVideo,
@@ -119,5 +125,6 @@ module.exports = {
     giftVideo,
     getUserPostedImages,
     searchAllVideos,
-    searchVideosFromProfile
+    searchVideosFromProfile,
+    videoStats
 }

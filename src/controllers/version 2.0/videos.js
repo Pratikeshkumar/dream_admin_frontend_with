@@ -480,7 +480,6 @@ const allComments = async (req, res, next) => {
 
 const giftVideo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GIFT VIDEO API CALLED");
-  let transaction = await sq.transaction();
   try {
     let data = req.body,
       {
@@ -494,12 +493,12 @@ const giftVideo = async (req, res, next) => {
 
     let gift = await Gift.create({
       sender_id, reciever_id, video_id: to_video_id, diamonds: num_of_diamonds
-    }, { transaction });
+    });
     gift = JSON.parse(JSON.stringify(gift));
 
     if (!gift) throw errorHandler("Unexpected error occured giving diamonds to video!", "badRequest");
 
-    let user = await User.findOne({ where: { id: sender_id } }, { transaction });
+    let user = await User.findOne({ where: { id: sender_id } });
     user.diamonds = user.diamonds - num_of_diamonds;
     user.save();
 
@@ -509,10 +508,10 @@ const giftVideo = async (req, res, next) => {
       ],
       where: { video_id: to_video_id },
       group: ['video_id']
-    }, { transaction });
+    });
     total_diamonds_gifted_to_video = JSON.parse(JSON.stringify(total_diamonds_gifted_to_video));
 
-    await transaction.commit();
+    console.log(total_diamonds_gifted_to_video)
 
     return res.status(200).json({
       success: true,
@@ -521,12 +520,12 @@ const giftVideo = async (req, res, next) => {
         video_id: to_video_id,
         diamonds_gifted: num_of_diamonds,
         total_diamonds_gifted_to_video:
-          parseInt(total_diamonds_gifted_to_video[0].total_diamonds_gifted_to_video) + parseInt(num_of_diamonds),
+          parseInt(total_diamonds_gifted_to_video[0]?.total_diamonds_gifted_to_video) + parseInt(num_of_diamonds),
       }
     });
   } catch (error) {
     logger.error(error);
-    await transaction.rollback();
+
     return next(error);
   }
 };
@@ -583,6 +582,70 @@ const searchVideosFromProfile = async (req, res, next) => {
   }
 };
 
+const videoStats = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: VIDEO STATS BY ID API CALLED");
+  try {
+    let { video_id } = req.params,
+      user_id = req.userData.id;
+
+    let video = await Video.findAll({
+      include: [
+        {
+          required: false,
+          attributes: [
+            [sequelize.fn("COUNT", sequelize.col('video_id')), "total_likes"]
+          ],
+          where: { video_id, status: true },
+          model: Like,
+          as: "likes"
+        },
+        {
+          attributes: {
+            exclude: ['first_name', 'last_name', 'firebase_uid', 'token']
+          },
+          model: User,
+          as: "user"
+        }
+      ],
+      group: ['video_id']
+    });
+    video = JSON.parse(JSON.stringify(video));
+
+
+    let liked = await Like.findOne({
+      attributes: [
+        ['status', 'did_liked_before']
+      ],
+      where: { user_id, video_id }
+    })
+    liked = JSON.parse(JSON.stringify(liked));
+
+    let gift = await Gift.findAll({
+      attributes: [
+        [sequelize.fn("SUM", sequelize.col('gift.diamonds')), "total_diamonds_gifted"]
+      ],
+      where: { video_id },
+      group: ['video_id']
+    });
+    gift = JSON.parse(JSON.stringify(gift));
+
+    return res.status(200).json({
+      success: true,
+      message: "Video stats successfully!",
+      payload: {
+        ...video[0],
+        ...gift[0],
+        ...liked
+      }
+    });
+  } catch (error) {
+    logger.error(error);
+
+    return next(error);
+  }
+};
+
+
 module.exports = {
   uploadVideo,
   allVideos,
@@ -599,5 +662,6 @@ module.exports = {
   getUserPostedImages,
   searchAllVideos,
   searchVideosFromProfile,
-  userInvolvedVideosById
+  userInvolvedVideosById,
+  videoStats
 };
