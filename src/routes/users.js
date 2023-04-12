@@ -23,7 +23,7 @@ router.get('/:userId/feeds', getFeeds);
 /************************************* VERSION 2.0 */
 router.post('/signup', validate(userValidation.signup), userApis2.signup);
 router.post('/login', validate(userValidation.login), userApis2.login);
-router.post('/update', userAuth, validate(userValidation.updateUser), userApis2.login);
+router.put('/update', userAuth, validate(userValidation.updateUser), userApis2.updateUser);
 router.get('/info', userAuth, userApis2.userInfo);
 
 router.post('/upload', upload.fields([{ name: "source", maxCount: 1 }]), userApis2.uploadData);

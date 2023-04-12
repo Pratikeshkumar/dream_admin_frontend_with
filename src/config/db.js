@@ -11,7 +11,7 @@ testDbConnection = async () => {
   try {
     await sequelize.authenticate()
 
-    sequelize.sync({ force: true, alter: true });
+    sequelize.sync({ force: false, alter: false });
 
     console.log('Connection has been established successfully.');
   } catch (error) {

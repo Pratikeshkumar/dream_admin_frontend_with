@@ -37,11 +37,8 @@ const login = {
 const updateUser = {
     body: joi.object({
         user_name: joi.string().optional(),
-        email: joi.string().optional(),
         phone: joi.string().optional(),
         bio: joi.string().optional(),
-        firebase_uid: joi.string().optional(),
-        token: joi.string().required(),
         profile_image: joi.string().optional(),
         intro_video: joi.string().optional(),
         id_type: joi.string().optional(),
