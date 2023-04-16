@@ -3,11 +3,11 @@ const joi = require('joi');
 const signup = {
     body: joi.object({
         user_name: joi.string().required(),
-        email: joi.string().optional(),
+        email: joi.string().required(),
         phone: joi.string().optional(),
         bio: joi.string().optional(),
-        firebase_uid: joi.string().required(),
-        token: joi.string().required(),
+        firebase_uid: joi.string().optional(),
+        token: joi.string().optional(),
         profile_image: joi.string().optional(),
         intro_video: joi.string().optional(),
         id_type: joi.string().optional(),
@@ -28,9 +28,10 @@ const signup = {
 
 const login = {
     body: joi.object({
-        email: joi.string().optional(),
-        firebase_uid: joi.string().required(),
-        token: joi.string().required(),
+        email: joi.string().required(),
+        firebase_uid: joi.string().optional(),
+        token: joi.string().optional(),
+        social_id: joi.string().optional(),
     }),
 };
 

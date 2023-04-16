@@ -14,17 +14,10 @@ const User = sq.define(
       type: DataTypes.STRING,
       allowNull: true
     },
-    first_name: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    last_name: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
     email: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      // unique: true
     },
     phone: {
       type: DataTypes.STRING,
@@ -32,13 +25,7 @@ const User = sq.define(
     },
     firebase_uid: {
       type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: true
-    },
-    token: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: true
+      allowNull: true,
     },
     role: {
       type: DataTypes.ENUM,
@@ -46,6 +33,10 @@ const User = sq.define(
       defaultValue: "user",
     },
     password: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    social_id: {
       type: DataTypes.STRING,
       allowNull: true
     },
@@ -117,18 +108,22 @@ const User = sq.define(
     allowedToSendGift: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
+      defaultValue: true
     },
     isPremiumUser: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
+      defaultValue: false
     },
     isProfileCrownEnabled: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
+      defaultValue: false
     },
     verificationStatus: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
+      defaultValue: true,
     },
     active: {
       type: DataTypes.INTEGER,

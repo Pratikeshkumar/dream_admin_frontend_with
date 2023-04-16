@@ -33,11 +33,11 @@ const getFeeds = async (req, res, next) => {
   try {
     const allFriends = await User.findOne({
       where: { id: userId },
-      attributes: ['id', 'first_name', 'last_name'],
+      attributes: ['id'],
       include: [
         {
           model: User,
-          attributes: ['id', 'first_name', 'last_name'],
+          attributes: ['id'],
           as: 'friend',
           include: [
             {

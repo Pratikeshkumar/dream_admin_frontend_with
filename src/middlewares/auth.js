@@ -13,7 +13,7 @@ exports.userAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, JWT_KEY);
 
     let userData = await User.findOne({
-      where: { id: decoded.user_id, firebase_uid: decoded.firebase_uid, token: decoded.token }
+      where: { id: decoded.user_id, email: decoded.email }
     });
     userData = JSON.parse(JSON.stringify(userData));
 

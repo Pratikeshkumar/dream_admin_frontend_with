@@ -167,6 +167,7 @@ const getUserPostedImages = async (req, res, next) => {
       condition = {};
 
     condition.status = status;
+    condition.type = "image";
 
     const videos = await Video.findAll({
       where: condition,
@@ -175,7 +176,7 @@ const getUserPostedImages = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Successfully fetched images!",
-      videos
+      images: videos
     });
   } catch (error) {
     logger.error(error);
@@ -601,7 +602,7 @@ const videoStats = async (req, res, next) => {
         },
         {
           attributes: {
-            exclude: ['first_name', 'last_name', 'firebase_uid', 'token']
+            exclude: ['firebase_uid']
           },
           model: User,
           as: "user"

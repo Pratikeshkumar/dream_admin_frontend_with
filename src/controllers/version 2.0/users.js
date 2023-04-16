@@ -11,7 +11,7 @@ const signup = async (req, res, next) => {
   try {
     let {
       user_name, email, firebase_uid,
-      token, profile_image, bio,
+      profile_image, bio,
       intro_video, id_type, id_number,
       language, avatar, country,
       countryCode, lat, lng, DOB, gender,
@@ -19,7 +19,7 @@ const signup = async (req, res, next) => {
     } = req.body;
 
     let user = await User.findOne({
-      where: { firebase_uid }
+      where: { email }
     });
 
     !language && (language = "EN");
@@ -28,7 +28,7 @@ const signup = async (req, res, next) => {
 
     let created_user = await User.create({
       user_name, email, firebase_uid, bio,
-      token, lat, lng, DOB, countryCode,
+      lat, lng, DOB, countryCode,
       intro_video, id_type, id_number,
       language, avatar, country, gender,
       id_attachement, secret_sign, id_verified,
@@ -43,7 +43,7 @@ const signup = async (req, res, next) => {
       message: "user created successfully",
       payload: {
         ...created_user,
-        auth_token: jwt.sign({ user_id: created_user.id, firebase_uid: created_user.firebase_uid, token: created_user.token }, JWT_KEY),
+        auth_token: jwt.sign({ user_id: created_user.id, email: created_user.email, firebase_uid: created_user.firebase_uid }, JWT_KEY),
       }
     });
   } catch (error) {
@@ -57,17 +57,18 @@ const login = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: LOGIN UP API CALLED");
   try {
     let {
-      email, firebase_uid, token,
+      email, firebase_uid, social_id
     } = req.body,
       condition = {
-        firebase_uid, token,
+        email
       };
 
-    email && (condition.email = email);
+    firebase_uid && (condition.firebase_uid = firebase_uid);
+    social_id && (condition.social_id = social_id);
 
     let user = await User.findOne({
       attributes: {
-        exclude: ['first_name', 'last_name', 'password']
+        exclude: ['password']
       },
       where: condition
     });
@@ -80,7 +81,7 @@ const login = async (req, res, next) => {
       message: "Logged-in successfully",
       payload: {
         ...user,
-        auth_token: jwt.sign({ user_id: user.id, firebase_uid: user.firebase_uid, token: user.token }, JWT_KEY),
+        auth_token: jwt.sign({ user_id: user.id, email: user.email, firebase_uid: user.firebase_uid }, JWT_KEY),
       }
     });
   } catch (error) {
@@ -93,13 +94,13 @@ const login = async (req, res, next) => {
 const userInfo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: GET USER INFO API CALLED");
   try {
-    let { firebase_uid, token } = req.userData;
+    let { id, email } = req.userData;
 
     let user = await User.findOne({
       attributes: {
-        exclude: ['first_name', 'last_name', 'password']
+        exclude: ['password']
       },
-      where: { firebase_uid, token }
+      where: { id, email }
     });
     user = JSON.parse(JSON.stringify(user));
 
@@ -124,7 +125,7 @@ const userInfoById = async (req, res, next) => {
 
     let user = await User.findOne({
       attributes: {
-        exclude: ['first_name', 'last_name', 'password']
+        exclude: ['password']
       },
       where: { id: user_id }
     });
@@ -148,21 +149,20 @@ const updateUser = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: USER UPDATE API CALLED");
   try {
     let data = req.body,
-      { firebase_uid, token } = req.userData;
+      { id, email } = req.userData;
 
-    let updatedUser = await User.update(
+
+    await User.update(
       data,
-      { where: { firebase_uid, token } }
+      { where: { id, email } }
     );
-
-    if (updatedUser[0] !== 1) throw errorHandler("Unexpected error occured while updating user info", "badRequest");
 
     let user = await User.findOne({
       attributes: {
-        exclude: ['first_name', 'last_name', 'password']
+        exclude: ['password']
       },
       where: {
-        firebase_uid, token
+        id, email
       }
     });
     user = JSON.parse(JSON.stringify(user));
