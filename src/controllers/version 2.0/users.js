@@ -151,7 +151,6 @@ const updateUser = async (req, res, next) => {
     let data = req.body,
       { id, email } = req.userData;
 
-
     await User.update(
       data,
       { where: { id, email } }
