@@ -6,71 +6,82 @@ const Video = sq.define(
   {
     id: {
       type: DataTypes.INTEGER,
+      primaryKey: true,
       autoIncrement: true,
       allowNull: false,
-      primaryKey: true,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     video: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
-    cover: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    status: {
+    thum: {
       type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: "public",
     },
-    type: {
+    gif: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    view: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    section: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    sound_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    privacy_type: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: 'public'
     },
     allow_comments: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      defaultValue: true,
-    },
-    allow_gifts: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      defaultValue: true,
     },
     allow_duet: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
+      allowNull: true,
     },
     block: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
+      allowNull: true,
     },
     duet_video_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
+      allowNull: true,
     },
     old_video_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    sound_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
+      allowNull: true,
     },
     duration: {
       type: DataTypes.FLOAT,
-      allowNull: false,
-      defaultValue: 0
+      allowNull: true,
     },
     promote: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
+      allowNull: true,
+    },
+    created: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: function () {
+        let d = new Date();
+        return d.toISOString();
+      },
     },
   },
   {

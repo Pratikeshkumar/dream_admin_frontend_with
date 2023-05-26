@@ -10,14 +10,32 @@ const uploadVideo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: CREATE VIDEO API CALLED");
   try {
     let {
-      mediaType, postedDateTime,
-      commentsEnabled, tags, status
-    } = req.body, dbObjectForTags = [],
-      { id } = req.userData,
-      video = req.files.source ? req.files.source[0] : null,
-      image = req.files.cover ? req.files.cover[0] : null,
-      videoPath = video?.path, imagePath = image?.path,
+       user_id, caption, privacy, hideComment, duet,
+    } = req.body, 
+    
+    dbObjectForTags = [],
+
+
+      video = req.files['video'] ? req.files['video'][0].originalname : null,
+      image = req.files['cover'] ? req.files['cover'][0].originalname : null,
+      videoPath = req.files['video'] ? req.files['video'][0].path : null,
+      imagePath = req.files['cover'] ? req.files['cover'][0].path : null,
       promises = [], uploadedVideo, uploadedImage;
+
+
+
+console.log("file data:", req.files['video'][0].originalname)
+
+
+console.log("file:", req.files)
+
+
+
+
+
+
+
+
 
     if (!videoPath) throw errorHandler("data is not present in body", "badRequest");
 
@@ -30,25 +48,30 @@ const uploadVideo = async (req, res, next) => {
     }
 
     let addVideo = await Video.create({
-      type: mediaType, postedDateTime,
-      commentsEnabled, cover: uploadedImage?.url || null,
-      video: uploadedVideo.url, user_id: id, status
+      cover: uploadedImage?.url || null,
+      video: uploadedVideo.url, 
+      user_id: user_id,
+      allow_comment: hideComment,
+      allow_duet: duet,
+      description: caption,
+      privacy_type: privacy
     });
     addVideo = JSON.parse(JSON.stringify(addVideo));
 
-    if (tags) {
-      let allTags = tags.split(',');
+    console.log(addVideo)
+    // if (tags) {
+    //   let allTags = tags.split(',');
 
-      for (let i = 0; i < allTags?.length; i++) {
-        dbObjectForTags.push({
-          video_id: addVideo.id,
-          title: allTags[i]
-        });
-      }
+    //   for (let i = 0; i < allTags?.length; i++) {
+    //     dbObjectForTags.push({
+    //       video_id: addVideo.id,
+    //       title: allTags[i]
+    //     });
+    //   }
 
-    }
-    let videoTags = await Tag.bulkCreate(dbObjectForTags);
-    videoTags = JSON.parse(JSON.stringify(videoTags));
+    // }
+    // let videoTags = await Tag.bulkCreate(dbObjectForTags);
+    // videoTags = JSON.parse(JSON.stringify(videoTags));
 
     await Promise.all(promises);
 
@@ -57,7 +80,7 @@ const uploadVideo = async (req, res, next) => {
       message: "Video posted successfully!",
       payload: {
         ...video,
-        tags: videoTags
+        // tags: videoTags
       }
     });
   } catch (error) {
@@ -136,17 +159,7 @@ const getVideo = async (req, res, next) => {
 const getAllUserVideos = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GET ALL USER VIDEOS API CALLED");
   try {
-    let { id } = req.userData;
-
-    const videos = await Video.findAll({
-      where: { user_id: id },
-      include: [
-        {
-          as: "comments",
-          model: Comment,
-        },
-      ],
-    });
+    const videos = await Video.findAll({});
 
     return res.status(200).json({
       success: true,

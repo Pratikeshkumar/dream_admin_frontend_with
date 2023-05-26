@@ -9,41 +9,39 @@ const cloudinary = require('../../config/cloudinary');
 const signup = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: SIGN UP API CALLED");
   try {
-    let {
-      user_name, email, firebase_uid,
-      profile_image, bio,
-      intro_video, id_type, id_number,
-      language, avatar, country,
-      countryCode, lat, lng, DOB, gender,
-      id_attachement, secret_sign, id_verified,
-    } = req.body;
-
+    let { name, email } = req.body;
+    let ip = req.ip;
+    const extractedIP = ip.split(':').pop();
     let user = await User.findOne({
       where: { email }
     });
+    console.log("use ip isz:", extractedIP)
 
-    !language && (language = "EN");
 
     if (user) throw errorHandler("User already exists!", "duplication");
+    
 
-    let created_user = await User.create({
-      user_name, email, firebase_uid, bio,
-      lat, lng, DOB, countryCode,
-      intro_video, id_type, id_number,
-      language, avatar, country, gender,
-      id_attachement, secret_sign, id_verified,
-      role: "user", active: true, profile_image
-    });
-    created_user = JSON.parse(JSON.stringify(created_user));
+  // creating fname and lname 
+    const parts = name.split(" ")
+    let first_name = parts[0]; 
+    let last_name = parts[1];
 
-    if (!created_user) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
+  // creating username from email
+  const part = email.split('@')
+  let username = part[0]
 
+  let created_user = await User.create({
+    first_name: first_name, last_name: last_name,  username: username, ip: extractedIP, email: email,
+    role: "user", active: true,
+  });
+  created_user = JSON.parse(JSON.stringify(created_user));
+  if (!created_user) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
     return res.status(201).json({
       success: true,
       message: "user created successfully",
       payload: {
         ...created_user,
-        auth_token: jwt.sign({ user_id: created_user.id, email: created_user.email, firebase_uid: created_user.firebase_uid }, JWT_KEY),
+        auth_token: jwt.sign({email: created_user.email, username: created_user.username }, JWT_KEY),
       }
     });
   } catch (error) {
@@ -57,19 +55,13 @@ const login = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: LOGIN UP API CALLED");
   try {
     let {
-      email, firebase_uid, social_id
+      email
     } = req.body,
       condition = {
         email
       };
 
-    firebase_uid && (condition.firebase_uid = firebase_uid);
-    social_id && (condition.social_id = social_id);
-
     let user = await User.findOne({
-      attributes: {
-        exclude: ['password']
-      },
       where: condition
     });
     user = JSON.parse(JSON.stringify(user));
@@ -81,7 +73,7 @@ const login = async (req, res, next) => {
       message: "Logged-in successfully",
       payload: {
         ...user,
-        auth_token: jwt.sign({ user_id: user.id, email: user.email, firebase_uid: user.firebase_uid }, JWT_KEY),
+        auth_token: jwt.sign({email: user.email, username: user.username }, JWT_KEY),
       }
     });
   } catch (error) {

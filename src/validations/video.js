@@ -11,7 +11,7 @@ const uploadVideo = {
         postedDateTime: joi.date().optional(),
 
     }),
-};
+}; 
 
 const updateVideo = {
     body: joi.object({

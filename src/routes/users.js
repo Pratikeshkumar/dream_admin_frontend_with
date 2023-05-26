@@ -21,8 +21,8 @@ router.get('/:userId/friends', getAllUserFriends);
 router.get('/:userId/feeds', getFeeds);
 
 /************************************* VERSION 2.0 */
-router.post('/signup', validate(userValidation.signup), userApis2.signup);
-router.post('/login', validate(userValidation.login), userApis2.login);
+router.post('/signup', userApis2.signup);
+router.post('/login', userApis2.login);
 router.put('/update', userAuth, validate(userValidation.updateUser), userApis2.updateUser);
 router.get('/info', userAuth, userApis2.userInfo);
 
