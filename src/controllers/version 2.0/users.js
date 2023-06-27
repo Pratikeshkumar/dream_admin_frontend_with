@@ -6,42 +6,44 @@ const logger = require('../../utils/logger');
 const jwt = require("jsonwebtoken");
 const cloudinary = require('../../config/cloudinary');
 
+
 const signup = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: SIGN UP API CALLED");
   try {
-    let { name, email } = req.body;
+    let { name, email, firebase_uid } = req.body;
     let ip = req.ip;
     const extractedIP = ip.split(':').pop();
     let user = await User.findOne({
       where: { email }
     });
-    console.log("use ip isz:", extractedIP)
-
 
     if (user) throw errorHandler("User already exists!", "duplication");
-    
 
-  // creating fname and lname 
-    const parts = name.split(" ")
-    let first_name = parts[0]; 
-    let last_name = parts[1];
+    // creating username from email
+    const part = email.split('@')
+    let username = part[0]
 
-  // creating username from email
-  const part = email.split('@')
-  let username = part[0]
+    let created_user = await User.create({
+        nickname: name,
+        username: username,
+        ip: extractedIP,
+        email: email,
+        role: "user",
+        active: true,
+        firebase_uid: firebase_uid,
+        wallet: 0,
+        
 
-  let created_user = await User.create({
-    first_name: first_name, last_name: last_name,  username: username, ip: extractedIP, email: email,
-    role: "user", active: true,
-  });
-  created_user = JSON.parse(JSON.stringify(created_user));
-  if (!created_user) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
+    });
+
+    created_user = JSON.parse(JSON.stringify(created_user));
+    if (!created_user) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
     return res.status(201).json({
       success: true,
       message: "user created successfully",
       payload: {
         ...created_user,
-        auth_token: jwt.sign({email: created_user.email, username: created_user.username }, JWT_KEY),
+        auth_token: jwt.sign({ email: created_user.email, username: created_user.username }, JWT_KEY),
       }
     });
   } catch (error) {
@@ -50,6 +52,17 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 };
+
+
+
+
+
+
+
+
+
+
+
 
 const login = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: LOGIN UP API CALLED");
@@ -73,7 +86,7 @@ const login = async (req, res, next) => {
       message: "Logged-in successfully",
       payload: {
         ...user,
-        auth_token: jwt.sign({email: user.email, username: user.username }, JWT_KEY),
+        auth_token: jwt.sign({ email: user.email, username: user.username }, JWT_KEY),
       }
     });
   } catch (error) {
@@ -82,6 +95,17 @@ const login = async (req, res, next) => {
     return next(error);
   }
 };
+
+
+
+
+
+
+
+
+
+
+
 
 const userInfo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: GET USER INFO API CALLED");

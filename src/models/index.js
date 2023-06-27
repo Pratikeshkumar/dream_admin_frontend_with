@@ -12,6 +12,92 @@ const Comment = require("./comment");
 const CommentReply = require("./commentReply");
 const Gift = require("./gift");
 const FollowerAndFollowing = require('./followerAndFollowing');
+const NewVideo = require('./newvideo')
+const Country = require('./countries')
+const City = require('./cities')
+const {sq} = require('../config/db')
+const { DataTypes } = require('sequelize');
+
+
+
+// const VideoCountry = sq.define(
+//   'VideoCountry',
+//   {
+//     created: {
+//       type: DataTypes.DATE,
+//       allowNull: false,
+//       defaultValue: DataTypes.NOW,
+//     },
+//     videoId: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//       references: {
+//         model: Video,
+//         key: 'id',
+//       },
+//     },
+//     countryId: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//       references: {
+//         model: Country,
+//         key: 'id',
+//       },
+//     },
+//   },
+//   {
+//     tableName: 'VideoCountry',
+//     timestamps: false,
+//   }
+// );
+
+// const VideoCity = sq.define(
+//   'VideoCity',
+//   {
+//     created: {
+//       type: DataTypes.DATE,
+//       allowNull: false,
+//       defaultValue: DataTypes.NOW,
+//     },
+//     videoId: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//       references: {
+//         model: Video,
+//         key: 'id',
+//       },
+//     },
+//     cityId: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//       references: {
+//         model: City,
+//         key: 'id',
+//       },
+//     },
+//   },
+//   {
+//     tableName: 'VideoCity',
+//     timestamps: false,
+//   }
+// );
+
+// Video.belongsToMany(Country, { through: VideoCountry });
+// Country.belongsToMany(Video, { through: VideoCountry });
+
+// Video.belongsToMany(City, { through: VideoCity });
+// City.belongsToMany(Video, { through: VideoCity });
+
+// module.exports = { VideoCountry, VideoCity };
+
+
+
+// Video.belongsToMany(Country, {through: VideoCountry})
+// Video.belongsToMany(City, {through: VideoCity})
+// Country.belongsToMany(Video, { through: VideoCountry });
+// City.belongsToMany(Video, { through: VideoCity });
+
+
 
 
 
@@ -120,5 +206,8 @@ module.exports = {
     Comment,
     CommentReply,
     Gift,
-    FollowerAndFollowing
+    FollowerAndFollowing,
+    NewVideo,
+    Country,
+    City
 };

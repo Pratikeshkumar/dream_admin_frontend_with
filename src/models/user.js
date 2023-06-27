@@ -1,18 +1,14 @@
 const { sq } = require("../config/db");
-const { DataTypes } = require("sequelize");
+const { DataTypes, DatabaseError } = require("sequelize");
 
-const User = sq.define('user', {
+const User = sq.define('users', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  first_name: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  last_name: {
+  nickname: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -84,7 +80,7 @@ const User = sq.define('user', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  long: {
+  lang: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -148,14 +144,51 @@ const User = sq.define('user', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  created: {
-    type: DataTypes.DATE,
+  emotion_state: {
+    type: DataTypes.STRING,
     allowNull: true,
-    defaultValue: function () {
-      let d = new Date();
-      return d.toISOString();
-    },
   },
+  making_friend_intention: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  hobbies: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  person_height: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  person_weight: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  instagram: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  you_tube: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  facebook: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  occupation: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  profile_video: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  firebase_uid: {
+    type: DataTypes.STRING,
+    allowNull: true
+  }
+
 },
 {
   timestamps: false,

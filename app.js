@@ -8,6 +8,20 @@ const { headers } = require("./src/middlewares/headers");
 const errorHandling = require('./src/utils/apiError');
 const errorHandler = require('./src/middlewares/errorHandler');
 const log = require('./src/utils/logger');
+const AWS = require('aws-sdk')
+const { s3 } = require('./src/config/aws')
+
+
+
+
+s3.listBuckets((err, data)=>{
+  if(err){
+    console.log("connection error with aws cli")
+  } else{
+    console.log("connected to aws :", data.Buckets)
+  }
+})
+
 
 const router = require("./src/routes/index");
 

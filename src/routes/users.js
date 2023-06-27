@@ -29,4 +29,7 @@ router.get('/info', userAuth, userApis2.userInfo);
 router.post('/upload', upload.fields([{ name: "source", maxCount: 1 }]), userApis2.uploadData);
 router.get('/infoById/:user_id', userAuth, validate(userValidation.userInfoById), userApis2.userInfoById);
 
+
+
+
 module.exports = router

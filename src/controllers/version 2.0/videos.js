@@ -1,93 +1,188 @@
-const { Video, Comment, CommentReply, Tag, Like, User, Gift } = require("../../models");
+const { Video, Comment, CommentReply, Tag, Like, User, Gift, NewVideo, City, Country } = require("../../models");
 const cloudinary = require("../../config/cloudinary");
 const fs = require("fs");
 const logger = require("../../utils/logger");
 const errorHandler = require("../../utils/errorObject");
 const sequelize = require('sequelize');
 const { sq } = require('../../config/db');
+const { s3 } = require('../../config/aws')
 
 const uploadVideo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: CREATE VIDEO API CALLED");
+
   try {
-    let {
-       user_id, caption, privacy, hideComment, duet,
-    } = req.body, 
-    
-    dbObjectForTags = [],
+    const { 
+      user_id, 
+      caption, 
+      privacy, 
+      allow_comment, 
+      allow_duet,
+      // allow_stitch,
+      // countries,
+      // ciities
+     } = req.body;
 
+    //  console.log('countries', countries)
+    //  console.log("ciites", ciities)
 
-      video = req.files['video'] ? req.files['video'][0].originalname : null,
-      image = req.files['cover'] ? req.files['cover'][0].originalname : null,
-      videoPath = req.files['video'] ? req.files['video'][0].path : null,
-      imagePath = req.files['cover'] ? req.files['cover'][0].path : null,
-      promises = [], uploadedVideo, uploadedImage;
+    const video = req.files['video'] ? req.files['video'][0].originalname : null
+    const image = req.files['cover'] ? req.files['cover'][0].originalname : null
+    const videoPath = req.files['video'] ? req.files['video'][0].path : null
+    const imagePath = req.files['cover'] ? req.files['cover'][0].path : null
 
+console.log(req.files['video'][0])
+     let addVideo = await Video.create({
+        video: `videos/${video}`,
+        thum: `images/${image}`, 
+        user_id: user_id,
+        allow_comments: allow_comment,
+        allow_duet: allow_duet,
+        description: caption,
+        allow_stitch: true,
+        view: 0,
+        block: false,
+        promote: false,
+        like: 0,
+        comment: 0,
+        shared: 0,
+          
+      });
 
+    // const countries_data = await Country.findAll({ where: { id: countries } });
+    // await Video.addCountries(countries_data);
 
-console.log("file data:", req.files['video'][0].originalname)
+    // const cities = await City.findAll({ where: { id: ciities } });
+    // await Video.addCities(cities);
 
+      addVideo = JSON.parse(JSON.stringify(addVideo));
 
-console.log("file:", req.files)
+      console.log(addVideo)
+      res.send(addVideo)
 
-
-
-
-
-
-
-
-
-    if (!videoPath) throw errorHandler("data is not present in body", "badRequest");
-
-    uploadedVideo = await cloudinary.uploads(videoPath, "SocialMedia");
-    promises.push(fs.unlinkSync(videoPath));
-
-    if (imagePath) {
-      uploadedImage = await cloudinary.uploads(imagePath, "SocialMedia");
-      promises.push(fs.unlinkSync(imagePath));
-    }
-
-    let addVideo = await Video.create({
-      cover: uploadedImage?.url || null,
-      video: uploadedVideo.url, 
-      user_id: user_id,
-      allow_comment: hideComment,
-      allow_duet: duet,
-      description: caption,
-      privacy_type: privacy
-    });
-    addVideo = JSON.parse(JSON.stringify(addVideo));
-
-    console.log(addVideo)
-    // if (tags) {
-    //   let allTags = tags.split(',');
-
-    //   for (let i = 0; i < allTags?.length; i++) {
-    //     dbObjectForTags.push({
-    //       video_id: addVideo.id,
-    //       title: allTags[i]
-    //     });
-    //   }
-
-    // }
-    // let videoTags = await Tag.bulkCreate(dbObjectForTags);
-    // videoTags = JSON.parse(JSON.stringify(videoTags));
-
-    await Promise.all(promises);
-
-    res.status(201).json({
-      success: true,
-      message: "Video posted successfully!",
-      payload: {
-        ...video,
-        // tags: videoTags
+    // uploading video to aws bucket
+    const uploadVideo = {
+      Bucket: 'dreamapplication',
+      Key: `videos/${video}`,
+      Body: fs.createReadStream(videoPath)
+    };
+    s3.upload(uploadVideo, (err, data) => {
+      if (err) {
+        console.error('Error uploading video:', err);
+      } else {
+        console.log('Video uploaded successfully:', data.Location);
       }
     });
-  } catch (error) {
-    logger.error(error);
 
-    return next(error);
+
+
+    // uploading image to aws bucket
+    const uploadPicture = {
+      Bucket: 'dreamapplication',
+      Key: `images/${image}`,
+      Body: fs.createReadStream(imagePath)
+    };
+
+    s3.upload(uploadPicture, (err, data) => {
+      if (err) {
+        console.error('Error uploading picture:', err);
+      } else {
+        console.log('picture uploaded successfully:', data.Location);
+      }
+    });
+
+
+  } catch (error) {
+    console.log(error)
   }
+
+
+
+
+
+
+
+
+
+  // try {
+  //   let {
+  //      user_id, caption, privacy, hideComment, duet,
+  //   } = req.body, 
+
+
+
+
+  // video = req.files['video'] ? req.files['video'][0].originalname : null,
+  // image = req.files['cover'] ? req.files['cover'][0].originalname : null,
+  // videoPath = req.files['video'] ? req.files['video'][0].path : null,
+  // imagePath = req.files['cover'] ? req.files['cover'][0].path : null,
+  // promises = [], uploadedVideo, uploadedImage;
+
+
+
+  // console.log("file data:", req.files['video'][0].originalname)
+
+
+  // console.log("file:", req.files)
+
+
+
+
+
+
+
+
+
+  // if (!videoPath) throw errorHandler("data is not present in body", "badRequest");
+
+  // uploadedVideo = await cloudinary.uploads(videoPath, "SocialMedia");
+  // promises.push(fs.unlinkSync(videoPath));
+
+  // if (imagePath) {
+  //   uploadedImage = await cloudinary.uploads(imagePath, "SocialMedia");
+  //   promises.push(fs.unlinkSync(imagePath));
+  // }
+
+  // let addVideo = await Video.create({
+  //   cover: uploadedImage?.url || null,
+  //   video: uploadedVideo.url, 
+  //   user_id: user_id,
+  //   allow_comment: hideComment,
+  //   allow_duet: duet,
+  //   description: caption,
+  //   privacy_type: privacy
+  // });
+  // addVideo = JSON.parse(JSON.stringify(addVideo));
+
+  // console.log(addVideo)
+  // if (tags) {
+  //   let allTags = tags.split(',');
+
+  //   for (let i = 0; i < allTags?.length; i++) {
+  //     dbObjectForTags.push({
+  //       video_id: addVideo.id,
+  //       title: allTags[i]
+  //     });
+  //   }
+
+  // }
+  // let videoTags = await Tag.bulkCreate(dbObjectForTags);
+  // videoTags = JSON.parse(JSON.stringify(videoTags));
+
+  //   await Promise.all(promises);
+
+  //   res.status(201).json({
+  //     success: true,
+  //     message: "Video posted successfully!",
+  //     payload: {
+  //       ...video,
+  //       // tags: videoTags
+  //     }
+  //   });
+  // } catch (error) {
+  //   logger.error(error);
+
+  //   return next(error);
+  // }
 };
 
 const allVideos = async (req, res, next) => {
@@ -123,6 +218,20 @@ const allVideos = async (req, res, next) => {
     return next(error);
   }
 };
+
+const getVideosByUserId = (req, res, next) =>{
+  logger.info("getting user videos by id")
+  try {
+    
+  } catch (error) {
+    console.log(err)
+  }
+}
+
+
+
+
+
 
 const getVideo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GET VIDEO BY FILTERS API CALLED");

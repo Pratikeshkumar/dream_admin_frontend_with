@@ -2,7 +2,7 @@ const { sq } = require("../config/db");
 const { DataTypes } = require("sequelize");
 
 const Video = sq.define(
-  "video",
+  "videos",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -19,7 +19,7 @@ const Video = sq.define(
       allowNull: true,
     },
     video: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING, 
       allowNull: true,
     },
     thum: {
@@ -56,7 +56,7 @@ const Video = sq.define(
       allowNull: true,
     },
     block: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BOOLEAN,
       allowNull: true,
     },
     duet_video_id: {
@@ -72,17 +72,25 @@ const Video = sq.define(
       allowNull: true,
     },
     promote: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    allow_stitch: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
+    },
+    like: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: true
     },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: function () {
-        let d = new Date();
-        return d.toISOString();
-      },
+    comment: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     },
+    shared: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    }
   },
   {
     freezeTableName: true,
