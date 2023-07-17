@@ -1,4 +1,4 @@
-const { Admin, User } = require("../../models");
+const { Admin, User, Avatar } = require("../../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const logger = require('../../utils/logger')
@@ -142,6 +142,10 @@ const awardDiamonds = async (req, res, next) => {
   }
 };
 
+const createAvatar = (req, res, next) =>{
+  logger.info("VERSION 2 API CALLED -> ADMIN: UPLOADING THE LIST OF AVATAR")
+}
+
 module.exports = {
   signup,
   login,
@@ -149,3 +153,4 @@ module.exports = {
   getUsers,
   awardDiamonds
 };
+

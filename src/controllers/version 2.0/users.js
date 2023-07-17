@@ -1,4 +1,4 @@
-const { User } = require("../../models");
+const { User, Avatar } = require("../../models");
 const fs = require('fs');
 const errorHandler = require("../../utils/errorObject");
 const { JWT_KEY } = process.env;
@@ -6,11 +6,10 @@ const logger = require('../../utils/logger');
 const jwt = require("jsonwebtoken");
 const cloudinary = require('../../config/cloudinary');
 
-
 const signup = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: SIGN UP API CALLED");
   try {
-    let { name, email, firebase_uid } = req.body;
+    let { name, email, firebase_uid, profile_pic } = req.body;
     let ip = req.ip;
     const extractedIP = ip.split(':').pop();
     let user = await User.findOne({
@@ -32,8 +31,7 @@ const signup = async (req, res, next) => {
         active: true,
         firebase_uid: firebase_uid,
         wallet: 0,
-        
-
+        profile_pic: profile_pic
     });
 
     created_user = JSON.parse(JSON.stringify(created_user));
@@ -97,7 +95,24 @@ const login = async (req, res, next) => {
 };
 
 
+const getAvatar = async (req, res, next) =>{
+  logger.info("VESRION 2.0 -> USER: GET AVATAR LIST FROM DB")
+  try {
+    let avatar = await Avatar.findAll()
+    avatar = JSON.parse(JSON.stringify(avatar))
+    if(!avatar) throw errorHandler("avatar are present")
 
+    return res.status(201).json({
+      success: true,
+      message: 'avtar fetched successfully',
+      payload: avatar
+    })
+    
+  } catch (error) {
+    logger.error("getting error while fetching the avatar list from db")
+    return next(error)
+  }
+}
 
 
 
@@ -117,7 +132,7 @@ const userInfo = async (req, res, next) => {
         exclude: ['password']
       },
       where: { id, email }
-    });
+    }); 
     user = JSON.parse(JSON.stringify(user));
 
     if (!user) throw errorHandler("User not found", "notFound");
@@ -125,7 +140,10 @@ const userInfo = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "User info fetched successfully!",
-      payload: user
+      payload: {
+        ...user,
+        auth_token: jwt.sign({ email: user.email, username: user.username }, JWT_KEY),
+      }
     });
   } catch (error) {
     logger.error(error);
@@ -152,7 +170,10 @@ const userInfoById = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "User info fetched successfully!",
-      payload: user
+      payload: {
+        ...user,
+        auth_token: jwt.sign({ email: user.email, username: user.username }, JWT_KEY),
+      }
     });
   } catch (error) {
     logger.error(error);
@@ -226,5 +247,6 @@ module.exports = {
   updateUser,
   userInfo,
   userInfoById,
-  uploadData
+  uploadData,
+  getAvatar
 };

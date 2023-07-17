@@ -15,9 +15,10 @@ const FollowerAndFollowing = require('./followerAndFollowing');
 const NewVideo = require('./newvideo')
 const Country = require('./countries')
 const City = require('./cities')
+const Avatar = require('./avatar')
 const {sq} = require('../config/db')
 const { DataTypes } = require('sequelize');
-
+const Hobbies = require('./hobbies')
 
 
 // const VideoCountry = sq.define(
@@ -209,5 +210,7 @@ module.exports = {
     FollowerAndFollowing,
     NewVideo,
     Country,
-    City
+    City,
+    Avatar,
+    Hobbies
 };

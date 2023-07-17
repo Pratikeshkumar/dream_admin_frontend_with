@@ -19,10 +19,15 @@ const remove = async (req, res, next) => {
 const update = async (req, res, next) => {
   logger.info("USER: UPDATE API CALLED");
   try {
+    const fields = req.body.name;
+    const value = req.body.value;
+    const updateObject = { [fields]: value };
     const updatedUser = await User.update(
-      { ...req.body },
+      {[req.body.name]: req.body.value},
       { where: { id: req.userData.id } }
     );
+
+
     res.status(200).json({ message: "update successful" });
   } catch (error) {
     logger.error(error);

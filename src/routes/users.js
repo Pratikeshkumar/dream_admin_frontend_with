@@ -14,7 +14,7 @@ const userValidation = require('../validations/user');
 /************************************* CONTROLLER VERSION 1.0 */
 router.delete('/delete', userAuth, remove);
 router.patch('/update', userAuth, update);
-
+ 
 //User posts routes
 router.get('/:userId/posts', getAllPosts);
 router.get('/:userId/friends', getAllUserFriends);
@@ -29,7 +29,9 @@ router.get('/info', userAuth, userApis2.userInfo);
 router.post('/upload', upload.fields([{ name: "source", maxCount: 1 }]), userApis2.uploadData);
 router.get('/infoById/:user_id', userAuth, validate(userValidation.userInfoById), userApis2.userInfoById);
 
+/****************************** AVATAR */
 
+router.get('/avatar', userApis2.getAvatar)
 
 
 module.exports = router

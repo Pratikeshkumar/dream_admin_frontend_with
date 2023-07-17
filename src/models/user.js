@@ -45,7 +45,7 @@ const User = sq.define('users', {
     allowNull: true,
   },
   profile_pic: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
   },
   profile_pic_small: {
