@@ -1,10 +1,11 @@
-const { User, Avatar } = require("../../models");
+const { User, Avatar, Transaction, Gift, Video, UserRelationship, Like } = require("../../models");
 const fs = require('fs');
 const errorHandler = require("../../utils/errorObject");
 const { JWT_KEY } = process.env;
 const logger = require('../../utils/logger');
 const jwt = require("jsonwebtoken");
 const cloudinary = require('../../config/cloudinary');
+
 
 const signup = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: SIGN UP API CALLED");
@@ -23,15 +24,15 @@ const signup = async (req, res, next) => {
     let username = part[0]
 
     let created_user = await User.create({
-        nickname: name,
-        username: username,
-        ip: extractedIP,
-        email: email,
-        role: "user",
-        active: true,
-        firebase_uid: firebase_uid,
-        wallet: 0,
-        profile_pic: profile_pic
+      nickname: name,
+      username: username,
+      ip: extractedIP,
+      email: email,
+      role: "user",
+      active: true,
+      firebase_uid: firebase_uid,
+      wallet: 0,
+      profile_pic: profile_pic
     });
 
     created_user = JSON.parse(JSON.stringify(created_user));
@@ -51,7 +52,27 @@ const signup = async (req, res, next) => {
   }
 };
 
+const userExist = async (req, res, next) => {
+  logger.info('**********USER EXISTANCE CHECKING******')
+  try {
+    const { email } = req.body;
+    let user = await User.findOne({
+      where: { email }
+    })
 
+    if (user) {
+      return res.status(201).json({
+        success: true,
+        message: 'user exist',
+
+      })
+    }
+
+  } catch (error) {
+    logger.error(error)
+  }
+
+}
 
 
 
@@ -71,13 +92,14 @@ const login = async (req, res, next) => {
       condition = {
         email
       };
-
     let user = await User.findOne({
       where: condition
     });
     user = JSON.parse(JSON.stringify(user));
 
-    if (!user) throw errorHandler("User not found!", "notFound");
+    if (!user) return res.json({
+      message: 'user not found'
+    })
 
     return res.status(201).json({
       success: true,
@@ -95,19 +117,19 @@ const login = async (req, res, next) => {
 };
 
 
-const getAvatar = async (req, res, next) =>{
+const getAvatar = async (req, res, next) => {
   logger.info("VESRION 2.0 -> USER: GET AVATAR LIST FROM DB")
   try {
     let avatar = await Avatar.findAll()
     avatar = JSON.parse(JSON.stringify(avatar))
-    if(!avatar) throw errorHandler("avatar are present")
+    if (!avatar) throw errorHandler("avatar are present")
 
     return res.status(201).json({
       success: true,
       message: 'avtar fetched successfully',
       payload: avatar
     })
-    
+
   } catch (error) {
     logger.error("getting error while fetching the avatar list from db")
     return next(error)
@@ -132,11 +154,10 @@ const userInfo = async (req, res, next) => {
         exclude: ['password']
       },
       where: { id, email }
-    }); 
-    user = JSON.parse(JSON.stringify(user));
+    });
 
+    user = JSON.parse(JSON.stringify(user))
     if (!user) throw errorHandler("User not found", "notFound");
-
     return res.status(200).json({
       success: true,
       message: "User info fetched successfully!",
@@ -151,6 +172,7 @@ const userInfo = async (req, res, next) => {
     return next(error);
   }
 };
+
 
 const userInfoById = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: GET OTHER USER INFO BY ID API CALLED");
@@ -161,26 +183,54 @@ const userInfoById = async (req, res, next) => {
       attributes: {
         exclude: ['password']
       },
-      where: { id: user_id }
+      where: { id: user_id },
+      include: [
+        {
+          model: Video,
+          as: 'videos',
+          attributes: ['id', 'description', 'video', 'thum', 'view', 'diamond_value'],
+        },
+        {
+          model: User,
+          as: 'Followers',
+          attributes: ['id', 'username'],
+        },
+        {
+          model: User,
+          as: 'Following',
+          attributes: ['id', 'username'],
+        },
+      ],
     });
-    user = JSON.parse(JSON.stringify(user));
-
     if (!user) throw errorHandler("User not found", "notFound");
 
-    return res.status(200).json({
-      success: true,
-      message: "User info fetched successfully!",
-      payload: {
-        ...user,
-        auth_token: jwt.sign({ email: user.email, username: user.username }, JWT_KEY),
-      }
+    let liked_video = await Like.findAll({
+      where: { sender_id: user_id },
+      include: [
+        {
+          model: Video,
+          as: 'video',
+          attributes: ['id', 'description', 'video', 'thum', 'view', 'diamond_value'],
+        },
+        {
+          model: User,
+          as: 'receiver',
+          attributes: ['id', 'username'],
+        },
+      ],
     });
+    return res.status(200).json({ user, liked_video });
   } catch (error) {
     logger.error(error);
 
     return next(error);
   }
 };
+
+
+
+
+
 
 const updateUser = async (req, res, next) => {
   logger.info("VERSION 2.0 -> USER: USER UPDATE API CALLED");
@@ -241,12 +291,283 @@ const uploadData = async (req, res, next) => {
   }
 };
 
+const storePayments = async (req, res, next) => {
+  logger.info("******* USER TRANSACTION STORED *******")
+  try {
+    const {
+      payment_id,
+      link,
+      country_code,
+      email_address,
+      first_name,
+      last_name,
+      payer_id,
+      account_id,
+      account_status,
+      amount_value,
+      currency_code,
+      reference_id,
+      status,
+      address_line_1,
+      admin_area_1,
+      admin_area_2,
+      postal_code,
+      dimanond_value
+    } = req.body;
+
+    const { id, email } = req.userData;
+    const user_id = id
+    const userIdToUpdate = id;
+    const additionalWalletValue = dimanond_value;
+
+    let result = await Transaction.create({
+      user_id,
+      payment_id,
+      link,
+      country_code,
+      email_address,
+      first_name,
+      last_name,
+      payer_id,
+      account_id,
+      account_status,
+      amount_value,
+      currency_code,
+      reference_id,
+      status,
+      address_line_1,
+      admin_area_1,
+      admin_area_2,
+      postal_code,
+      dimanond_value
+    })
+    result = JSON.parse(JSON.stringify(result));
+    if (!result) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
+
+    async function updateUserWallet(userId, additionalWalletValue) {
+      try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+          console.log('User not found');
+          return;
+        }
+        const currentWalletValue = user.wallet || 0;
+        const newWalletValue = currentWalletValue + additionalWalletValue;
+        let updated_wallet = await user.update({ wallet: newWalletValue });
+        updated_wallet = JSON.parse(JSON.stringify(updated_wallet));
+
+        res.status(201).json({
+          message: 'transaction_successfull',
+          ...updated_wallet
+        })
+
+        console.log('User wallet updated successfully!');
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    }
+    updateUserWallet(userIdToUpdate, additionalWalletValue);
+
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
+const sendGifts = async (req, res, next) => {
+  logger.info("*******SENDING GIFTS*******")
+  try {
+    const {
+      diamonds,
+      video_id,
+      reciever_id,
+    } = req.body;
+    const { id, email } = req.userData;
+    const sender_id = id;
+    const userIdToUpdate = id;
+    const additionalWalletValue = diamonds;
+    r
+
+    let sended_gifts = await Gift.create({
+      diamonds,
+      video_id,
+      reciever_id,
+      sender_id
+    })
+
+    sended_gifts = JSON.parse(JSON.stringify(sended_gifts));
+    if (!sended_gifts) throw errorHandler("Unexpected error occured while creating user!", "badRequest");
+    async function updateUserWallet(userId, additionalWalletValue) {
+      try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+          console.log('User not found');
+          return;
+        }
+        const currentWalletValue = user.wallet || 0;
+        const newWalletValue = currentWalletValue - additionalWalletValue;
+        let updated_wallet = await user.update({ wallet: newWalletValue });
+        updated_wallet = JSON.parse(JSON.stringify(updated_wallet));
+
+        const reciever_video = await Video.findByPk(video_id)
+        if (!user) {
+          logger.error('video not found');
+          return;
+        }
+        const currentVideoWalletValue = reciever_video.diamond_value || 0;
+        const newVideoWalletValue = currentVideoWalletValue + diamonds;
+        let updated_video_wallet = await Video.update(
+          { diamond_value: newVideoWalletValue },
+          {
+            where: { id: video_id, },
+          });
+        updated_video_wallet = JSON.parse(JSON.stringify(updated_video_wallet));
+
+
+        res.status(201).json({
+          message: 'successfull sended',
+          ...updated_wallet,
+          ...sended_gifts
+        })
+        console.log(updated_video_wallet)
+
+        console.log('User wallet updated successfully!');
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    }
+    updateUserWallet(userIdToUpdate, additionalWalletValue);
+
+
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
+const follow = async (req, res, next) => {
+  logger.info("INFO - USER FOLLOW API CALLED");
+  try {
+    let { receiver_id } = req.body;
+    const { id } = req.userData;
+    let sender_id = id;
+
+    const result = await UserRelationship.create({
+      sender_id,
+      receiver_id
+    });
+
+    res.status(201).json({
+      message: 'success',
+      result // Sending the result object directly in the response
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ message: 'An error occurred. Please try again later.' });
+  }
+};
+
+
+const unfollow = async (req, res, next) => {
+  logger.info("INFO - USER UNFOLLOW API CALLED");
+  try {
+    let { receiver_id } = req.body;
+    const { id } = req.userData;
+    let sender_id = id;
+
+    const relationship = await UserRelationship.findOne({
+      where: { sender_id, receiver_id }
+    });
+
+    if (!relationship) {
+      return res.status(404).json({ message: 'Relationship not found. User may not be following.' });
+    }
+
+    await UserRelationship.destroy({
+      where: { sender_id, receiver_id }
+    });
+
+    res.status(200).json({ message: 'Unfollowed successfully.' });
+
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ message: 'An error occurred. Please try again later.' });
+  }
+};
+
+
+const getFollowersDetails = async (req, res, next) => {
+  logger.info("INFO - USER FOLLOWERS DETAILS API CALLED");
+  try {
+    const { user_id } = req.params;
+    let user = await User.findByPk(user_id, {
+      include: [
+        {
+          model: User,
+          as: 'Followers',
+          through: UserRelationship,
+          attributes: ['id', 'nickname', 'profile_pic', 'username'],
+        },
+      ],
+    });
+   if(!user) throw errorHandler("User does not have any followers", "no followers");
+
+    user = JSON.parse(JSON.stringify(user));
+    res.status(201).json({
+      ...user
+    })
+
+
+
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'An error occurred. Please try again later.' })
+  }
+}
+
+
+
+const getFollowingsDetails = async (req, res, next) => {
+  logger.info("INFO - USER FOLLOWINGS DETAILS API CALLED");
+  try {
+    const { user_id } = req.params;
+    let user = await User.findByPk(user_id, {
+      include: [
+        {
+          model: User,
+          as: 'Following',
+          through: UserRelationship,
+          attributes: ['id', 'nickname', 'profile_pic', 'username'],
+        },
+      ],
+    });
+    if(!user) throw errorHandler("User does not have any followings", "no followigs");
+
+    user = JSON.parse(JSON.stringify(user));
+    res.status(201).json({
+      ...user
+    })
+
+
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'An error occurred. Please try again later.' })
+  }
+}
+
+
+
 module.exports = {
   signup,
-  login,
+  login, 
   updateUser,
   userInfo,
   userInfoById,
   uploadData,
-  getAvatar
+  getAvatar,
+  userExist,
+  storePayments,
+  sendGifts,
+  follow,
+  unfollow,
+  getFollowersDetails,
+  getFollowingsDetails
 };

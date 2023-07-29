@@ -187,6 +187,10 @@ const User = sq.define('users', {
   firebase_uid: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  twitter: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 
 },

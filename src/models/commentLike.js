@@ -1,26 +1,24 @@
 const { sq } = require("../config/db");
 const { DataTypes } = require("sequelize");
 const { User } = require('./user')
-const { Video } = require('./video')
+const { Video } = require('./video');
+const PostComment = require("./comment");
 
-const Gift = sq.define(
-    "gifts", {
+
+const CommentLike = sq.define(
+    "video_comment_like", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
     },
-    diamonds: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
     video_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: Video, 
+            model: Video,
             key: 'id',
-          },
+        },
     },
     reciever_id: {
         type: DataTypes.INTEGER,
@@ -28,7 +26,7 @@ const Gift = sq.define(
         references: {
             model: User,
             key: 'id'
-          }
+        }
     },
     sender_id: {
         type: DataTypes.INTEGER,
@@ -36,10 +34,18 @@ const Gift = sq.define(
         references: {
             model: User,
             key: 'id'
-          }
+        }
     },
+    comment_id: {
+        type: DataTypes.INTEGER,
+        unique: false,
+        references: {
+            model: PostComment,
+            key: 'id'
+        }
+    }
 });
 
 
 
-module.exports = Gift;
+module.exports = CommentLike;
