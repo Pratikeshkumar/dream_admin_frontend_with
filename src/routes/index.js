@@ -8,6 +8,7 @@ const comments = require("./comments");
 const likes = require("./likes");
 const friends = require("./friends");
 const country = require('./country');
+const search = require('./search')
 
 
 router.use("/admin", admin);
@@ -17,5 +18,6 @@ router.use("/comments", comments);
 router.use("/likes", likes);
 router.use("/friends", friends);
 router.use("/country", country)
+router.use('/search', search)
 
 module.exports = router;

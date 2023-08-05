@@ -1,10 +1,12 @@
-const { User, Avatar, Transaction, Gift, Video, UserRelationship, Like } = require("../../models");
+const { User, Avatar, Transaction, Gift, Video, UserRelationship, Like, Message } = require("../../models");
 const fs = require('fs');
 const errorHandler = require("../../utils/errorObject");
 const { JWT_KEY } = process.env;
 const logger = require('../../utils/logger');
 const jwt = require("jsonwebtoken");
 const cloudinary = require('../../config/cloudinary');
+const { Op, literal } = require('sequelize');
+const sequelize = require('sequelize')
 
 
 const signup = async (req, res, next) => {
@@ -182,7 +184,7 @@ const userInfoById = async (req, res, next) => {
     let user = await User.findOne({
       attributes: {
         exclude: ['password']
-      },
+      }, 
       where: { id: user_id },
       include: [
         {
@@ -442,7 +444,7 @@ const sendGifts = async (req, res, next) => {
     logger.error(error)
   }
 }
-
+ 
 const follow = async (req, res, next) => {
   logger.info("INFO - USER FOLLOW API CALLED");
   try {
@@ -508,7 +510,7 @@ const getFollowersDetails = async (req, res, next) => {
         },
       ],
     });
-   if(!user) throw errorHandler("User does not have any followers", "no followers");
+    if (!user) throw errorHandler("User does not have any followers", "no followers");
 
     user = JSON.parse(JSON.stringify(user));
     res.status(201).json({
@@ -539,7 +541,7 @@ const getFollowingsDetails = async (req, res, next) => {
         },
       ],
     });
-    if(!user) throw errorHandler("User does not have any followings", "no followigs");
+    if (!user) throw errorHandler("User does not have any followings", "no followigs");
 
     user = JSON.parse(JSON.stringify(user));
     res.status(201).json({
@@ -553,11 +555,118 @@ const getFollowingsDetails = async (req, res, next) => {
   }
 }
 
+const getAllMessages = async (req, res, next) => {
+  logger.info('INFO -> GET ALL MESSAGES API CALLED');
+  try {
+    const { chatedPerson } = req.params;
+    const { id } = req.userData;
+    const senderId = id;
+    const receiverId = chatedPerson;
+
+    let messages = await Message.findAll({
+      where: {
+        [Op.or]: [
+          { senderId, receiverId },
+          { senderId: receiverId, receiverId: senderId },
+        ],
+      },
+      include: [
+        {
+          model: User,
+          as: 'sender',
+          attributes: ['id', 'nickname', 'profile_pic'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const giftedChatMessages = messages.map((message) => {
+      return {
+        _id: message.id.toString(), // Convert the ID to a string
+        text: message.text,
+        type: 'text',
+        createdAt: message.createdAt,
+        user: {
+          _id: message.sender.id.toString(),
+          name: message.sender.nickname,
+          avatar: message.sender.profile_pic,
+        },
+
+      };
+    });
+
+    res.status(200).json({
+      messages: giftedChatMessages,
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({
+      message: 'An error occurred while getting your messages. Please try again later.',
+    });
+  }
+};
+
+
+const getMyAllChatedPerson = async (req, res) => {
+  logger.info('INFO -> GET MY ALL CHATED API CALLED');
+  try {
+    const { id } = req.userData;
+
+    const uniqueUsers = await getUniqueUsers(id);
+    res.status(201).json({ uniqueUsers });
+  } catch (error) {
+    logger.error('Error fetching unique users:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+
+const getUniqueUsers = async (userId) => {
+  try {
+    const uniqueUsers = await Message.findAll({
+      where: {
+        [Op.or]: [
+          { senderId: userId },
+          { receiverId: userId },
+        ],
+      },
+      attributes: ['senderId', 'receiverId'],
+    });
+
+    const userSet = new Set();
+
+    uniqueUsers.forEach((msg) => {
+      if (msg.senderId !== userId) {
+        userSet.add(msg.senderId);
+      }
+      if (msg.receiverId !== userId) {
+        userSet.add(msg.receiverId);
+      }
+    });
+
+    const uniqueArr = Array.from(userSet);
+
+    const uniqueChatedPeople = await User.findAll({
+      where: { id: uniqueArr },
+      attributes: ['id', 'nickname', 'profile_pic', 'username'],
+    });
+
+   return JSON.parse(JSON.stringify(uniqueChatedPeople))
+  } catch (error) {
+    console.error('Error retrieving unique users:', error);
+    throw error;
+  }
+};
+
+
+
 
 
 module.exports = {
   signup,
-  login, 
+  login,
   updateUser,
   userInfo,
   userInfoById,
@@ -569,5 +678,7 @@ module.exports = {
   follow,
   unfollow,
   getFollowersDetails,
-  getFollowingsDetails
+  getFollowingsDetails,
+  getAllMessages,
+  getMyAllChatedPerson
 };

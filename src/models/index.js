@@ -18,6 +18,7 @@ const UserRelationship = require('./releationship')
 const PostComment = require('./comment')
 const PostCommentReply = require('./commentReply')
 const CommentLike = require('./commentLike')
+const Message = require('./chat')
 
 
 User.hasMany(Transaction, { foreignKey: 'user_id', sourceKey: 'id' })
@@ -57,21 +58,44 @@ PostCommentReply.belongsTo(PostComment, {
 });
 
 PostComment.hasMany(PostCommentReply, { foreignKey: 'parent_comment_id', as: 'replies' });
-
-
-
-// PostCommentReply.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 PostComment.hasMany(CommentLike, { foreignKey: 'comment_id', as: 'comment_likes' });
-
-
-
-
-
-
 CommentLike.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
 CommentLike.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
 CommentLike.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
 CommentLike.belongsTo(PostComment, { foreignKey: 'comment_id', as: 'comment' });
+
+Message.belongsTo(User, {
+  as: "sender",
+  foreignKey: "senderId",
+  onDelete: "CASCADE",
+});
+
+Message.belongsTo(User, {
+  as: "receiver",
+  foreignKey: "receiverId",
+  onDelete: "CASCADE",
+});
+
+Message.belongsTo(Message, {
+  as: "parentMessage",
+  foreignKey: "parentMessageId",
+  onDelete: "CASCADE",
+  foreignKeyConstraint: false,
+});
+
+Message.hasMany(Message, {
+  as: "replies",
+  foreignKey: "parentMessageId",
+  onDelete: "CASCADE",
+});
+
+User.hasMany(Message, {
+  foreignKey: "receiverId",
+  as: "receivedMessages",
+});
+
+
+
 
 
 // /************************* USER ASSOCIATION **********/
@@ -185,5 +209,6 @@ module.exports = {
   UserRelationship,
   CommentLike,
   PostComment,
-  PostCommentReply
+  PostCommentReply,
+  Message
 };

@@ -16,47 +16,10 @@ const cheerio = require('cheerio')
 
 
 
-s3.listBuckets((err, data) => {
-  if (err) {
-    console.log("connection error with aws cli")
-  } else {
-    console.log("connected to aws :", data.Buckets)
-  }
-})
-
-const fetch_hobbies = async () => {
-  const url = 'https://en.wikipedia.org/wiki/List_of_hobbies';
-  const web_data = await axios.get(url)
-  const $ = cheerio.load(web_data.data)
-
-  const hobbies = []
-
-  $('li').each((index, element) => {
-    const hobbyText = $(element).text().trim();
-    if (hobbyText.length > 0 &&
-      !hobbyText.includes('unwanted') &&
-      !hobbyText.startsWith('[') &&
-      !hobbyText.endsWith(']') &&
-      !hobbyText.includes('\n')  &&
-      !hobbyText.includes('Main page') && 
-      !hobbyText.includes('Contents') &&
-      !hobbyText.includes('Current events') &&
-      !hobbyText.includes('Random article') &&
-      !/^\d+\.\d/.test(hobbyText)
-     ){
-    hobbies.push($(element).text().trim());
-  }
-
-});
-}
-
-fetch_hobbies()
-
-
 const router = require("./src/routes/index");
 
 const app = express();
-// require('./src/config/testdb')
+
 
 app.use(headers);
 testDbConnection();

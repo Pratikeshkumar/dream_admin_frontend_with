@@ -37,6 +37,8 @@ router.post('/unfollow', userAuth, userApis2.unfollow)
 
 router.post('/upload', upload.fields([{ name: "source", maxCount: 1 }]), userApis2.uploadData);
 router.get('/infoById/:user_id', validate(userValidation.userInfoById), userApis2.userInfoById);
+router.get('/getAllMessages/:chatedPerson', userAuth, userApis2.getAllMessages )
+router.get('/getMyAllChatedPerson', userAuth, userApis2.getMyAllChatedPerson )
 
 /****************************** AVATAR */
 
