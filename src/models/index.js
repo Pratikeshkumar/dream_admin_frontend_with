@@ -19,6 +19,7 @@ const PostComment = require('./comment')
 const PostCommentReply = require('./commentReply')
 const CommentLike = require('./commentLike')
 const Message = require('./chat')
+const MessageSubscription = require('./message_subscription')
 
 
 User.hasMany(Transaction, { foreignKey: 'user_id', sourceKey: 'id' })
@@ -94,7 +95,18 @@ User.hasMany(Message, {
   as: "receivedMessages",
 });
 
+User.hasMany(MessageSubscription, {
+  foreignKey: 'reciever_id',
+  as: 'subscriptionMessageReciver'
+})
 
+
+User.hasMany(MessageSubscription, {
+  foreignKey: 'sender_id',
+  as: 'subscriptionMessageSender'
+})
+
+MessageSubscription.belongsTo(User)
 
 
 
@@ -210,5 +222,6 @@ module.exports = {
   CommentLike,
   PostComment,
   PostCommentReply,
-  Message
+  Message,
+  MessageSubscription
 };

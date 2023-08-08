@@ -387,7 +387,7 @@ const sendGifts = async (req, res, next) => {
     const sender_id = id;
     const userIdToUpdate = id;
     const additionalWalletValue = diamonds;
-    r
+    
 
     let sended_gifts = await Gift.create({
       diamonds,
@@ -442,6 +442,7 @@ const sendGifts = async (req, res, next) => {
 
   } catch (error) {
     logger.error(error)
+    res.status(500).json({message: 'error while sending gifts, Please try after some time'})
   }
 }
  
