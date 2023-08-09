@@ -442,6 +442,7 @@ const sendGifts = async (req, res, next) => {
 
   } catch (error) {
     logger.error(error)
+    res.status(500).json({message: 'error while sending gifts, Please try after some time'})
   }
 }
  
