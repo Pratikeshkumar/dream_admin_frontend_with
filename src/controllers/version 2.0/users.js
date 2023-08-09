@@ -387,7 +387,7 @@ const sendGifts = async (req, res, next) => {
     const sender_id = id;
     const userIdToUpdate = id;
     const additionalWalletValue = diamonds;
-    r
+    
 
     let sended_gifts = await Gift.create({
       diamonds,
