@@ -1,47 +1,80 @@
-const { Video, User, VideoLike } = require("../../models");
+const logger = require('../../utils/logger');
+const { User, Avatar, Transaction, Gift, Video, Like } = require("../../models");
 
-const like = async (req, res, next) => {
-  logger.info("LIKE: LIKE API CALLED");
-  try {
-    const { videoId } = req.body;
-    const userId = req.userData.id;
-    if (videoId) {
-      const checkVideo = await Video.findOne({ where: { id: videoId } });
-      if (checkVideo) {
-        const checkLike = await VideoLike.findOne({
-          where: { user_id: userId, video_id: videoId },
-        });
-        if (checkLike) {
-          await VideoLike.destroy({ where: { user_id: userId, video_id: videoId } });
-          res.status(200).json({
-            response: "success",
-            likeState: false,
-          });
+const addLike = async (req, res, next) => {
+    logger.info("Like: Like added to people");
+    try {
+        const {
+            video_id,
+            reciever_id,
+            unlike 
+        } = req.body;
+        const { id, email } = req.userData;
+        const sender_id = id;
+        
+        let operationResult;
+        if (unlike) {
+            operationResult = await Like.destroy({
+                where: {
+                    video_id,
+                    reciever_id,
+                    sender_id
+                }
+            });
         } else {
-          await VideoLike.create({ user_id: userId, video_id: videoId });
-          res.status(200).json({
-            response: "success",
-            likeState: true,
-          });
+            operationResult = await Like.create({
+                video_id,
+                reciever_id,
+                sender_id
+            });
         }
-      } else {
-        res.status(404).json({
-          response: "video not found",
-        });
-      }
-    } else {
-      res.status(422).json({
-        response: "videoId not present",
-      });
+        
+        if (!operationResult) {
+            throw errorHandler("Unexpected error occurred while updating like!", "badRequest");
+        }
+        
+        async function updateUserLike(userId, decrement = false) {
+            try {
+                const user = await Video.findByPk(userId);
+                if (!user) {
+                    console.log('User not found');
+                    return;
+                }
+                
+                const currentLike = user.like || 0;
+                const newLike = decrement ? Math.max(currentLike - 1, 0) : currentLike + 1;
+                
+                const updated_like = await Video.update(
+                    { like: newLike },
+                    {
+                        where: { id: video_id },
+                    }
+                );
+                
+                res.status(201).json({
+                    message: 'transaction_successful',
+                    updated_like
+                });
+
+                console.log('User likes updated successfully!');
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        }
+        
+        if (unlike) {
+            updateUserLike(video_id, true); 
+        } else {
+            updateUserLike(video_id);
+        }
+
+    } catch (error) {
+        logger.error(error);
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      response: "error occured",
-    });
-  }
-};
+}
+
+
 
 module.exports = {
-  like,
-};
+    addLike
+}

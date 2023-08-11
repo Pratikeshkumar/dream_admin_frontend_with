@@ -7,6 +7,10 @@ require('dotenv').config()
 var app = require('../app');
 var debug = require('debug')('dream-media:server');
 var http = require('http');
+const {Server} = require('socket.io')
+const socketController = require('../src/socket/socketController');
+
+
 
 /**
  * Get port from environment and store in Express.
@@ -15,11 +19,18 @@ var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
+
 /**
  * Create HTTP server.
  */
 
 var server = http.createServer(app);
+const io = new Server(server)
+app.set('socketio', io);
+socketController(io);
+
+
+
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -89,4 +100,8 @@ function onListening() {
   debug('Listening on ' + bind);
   console.log('Listening on ' + bind);
   
+}
+
+module.exports = {
+  io
 }

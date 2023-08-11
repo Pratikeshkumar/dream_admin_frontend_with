@@ -1,103 +1,113 @@
 const Admin = require("./admin");
 const User = require("./user");
 const UserFriend = require("./userFriend");
-const VideoComment = require("./video_comment");
 const Post = require("./post");
 const Document = require("./document");
 const Tag = require("./tags");
 const Video = require("./video");
 const VideoLike = require("./video_like");
 const Like = require("./like");
-const Comment = require("./comment");
-const CommentReply = require("./commentReply");
 const Gift = require("./gift");
-const FollowerAndFollowing = require('./followerAndFollowing');
 const NewVideo = require('./newvideo')
 const Country = require('./countries')
 const City = require('./cities')
-const {sq} = require('../config/db')
-const { DataTypes } = require('sequelize');
+const Avatar = require('./avatar')
+const Hobbies = require('./hobbies')
+const Transaction = require('./transaction')
+const UserRelationship = require('./releationship')
+const PostComment = require('./comment')
+const PostCommentReply = require('./commentReply')
+const CommentLike = require('./commentLike')
+const Message = require('./chat')
+const MessageSubscription = require('./message_subscription')
 
 
-
-// const VideoCountry = sq.define(
-//   'VideoCountry',
-//   {
-//     created: {
-//       type: DataTypes.DATE,
-//       allowNull: false,
-//       defaultValue: DataTypes.NOW,
-//     },
-//     videoId: {
-//       type: DataTypes.INTEGER,
-//       allowNull: false,
-//       references: {
-//         model: Video,
-//         key: 'id',
-//       },
-//     },
-//     countryId: {
-//       type: DataTypes.INTEGER,
-//       allowNull: false,
-//       references: {
-//         model: Country,
-//         key: 'id',
-//       },
-//     },
-//   },
-//   {
-//     tableName: 'VideoCountry',
-//     timestamps: false,
-//   }
-// );
-
-// const VideoCity = sq.define(
-//   'VideoCity',
-//   {
-//     created: {
-//       type: DataTypes.DATE,
-//       allowNull: false,
-//       defaultValue: DataTypes.NOW,
-//     },
-//     videoId: {
-//       type: DataTypes.INTEGER,
-//       allowNull: false,
-//       references: {
-//         model: Video,
-//         key: 'id',
-//       },
-//     },
-//     cityId: {
-//       type: DataTypes.INTEGER,
-//       allowNull: false,
-//       references: {
-//         model: City,
-//         key: 'id',
-//       },
-//     },
-//   },
-//   {
-//     tableName: 'VideoCity',
-//     timestamps: false,
-//   }
-// );
-
-// Video.belongsToMany(Country, { through: VideoCountry });
-// Country.belongsToMany(Video, { through: VideoCountry });
-
-// Video.belongsToMany(City, { through: VideoCity });
-// City.belongsToMany(Video, { through: VideoCity });
-
-// module.exports = { VideoCountry, VideoCity };
+User.hasMany(Transaction, { foreignKey: 'user_id', sourceKey: 'id' })
+Gift.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
+Gift.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
+Gift.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
+Like.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
+Like.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
+Like.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
+User.hasMany(Video, { foreignKey: "user_id" });
+Video.hasMany(Like, { foreignKey: 'video_id', as: 'likes' });
+Video.belongsTo(User, { foreignKey: "user_id" });
+User.belongsToMany(User, { as: 'Followers', through: UserRelationship, foreignKey: 'receiver_id' });
+User.belongsToMany(User, { as: 'Following', through: UserRelationship, foreignKey: 'sender_id' });
 
 
+PostComment.belongsTo(User, {
+  foreignKey: 'user_id',
+  as: 'user'
+})
+PostComment.belongsTo(Video, {
+  foreignKey: 'video_id',
+  as: 'video'
+})
+PostCommentReply.belongsTo(User, {
+  foreignKey: 'user_id',
+  as: 'user',
+});
 
-// Video.belongsToMany(Country, {through: VideoCountry})
-// Video.belongsToMany(City, {through: VideoCity})
-// Country.belongsToMany(Video, { through: VideoCountry });
-// City.belongsToMany(Video, { through: VideoCity });
+PostCommentReply.belongsTo(Video, {
+  foreignKey: 'video_id',
+  as: 'video',
+});
+
+PostCommentReply.belongsTo(PostComment, {
+  foreignKey: 'parent_comment_id',
+  as: 'parentComment',
+});
+
+PostComment.hasMany(PostCommentReply, { foreignKey: 'parent_comment_id', as: 'replies' });
+PostComment.hasMany(CommentLike, { foreignKey: 'comment_id', as: 'comment_likes' });
+CommentLike.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
+CommentLike.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
+CommentLike.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
+CommentLike.belongsTo(PostComment, { foreignKey: 'comment_id', as: 'comment' });
+
+Message.belongsTo(User, {
+  as: "sender",
+  foreignKey: "senderId",
+  onDelete: "CASCADE",
+});
+
+Message.belongsTo(User, {
+  as: "receiver",
+  foreignKey: "receiverId",
+  onDelete: "CASCADE",
+});
+
+Message.belongsTo(Message, {
+  as: "parentMessage",
+  foreignKey: "parentMessageId",
+  onDelete: "CASCADE",
+  foreignKeyConstraint: false,
+});
+
+Message.hasMany(Message, {
+  as: "replies",
+  foreignKey: "parentMessageId",
+  onDelete: "CASCADE",
+});
+
+User.hasMany(Message, {
+  foreignKey: "receiverId",
+  as: "receivedMessages",
+});
+
+User.hasMany(MessageSubscription, {
+  foreignKey: 'reciever_id',
+  as: 'subscriptionMessageReciver'
+})
 
 
+User.hasMany(MessageSubscription, {
+  foreignKey: 'sender_id',
+  as: 'subscriptionMessageSender'
+})
+
+MessageSubscription.belongsTo(User)
 
 
 
@@ -193,21 +203,26 @@ const { DataTypes } = require('sequelize');
 // }
 
 module.exports = {
-    Admin,
-    User,
-    Video,
-    VideoLike,
-    VideoComment,
-    UserFriend,
-    Post,
-    Document,
-    Tag,
-    Like,
-    Comment,
-    CommentReply,
-    Gift,
-    FollowerAndFollowing,
-    NewVideo,
-    Country,
-    City
+  Admin,
+  User,
+  Video,
+  VideoLike,
+  UserFriend,
+  Post,
+  Document,
+  Tag,
+  Like,
+  Gift,
+  NewVideo,
+  Country,
+  City,
+  Avatar,
+  Hobbies,
+  Transaction,
+  UserRelationship,
+  CommentLike,
+  PostComment,
+  PostCommentReply,
+  Message,
+  MessageSubscription
 };

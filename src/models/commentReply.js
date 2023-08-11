@@ -1,7 +1,10 @@
 const { sq } = require("../config/db");
 const { DataTypes } = require("sequelize");
+const User = require("./user");
+const Video = require("./video");
+const PostComment = require("./comment");
 
-const CommentReply = sq.define(
+const PostCommentReply = sq.define(
   "commentReply",
   {
     id: {
@@ -10,10 +13,38 @@ const CommentReply = sq.define(
       allowNull: false,
       primaryKey: true,
     },
-    reply: {
-      type: DataTypes.STRING,
-      allowNull: true
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: 'id'
+      }
     },
+    video_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Video,
+        key: 'id'
+      }
+    },
+    parent_comment_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: PostComment,
+        key: 'id'
+      }
+    },
+    reply_message: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   },
   {
     freezeTableName: true,
@@ -21,4 +52,4 @@ const CommentReply = sq.define(
   }
 );
 
-module.exports = CommentReply;
+module.exports = PostCommentReply;

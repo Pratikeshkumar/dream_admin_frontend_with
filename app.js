@@ -10,23 +10,16 @@ const errorHandler = require('./src/middlewares/errorHandler');
 const log = require('./src/utils/logger');
 const AWS = require('aws-sdk')
 const { s3 } = require('./src/config/aws')
+const { Avatar, User, Hobbies } = require('./src/models')
+const axios = require('axios')
+const cheerio = require('cheerio')
 
-
-
-
-s3.listBuckets((err, data)=>{
-  if(err){
-    console.log("connection error with aws cli")
-  } else{
-    console.log("connected to aws :", data.Buckets)
-  }
-})
 
 
 const router = require("./src/routes/index");
 
 const app = express();
-// require('./src/config/testdb')
+
 
 app.use(headers);
 testDbConnection();
@@ -49,3 +42,6 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 module.exports = app;
+
+
+

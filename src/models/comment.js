@@ -1,7 +1,9 @@
 const { sq } = require("../config/db");
-const { DataTypes } = require("sequelize");
+const { DataTypes, } = require("sequelize");
+const Video = require("./video");
+const User = require("./user");
 
-const VideoComment = sq.define(
+const PostComment = sq.define(
   "comment",
   {
     id: {
@@ -10,15 +12,36 @@ const VideoComment = sq.define(
       allowNull: false,
       primaryKey: true,
     },
-    comment: {
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: 'id'
+      },
+    },
+    video_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Video,
+        key: 'id'
+      }
+    },
+    comment_data: {
       type: DataTypes.STRING,
       allowNull: true
     },
+    likes: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   },
+
   {
     freezeTableName: true,
     timestamps: true
   }
 );
 
-module.exports = VideoComment;
+module.exports = PostComment;

@@ -7,6 +7,10 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
   logging: false,
 });
 
+
+
+
+
 testDbConnection = async () => {
   try {
     await sequelize.authenticate()
@@ -14,6 +18,10 @@ testDbConnection = async () => {
     sequelize.sync({ force: false, alter: false });
 
     console.log('Connection has been established successfully.');
+
+    
+
+
   } catch (error) {
     console.error(error)
   }

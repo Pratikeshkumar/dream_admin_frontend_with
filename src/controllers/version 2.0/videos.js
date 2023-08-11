@@ -11,42 +11,36 @@ const uploadVideo = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: CREATE VIDEO API CALLED");
 
   try {
-    const { 
-      user_id, 
-      caption, 
-      privacy, 
-      allow_comment, 
+    const {
+      caption,
+      privacy,
+      allow_comment,
       allow_duet,
-      // allow_stitch,
-      // countries,
-      // ciities
-     } = req.body;
+    } = req.body;
 
-    //  console.log('countries', countries)
-    //  console.log("ciites", ciities)
+    const { id, email, profile_pic } = req.userData;
 
     const video = req.files['video'] ? req.files['video'][0].originalname : null
     const image = req.files['cover'] ? req.files['cover'][0].originalname : null
     const videoPath = req.files['video'] ? req.files['video'][0].path : null
     const imagePath = req.files['cover'] ? req.files['cover'][0].path : null
 
-console.log(req.files['video'][0])
-     let addVideo = await Video.create({
-        video: `videos/${video}`,
-        thum: `images/${image}`, 
-        user_id: user_id,
-        allow_comments: allow_comment,
-        allow_duet: allow_duet,
-        description: caption,
-        allow_stitch: true,
-        view: 0,
-        block: false,
-        promote: false,
-        like: 0,
-        comment: 0,
-        shared: 0,
-          
-      });
+    let addVideo = await Video.create({
+      video: `videos/${video}`,
+      thum: `images/${image}`,
+      user_id: id,
+      profile_pic: profile_pic,
+      allow_comments: allow_comment,
+      allow_duet: allow_duet,
+      description: caption,
+      allow_stitch: true,
+      view: 0,
+      block: false,
+      promote: false,
+      like: 0,
+      comment: 0,
+      shared: 0,
+    });
 
     // const countries_data = await Country.findAll({ where: { id: countries } });
     // await Video.addCountries(countries_data);
@@ -54,10 +48,10 @@ console.log(req.files['video'][0])
     // const cities = await City.findAll({ where: { id: ciities } });
     // await Video.addCities(cities);
 
-      addVideo = JSON.parse(JSON.stringify(addVideo));
+    // addVideo = JSON.parse(JSON.stringify(addVideo));
 
-      console.log(addVideo)
-      res.send(addVideo)
+
+    res.send(addVideo)
 
     // uploading video to aws bucket
     const uploadVideo = {
@@ -219,15 +213,23 @@ const allVideos = async (req, res, next) => {
   }
 };
 
-const getVideosByUserId = (req, res, next) =>{
-  logger.info("getting user videos by id")
+
+const getMyVideos = async (req, res, next) => {
+  logger.info("VERSION 2.0 -> VIDEO: GET MY VIDEO BY FILTERS API CALLED");
   try {
-    
+    let { id, email } = req.userData;
+
+    const videos = await Video.findAll({
+      where: { user_id: id }
+    })
+
+    if (videos) {
+      res.status(201).json(videos)
+    }
   } catch (error) {
-    console.log(err)
+    logger.err(error)
   }
 }
-
 
 
 
@@ -265,10 +267,26 @@ const getVideo = async (req, res, next) => {
   }
 };
 
+
+
+
 const getAllUserVideos = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GET ALL USER VIDEOS API CALLED");
   try {
-    const videos = await Video.findAll({});
+    let videos = await Video.findAll({
+      include: [{
+        model: User,
+        attributes: ['id', 'username', 'profile_pic', 'bio', 'nickname', 'instagram', 'you_tube', 'facebook'],
+      },
+      {
+        model: Like,
+        as: 'likes',
+        attributes: ['id', 'reciever_id', 'sender_id'],
+
+      }
+      ],
+    });
+
 
     return res.status(200).json({
       success: true,
@@ -281,6 +299,20 @@ const getAllUserVideos = async (req, res, next) => {
     return next(error);
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const getUserPostedImages = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GET ALL USER POSTED IMAGES API CALLED");
@@ -354,7 +386,7 @@ const likeVideo = async (req, res, next) => {
     like_id && (dbPayload.id = like_id);
 
     let liked = await Like.upsert(dbPayload);
-    liked = JSON.parse(JSON.stringify(liked));
+    // liked = JSON.parse(JSON.stringify(liked));
 
     if (!liked) throw errorHandler("Unexpected error occured while liking video!", "notFound");
 
@@ -392,7 +424,7 @@ const commentVideo = async (req, res, next) => {
     let commented = await Comment.create({
       video_id, comment, user_id
     });
-    commented = JSON.parse(JSON.stringify(commented));
+    // commented = JSON.parse(JSON.stringify(commented));
 
     if (!commented) throw errorHandler("Unexpected error occured while commenting on video!", "notFound");
 
@@ -732,7 +764,7 @@ const videoStats = async (req, res, next) => {
       ],
       group: ['video_id']
     });
-    video = JSON.parse(JSON.stringify(video));
+    // video = JSON.parse(JSON.stringify(video));
 
 
     let liked = await Like.findOne({
@@ -741,7 +773,7 @@ const videoStats = async (req, res, next) => {
       ],
       where: { user_id, video_id }
     })
-    liked = JSON.parse(JSON.stringify(liked));
+    // liked = JSON.parse(JSON.stringify(liked));
 
     let gift = await Gift.findAll({
       attributes: [
@@ -750,7 +782,7 @@ const videoStats = async (req, res, next) => {
       where: { video_id },
       group: ['video_id']
     });
-    gift = JSON.parse(JSON.stringify(gift));
+    // gift = JSON.parse(JSON.stringify(gift));
 
     return res.status(200).json({
       success: true,
@@ -786,5 +818,6 @@ module.exports = {
   searchAllVideos,
   searchVideosFromProfile,
   userInvolvedVideosById,
-  videoStats
+  videoStats,
+  getMyVideos
 };

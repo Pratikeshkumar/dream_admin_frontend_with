@@ -1,26 +1,15 @@
 const { sq } = require("../config/db");
-const { DataTypes } = require("sequelize");
+const { DataTypes, DatabaseError } = require("sequelize");
 const { User } = require('./user')
 const { Video } = require('./video')
 
-const Gift = sq.define(
-    "gifts", {
+const MessageSubscription = sq.define(
+    "message_subscription", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-    },
-    diamonds: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    video_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Video, 
-            key: 'id',
-          },
     },
     reciever_id: {
         type: DataTypes.INTEGER,
@@ -38,8 +27,22 @@ const Gift = sq.define(
             key: 'id'
           }
     },
+    no_of_diamond: {
+        type: DataTypes.INTEGER,
+        allowNull: false,  
+    },
+    no_of_allowed_messages: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    expire: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+
+    }
+
 });
 
 
 
-module.exports = Gift;
+module.exports = MessageSubscription;

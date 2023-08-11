@@ -12,8 +12,9 @@ exports.userAuth = async (req, res, next) => {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, JWT_KEY);
 
+
     let userData = await User.findOne({
-      where: { id: decoded.user_id, email: decoded.email }
+      where: { email: decoded.email, username: decoded.username }
     });
     userData = JSON.parse(JSON.stringify(userData));
 
@@ -25,7 +26,7 @@ exports.userAuth = async (req, res, next) => {
     logger.error(error);
 
     return next(error);
-  }
+  } 
 };
 
 exports.adminAuth = async (req, res, next) => {

@@ -45,7 +45,7 @@ const User = sq.define('users', {
     allowNull: true,
   },
   profile_pic: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
   },
   profile_pic_small: {
@@ -185,6 +185,10 @@ const User = sq.define('users', {
     allowNull: true
   },
   firebase_uid: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  twitter: {
     type: DataTypes.STRING,
     allowNull: true
   }
