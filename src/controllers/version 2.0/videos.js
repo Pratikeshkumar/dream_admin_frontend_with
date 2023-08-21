@@ -1,4 +1,4 @@
-const { Video, Comment, CommentReply, Tag, Like, User, Gift, NewVideo, City, Country } = require("../../models");
+const { Video, Comment, CommentReply, Tag, Like, User, Gift, NewVideo, City, Country, VideoCountry, VideoCity, TaggingUser, TaggingText } = require("../../models");
 const cloudinary = require("../../config/cloudinary");
 const fs = require("fs");
 const logger = require("../../utils/logger");
@@ -8,22 +8,84 @@ const { sq } = require('../../config/db');
 const { s3 } = require('../../config/aws')
 
 const uploadVideo = async (req, res, next) => {
-  logger.info("VERSION 2.0 -> VIDEO: CREATE VIDEO API CALLED");
-
+  logger.info("INFO -> VIDEO UPLOADING API CALLED");
   try {
     const {
       caption,
       privacy,
       allow_comment,
       allow_duet,
+      allow_stitch,
+      countries,
+      cities,
+      hashtag,
+      tag_people,
+      tagged_people_id
+
+
     } = req.body;
 
     const { id, email, profile_pic } = req.userData;
+
+
 
     const video = req.files['video'] ? req.files['video'][0].originalname : null
     const image = req.files['cover'] ? req.files['cover'][0].originalname : null
     const videoPath = req.files['video'] ? req.files['video'][0].path : null
     const imagePath = req.files['cover'] ? req.files['cover'][0].path : null
+
+
+
+
+    // CHECK WHEATHER THE TAG TEXT ARE EXISTED OR NOT IF NO THEN CREATE THE TAG, AND GET ID OF ALL TAG
+    const checkAndCreateTags = async (tagsToCheck) => {
+      const tagIds = [];
+
+      for (const tagName of tagsToCheck) {
+        try {
+          const [tag, created] = await Tag.findOrCreate({
+            where: { title: tagName },
+            defaults: { title: tagName }, // Create the tag if it doesn't exist
+          });
+
+          tagIds.push(tag.id);
+        } catch (error) {
+          logger.error(`Error while processing tag "${tagName}":`, error);
+        }
+      }
+
+      return tagIds;
+    };
+
+    const findUserIdsByUsername = async (usernames) => {
+      const userIds = [];
+
+      for (const username of usernames) {
+        try {
+          const user = await User.findOne({
+            where: { username: username },
+            attributes: ['id'],
+          });
+
+          if (user) {
+            userIds.push(user.id);
+          } else {
+            userIds.push(null); // User not found, pushing null
+          }
+        } catch (error) {
+          console.error(`Error while finding user "${username}":`, error);
+          userIds.push(null); // Pushing null in case of error
+        }
+      }
+
+      return userIds;
+    };
+
+
+
+
+
+
 
     let addVideo = await Video.create({
       video: `videos/${video}`,
@@ -33,25 +95,90 @@ const uploadVideo = async (req, res, next) => {
       allow_comments: allow_comment,
       allow_duet: allow_duet,
       description: caption,
-      allow_stitch: true,
+      allow_stitch: allow_stitch,
       view: 0,
       block: false,
       promote: false,
       like: 0,
       comment: 0,
       shared: 0,
-    });
+      privacy_type: privacy ? 'private' : 'public'
+    }); // adding into video db 
+    const videoId = addVideo.id; // getting the id of video
 
-    // const countries_data = await Country.findAll({ where: { id: countries } });
-    // await Video.addCountries(countries_data);
+    if (countries) {
+      const countriesArray = countries.split(",").map(countryId => parseInt(countryId));
+      let VideoCountry_result = await VideoCountry.bulkCreate(
+        countriesArray.map(countryId => ({
+          post_id: videoId,
+          countriesId: countryId
+        }))
+      ) // adding the video country releationship to db 
+    }
 
-    // const cities = await City.findAll({ where: { id: ciities } });
-    // await Video.addCities(cities);
+    if (cities) {
+      const citiesArray = cities.split(",").map(cityId => parseInt(cityId));
+      let CityCountry_result = await VideoCity.bulkCreate(
+        citiesArray.map(cityId => ({
+          post_id: videoId,
+          city_id: cityId
+        }))
+      ) // adding video city association in db
+    }
 
-    // addVideo = JSON.parse(JSON.stringify(addVideo));
 
 
-    res.send(addVideo)
+    if (tag_people) {
+      const TaggedPeopleUsername = tag_people.split(",").map(text => text)
+      const userId = await findUserIdsByUsername(TaggedPeopleUsername)
+      let UserVideoResult = await TaggingUser.bulkCreate(
+        userId.map(tagged_people_id => ({
+          post_id: videoId,
+          tagged_people_id: tagged_people_id
+        }))
+      ) // adding video user association in db 
+    }
+
+
+
+
+    if (tagged_people_id) {
+      const TaggedPeopleId = tagged_people_id.split(",").map(id => parseInt(id))
+      let UserVideoResult = await TaggingUser.bulkCreate(
+        TaggedPeopleId.map(tagged_people_id => ({
+          post_id: videoId,
+          tagged_people_id: tagged_people_id
+        }))
+      ) // adding video user association in db 
+
+    }
+
+
+
+
+    if (hashtag) {
+      const taggedText = hashtag.split(",",).map(text => text)
+      const tagId = await checkAndCreateTags(taggedText)
+      let UserTextResult = await TaggingText.bulkCreate(
+        tagId.map(tagged_tags => ({
+          post_id: videoId,
+          tagged_tags: tagged_tags
+        }))
+      ) // adding video text association in db
+
+
+    }
+
+
+
+
+
+    addVideo = JSON.parse(JSON.stringify(addVideo))
+
+    res.status(201).json({
+      message: 'success',
+      payload: addVideo
+    })
 
     // uploading video to aws bucket
     const uploadVideo = {
@@ -61,9 +188,9 @@ const uploadVideo = async (req, res, next) => {
     };
     s3.upload(uploadVideo, (err, data) => {
       if (err) {
-        console.error('Error uploading video:', err);
+        logger.error('Error uploading video:', err);
       } else {
-        console.log('Video uploaded successfully:', data.Location);
+        logger.info('Video uploaded successfully:', data.Location);
       }
     });
 
@@ -78,16 +205,18 @@ const uploadVideo = async (req, res, next) => {
 
     s3.upload(uploadPicture, (err, data) => {
       if (err) {
-        console.error('Error uploading picture:', err);
+        logger.error('Error uploading picture:', err);
       } else {
-        console.log('picture uploaded successfully:', data.Location);
+        logger.info('picture uploaded successfully:', data.Location);
       }
     });
 
 
   } catch (error) {
-    console.log(error)
+    logger.error(error)
+    res.status(500).json({ message: 'error while uploading video. Please try again after some time' })
   }
+
 
 
 

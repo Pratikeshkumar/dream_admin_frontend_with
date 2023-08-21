@@ -24,7 +24,7 @@ const Video = sq.define(
       allowNull: true,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
     video: {

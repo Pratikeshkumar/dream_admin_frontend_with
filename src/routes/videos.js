@@ -9,6 +9,17 @@ const videoValidation = require('../validations/video');
 
 /************************************* CONTROLLER VERSION 2.0 */
 router.post("/video", userAuth, upload.fields([{ name: 'video', maxCount: 10, optional: true }, { name: 'cover', maxCount: 10, optional: true }]), videoApis2.uploadVideo);
+
+
+
+
+
+
+
+
+
+
+
 router.get("/userAllVideos", videoApis2.getAllUserVideos);
 router.get("/userPostedImages", validate(videoValidation.getUserPostedImages), videoApis2.getUserPostedImages);
 router.get("/allVideos", videoApis2.allVideos);
