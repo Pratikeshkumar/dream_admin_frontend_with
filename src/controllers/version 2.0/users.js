@@ -1,4 +1,4 @@
-const { User, Avatar, Transaction, Gift, Video, UserRelationship, Like, Message } = require("../../models");
+const { User, Avatar, Transaction, Gift, Video, UserRelationship, Like, Message, UserInteraction } = require("../../models");
 const fs = require('fs');
 const errorHandler = require("../../utils/errorObject");
 const { JWT_KEY } = process.env;
@@ -682,14 +682,41 @@ const getAllFollowingsUsers = async (req, res) => {
       message: 'success',
       payload: user
     })
-
-
-
   } catch (error) {
     logger.error(error)
     res.status(500).json({ message: 'error while fetching the user followings details, Please try again after some time' })
   }
 
+}
+
+const addUserInteractionTime = async (req, res) => {
+  logger.info('INFO -> ADDING INTERACTION API CALLED')
+  try {
+    const { id } = req.userData;
+    const {
+      interaction_start,
+      interacted_time
+    } = req.body;
+
+
+
+    let result = await UserInteraction.create({
+      user_id: id,
+      interaction_start,
+      interacted_time
+    })
+    if (!result) throw errorHandler('error while creating the user interaction')
+    result = JSON.parse(JSON.stringify(result))
+
+    res.status(200).json({
+      message: 'success',
+      payload: result
+    })
+
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'error while adding data. Please try again after time', error })
+  }
 }
 
 
@@ -713,5 +740,6 @@ module.exports = {
   getFollowingsDetails,
   getAllMessages,
   getMyAllChatedPerson,
-  getAllFollowingsUsers
+  getAllFollowingsUsers,
+  addUserInteractionTime
 };

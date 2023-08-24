@@ -33,6 +33,7 @@ router.post('/transaction', userAuth, userApis2.storePayments)
 router.post('/gifts', userAuth, userApis2.sendGifts)
 router.post('/follow', userAuth, userApis2.follow)
 router.post('/unfollow', userAuth, userApis2.unfollow)
+router.post('/addUserInteractionTime', userAuth, userApis2.addUserInteractionTime)
 
 
 

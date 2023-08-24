@@ -24,8 +24,8 @@ const TaggingUser = require('./tagging_user')
 const TaggingText = require('./tagging_text')
 const VideoCity = require('./VideoCity')
 const VideoCountry = require("./VideoCountry");
+const UserInteraction = require('./user_interaction')
 
-Country.sync()
 
 User.hasMany(Transaction, { foreignKey: 'user_id', sourceKey: 'id' })
 Gift.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
@@ -123,6 +123,12 @@ VideoCity.belongsTo(Video, { foreignKey: 'post_id', as: 'video' });
 VideoCity.belongsTo(City, { foreignKey: 'city_id', as: 'city' });
 VideoCountry.belongsTo(Video, { foreignKey: 'post_id', as: 'video' });
 VideoCountry.belongsTo(Country, { foreignKey: 'countriesId', as: 'country' });
+User.hasMany(UserInteraction)
+UserInteraction.belongsTo(User)
+
+
+
+
 
 // /************************* USER ASSOCIATION **********/
 // {
@@ -241,5 +247,6 @@ module.exports = {
   TaggingUser,
   TaggingText,
   VideoCity,
-  VideoCountry
+  VideoCountry,
+  UserInteraction
 };

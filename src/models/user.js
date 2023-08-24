@@ -191,13 +191,18 @@ const User = sq.define('users', {
   twitter: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  account_type: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'basic'
   }
 
 },
-{
-  timestamps: false,
-  freezeTableName: true,
-});
+  {
+    timestamps: false,
+    freezeTableName: true,
+  });
 
 module.exports = User;
 

@@ -11,6 +11,7 @@ const country = require('./country');
 const search = require('./search')
 const analytics=require('./analytics')
 const message_subscription = require('./messageSubscription')
+const payment = require('./payments')
 
 
 router.use("/admin", admin);
@@ -23,6 +24,7 @@ router.use("/country", country)
 router.use('/search', search)
 router.use('/analytics', analytics)
 router.use('/message_subscription', message_subscription)
+router.use('/payments', payment)
 
 
 module.exports = router;
