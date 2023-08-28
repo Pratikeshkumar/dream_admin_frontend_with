@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { userAuth } = require('../middlewares/auth');
 const upload = require('../middlewares/uploadData');
+
 const videoApis2 = require('../controllers/version 2.0/videos');
 const validate = require('../middlewares/validate');
 const videoValidation = require('../validations/video');

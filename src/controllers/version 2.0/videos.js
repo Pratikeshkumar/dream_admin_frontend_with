@@ -22,7 +22,6 @@ const uploadVideo = async (req, res, next) => {
       tag_people,
       tagged_people_id
 
-
     } = req.body;
 
     const { id, email, profile_pic } = req.userData;
@@ -191,6 +190,13 @@ const uploadVideo = async (req, res, next) => {
         logger.error('Error uploading video:', err);
       } else {
         logger.info('Video uploaded successfully:', data.Location);
+        fs.unlink(videoPath, (unlinkErr) => {
+          if (unlinkErr) {
+            logger.error('Error deleting local video file:', unlinkErr);
+          } else {
+            logger.info('Local video file deleted:', videoPath);
+          }
+        });
       }
     });
 
@@ -208,6 +214,13 @@ const uploadVideo = async (req, res, next) => {
         logger.error('Error uploading picture:', err);
       } else {
         logger.info('picture uploaded successfully:', data.Location);
+        fs.unlink(imagePath, (unlinkErr) => {
+          if (unlinkErr) {
+            logger.error('Error deleting local video file:', unlinkErr);
+          } else {
+            logger.info('Local video file deleted:', videoPath);
+          }
+        });
       }
     });
 
