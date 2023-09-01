@@ -25,15 +25,38 @@ const TaggingText = require('./tagging_text')
 const VideoCity = require('./VideoCity')
 const VideoCountry = require("./VideoCountry");
 const UserInteraction = require('./user_interaction')
+const CommentDisLike = require('./commentDislike')
+const CommentRose = require('./commentRose')
+
+
+
+CommentRose.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
+CommentRose.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
+CommentRose.belongsTo(Video, { foreignKey: 'video_id', as: 'comment_rose_video' });
+CommentRose.belongsTo(PostComment, { foreignKey: 'comment_id', as: 'comment' })
+
 
 
 User.hasMany(Transaction, { foreignKey: 'user_id', sourceKey: 'id' })
+
+
+
 Gift.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
 Gift.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
 Gift.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
+
+
+
+
+
+
+
 Like.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
 Like.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
 Like.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
+
+
+
 User.hasMany(Video, { foreignKey: "user_id" });
 Video.hasMany(Like, { foreignKey: 'video_id', as: 'likes' });
 Video.belongsTo(User, { foreignKey: "user_id" });
@@ -65,11 +88,20 @@ PostCommentReply.belongsTo(PostComment, {
 });
 
 PostComment.hasMany(PostCommentReply, { foreignKey: 'parent_comment_id', as: 'replies' });
+
 PostComment.hasMany(CommentLike, { foreignKey: 'comment_id', as: 'comment_likes' });
 CommentLike.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
 CommentLike.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
 CommentLike.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
 CommentLike.belongsTo(PostComment, { foreignKey: 'comment_id', as: 'comment' });
+
+PostComment.hasMany(CommentDisLike, { foreignKey: 'comment_id', as: 'comment_dislikes' });
+CommentDisLike.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
+CommentDisLike.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
+CommentDisLike.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
+CommentDisLike.belongsTo(PostComment, { foreignKey: 'comment_id', as: 'comment' });
+
+
 
 Message.belongsTo(User, {
   as: "sender",
@@ -248,5 +280,7 @@ module.exports = {
   TaggingText,
   VideoCity,
   VideoCountry,
-  UserInteraction
+  UserInteraction,
+  CommentDisLike,
+  CommentRose
 };

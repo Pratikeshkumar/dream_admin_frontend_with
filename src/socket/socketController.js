@@ -2,6 +2,10 @@ const { Message } = require('../models/index')
 const logger = require('../utils/logger')
 
 
+// Store active rooms and their participants
+const rooms = {};
+
+
 module.exports = (io) => {
   io.on('connection', (socket) => {
     console.log('New client connected');
@@ -10,16 +14,11 @@ module.exports = (io) => {
       console.log('user joined', roomId)
     });
 
-    socket.on('videoCall', async (data) => {
-      const { offer, roomId, my_id } = data;
-      io.to(roomId).emit('videoCallListener', { offer, my_id })
-    })
+    socket.on('message', (roomId, message) => {
+      io.to(roomId).emit('message', message);
+      console.log(`Message in room ${roomId}:`, message);
+    });
 
-
-    socket.on('sendOffer', async (data) => {
-      const { answer, roomId, my_id } = data;
-      io.to(roomId).emit('answer', { answer, my_id })
-    })
 
 
 

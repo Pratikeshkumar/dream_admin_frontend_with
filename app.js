@@ -10,7 +10,7 @@ const errorHandler = require('./src/middlewares/errorHandler');
 const log = require('./src/utils/logger');
 const AWS = require('aws-sdk')
 const { s3 } = require('./src/config/aws')
-const { Avatar, User, Hobbies } = require('./src/models')
+const { Avatar, User, Hobbies, PostComment } = require('./src/models')
 const axios = require('axios')
 const cheerio = require('cheerio')
 
@@ -20,7 +20,7 @@ const cheerio = require('cheerio')
 
 
 
-
+PostComment.sync()
 
 
 
