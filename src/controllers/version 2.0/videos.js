@@ -409,31 +409,40 @@ const getVideo = async (req, res, next) => {
   }
 };
 
-
-
-
 const getAllUserVideos = async (req, res, next) => {
   logger.info("VERSION 2.0 -> VIDEO: GET ALL USER VIDEOS API CALLED");
   try {
-    let videos = await Video.findAll({
-      include: [{
-        model: User,
-        attributes: ['id', 'username', 'profile_pic', 'bio', 'nickname', 'instagram', 'you_tube', 'facebook'],
-      },
-      {
-        model: Like,
-        as: 'likes',
-        attributes: ['id', 'reciever_id', 'sender_id'],
+    const page = parseInt(req.query.page, 10) || 1; // Get the requested page (default to 1 if not provided)
+    const pageSize = parseInt(req.query.pageSize, 10) || 5; // Get the number of items per page (default to 5 if not provided)
 
-      }
+    // Calculate the offset based on the page and page size
+    const offset = (page - 1) * pageSize; // Corrected offset calculation
+
+    // Query for videos with pagination
+    const videos = await Video.findAndCountAll({
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'username', 'profile_pic', 'bio', 'nickname', 'instagram', 'you_tube', 'facebook'],
+        },
+        {
+          model: Like,
+          as: 'likes',
+          attributes: ['id', 'reciever_id', 'sender_id'],
+        },
       ],
+      limit: pageSize, // Number of items per page
+      offset, // Offset to skip items based on the page
     });
 
 
     return res.status(200).json({
       success: true,
       message: "Successfully fetched videos!",
-      videos
+      videos: videos.rows, // The actual video data
+      totalVideos: videos.count, // Total number of videos (useful for pagination)
+      currentPage: page,
+      pageSize: pageSize,
     });
   } catch (error) {
     logger.error(error);
@@ -441,13 +450,6 @@ const getAllUserVideos = async (req, res, next) => {
     return next(error);
   }
 };
-
-
-
-
-
-
-
 
 
 
