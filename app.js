@@ -19,14 +19,6 @@ const cheerio = require('cheerio')
 
 
 
-
-PostComment.sync()
-
-
-
-
-
-
 const router = require("./src/routes/index");
 
 const app = express();

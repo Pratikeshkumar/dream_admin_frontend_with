@@ -16,25 +16,19 @@ module.exports = (io) => {
       const socketId = socket.id;
       const myId = data?.myId;
       const user = { socketId, myId };
-      // Check if the user is already in the list before adding them
       const existingUser = onlinePeopleList.find((u) => u.myId === myId);
       if (!existingUser) {
         onlinePeopleList.push(user);
       }
-
-      // Broadcast the updated online people list to all connected clients
       io.emit('online-people-list', onlinePeopleList);
     });
 
     socket.on('disconnect', () => {
       console.log('Client disconnected');
 
-      // Remove the disconnected user from the onlinePeopleList
       const index = onlinePeopleList.findIndex((user) => user.socketId === socket.id);
       if (index !== -1) {
         onlinePeopleList.splice(index, 1);
-
-        // Broadcast the updated online people list to all connected clients
         io.emit('online-people-list', onlinePeopleList);
       }
     });
