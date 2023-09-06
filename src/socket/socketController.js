@@ -3,6 +3,7 @@ const logger = require('../utils/logger');
 const chatHandler = require('./handlers/chat');
 const onlineDetector = require('./handlers/onlineDetector');
 const testing = require('./handlers/testing');
+const videoCall = require('./handlers/videoCall')
 
 const onlinePeopleList = [];
 
@@ -11,6 +12,8 @@ module.exports = (io) => {
     console.log('New client connected');
 
     chatHandler(socket, io);
+    videoCall(socket, io)
+
 
     socket.on('online-display', (data) => {
       const socketId = socket.id;
