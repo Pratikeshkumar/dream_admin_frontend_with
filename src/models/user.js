@@ -153,7 +153,7 @@ const User = sq.define('users', {
     allowNull: true
   },
   hobbies: {
-    type: DataTypes.STRING,
+    type: DataTypes.JSON,
     allowNull: true
   },
   person_height: {
@@ -196,6 +196,10 @@ const User = sq.define('users', {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: 'basic'
+  },
+  language: {
+    type: DataTypes.JSON,
+    allowNull: false
   }
 
 },

@@ -1,4 +1,4 @@
-const { Video, Comment, CommentReply, Tag, Like, User, Gift, NewVideo, City, Country, VideoCountry, VideoCity, TaggingUser, TaggingText } = require("../../models");
+const { Video, Comment, CommentReply, Tag, Like, User, Gift, NewVideo, City, Country, VideoCountry, VideoCity, TaggingUser, TaggingText, PicturePost } = require("../../models");
 const cloudinary = require("../../config/cloudinary");
 const fs = require("fs");
 const logger = require("../../utils/logger");
@@ -944,6 +944,119 @@ const videoStats = async (req, res, next) => {
   }
 };
 
+const getUserPersonalInteractedVideo = async (req, res) => {
+  logger.info('INFO -> GETTING USER PERSONAL INTERACTED VIDEO')
+  try {
+    const { id } = req.userData;
+    // const result = await 
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'error generating while getting the list of video', error })
+  }
+}
+
+
+
+const uploadPicturePost = async (req, res) => {
+  logger.info('INFO -> UPLOADING PICTURE POST API CALLED')
+  try {
+    const {
+      caption,
+      view,
+      privacy_type,
+      like,
+      comment,
+      shared } = req.body;
+    const image = req.files['images'] ? req.files['images'][0].originalname : null
+    const imagePath = req.files['images'] ? req.files['images'][0].path : null
+    const { id } = req.userData;
+
+    // uploading image to aws bucket
+    const uploadPicture = {
+      Bucket: 'dreamapplication',
+      Key: `images/${image}`,
+      Body: fs.createReadStream(imagePath)
+    };
+
+    let result = await PicturePost.create({
+      user_id: id,
+      description: caption,
+      view: 0,
+      privacy_type,
+      like: 0,
+      comment: 0,
+      shared: 0,
+      image_url: `images/${image}`
+    })
+
+    result = JSON.parse(JSON.stringify(result))
+
+    console.log(result)
+
+    res.status(200).json({
+      message: 'successfully uploaded',
+      payload: result
+    })
+
+    s3.upload(uploadPicture, (err, data) => {
+      if (err) {
+        logger.error('Error uploading picture:', err);
+      } else {
+        logger.info('picture uploaded successfully:', data.Location);
+        fs.unlink(imagePath, (unlinkErr) => {
+          if (unlinkErr) {
+            logger.error('Error deleting local video file:', unlinkErr);
+          } else {
+            logger.info('Local video file deleted:', imagePath);
+          }
+        });
+      }
+    });
+
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'error generated while uploading the picture post', error })
+  }
+
+}
+
+
+
+
+const getAllPicturePost = async (req, res) => {
+  logger.info('INFO -> GETTING ALL PICTURE POST API CALLED')
+  try {
+    const { user_id } = req?.params;
+
+    let result = await PicturePost.findAll({
+      where: { user_id }
+    })
+    result = JSON.parse(JSON.stringify(result))
+
+    res.status(200).json({
+      message: 'success',
+      payload: result
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'error generated while uploading picture post', error })
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = {
   uploadVideo,
@@ -963,5 +1076,7 @@ module.exports = {
   searchVideosFromProfile,
   userInvolvedVideosById,
   videoStats,
-  getMyVideos
+  getMyVideos,
+  uploadPicturePost,
+  getAllPicturePost
 };

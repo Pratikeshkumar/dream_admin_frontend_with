@@ -1,6 +1,6 @@
 const { sq } = require("../config/db");
 const { DataTypes } = require("sequelize");
-const {User} = require('./user')
+const { User } = require('./user')
 
 
 const Video = sq.define(
@@ -15,7 +15,7 @@ const Video = sq.define(
     user_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: User, 
+        model: User,
         key: 'id',
       },
     },
@@ -28,7 +28,7 @@ const Video = sq.define(
       allowNull: true,
     },
     video: {
-      type: DataTypes.STRING, 
+      type: DataTypes.STRING,
       allowNull: true,
     },
     thum: {

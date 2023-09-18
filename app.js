@@ -10,9 +10,10 @@ const errorHandler = require('./src/middlewares/errorHandler');
 const log = require('./src/utils/logger');
 const AWS = require('aws-sdk')
 const { s3 } = require('./src/config/aws')
-const { Avatar, User, Hobbies, PostComment } = require('./src/models')
+const { Avatar, User, Hobbies, PostComment, Language } = require('./src/models')
 const axios = require('axios')
 const cheerio = require('cheerio')
+
 
 
 
@@ -29,19 +30,18 @@ testDbConnection();
 app.use(logger("tiny"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static("./src/uploads"));
+app.use(express.static('./public'));
 app.use(cookieParser());
 
 app.use("", router);
 
-/****************** ERORR HANDLING */
-// error handlers for not found
+
+
 app.use((req, res, next) => {
   log.error("*************** API NOT FOUND ***************")
   next(new errorHandling("route not found", "notFound"));
 });
 
-// error handler
 app.use(errorHandler);
 
 module.exports = app;

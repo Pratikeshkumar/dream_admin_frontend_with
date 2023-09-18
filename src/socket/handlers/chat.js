@@ -43,16 +43,19 @@ module.exports = (socket, io) => {
         } else {
             const id = roomId - user?._id;
             let devices_token = await User.findByPk(id, {
-                attributes: ['device_token']
+                attributes: ['device_token', 'profile_pic', 'nickname']
             })
-            let token = JSON.parse(JSON.stringify(devices_token)).device_token
+            let result = JSON.parse(JSON.stringify(devices_token))
+            const token = result?.device_token
             await admin.messaging().sendEachForMulticast({
                 tokens: [token],
                 data: {
                     notifee: JSON.stringify({
+                        title: `Message from ${result?.nickname}`,
                         body: data[0]?.text,
                         android: {
                             channelId: 'default',
+                            largeIcon: result?.profile_pic,
                             actions: [
                                 {
                                     title: 'message',

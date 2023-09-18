@@ -1,4 +1,13 @@
-const { PostComment, PostCommentReply, CommentLike, User, Video, CommentDisLike, CommentRose } = require('../../models');
+const {
+  PostComment,
+  PostCommentReply,
+  CommentLike,
+  User,
+  Video,
+  CommentDisLike,
+  CommentRose,
+
+} = require('../../models');
 const logger = require('../../utils/logger');
 const errorHandler = require('../../utils/errorObject')
 
@@ -422,7 +431,24 @@ const sendRose = async (req, res) => {
 
 
 
+const getCommentOfVideoByVideoId = async (req, res) => {
+  logger.info('INFO -> GETING ALL COMMENT OF VIDEO BY VIDEO ID API CALLED')
+  try {
+    const { video_id } = req.params;
 
+    let comment = await PostComment.count({
+      where: { video_id: video_id }
+    })
+    res.status(200).json({
+      message: 'success',
+      no_of_comment: comment
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: "error generating while getting all comments", error })
+  }
+
+}
 
 
 
@@ -447,5 +473,6 @@ module.exports = {
   fetchComment,
   disLikeComment,
   unDISlikeComment,
-  sendRose
+  sendRose,
+  getCommentOfVideoByVideoId
 }

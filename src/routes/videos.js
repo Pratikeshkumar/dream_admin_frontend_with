@@ -10,6 +10,7 @@ const videoValidation = require('../validations/video');
 
 /************************************* CONTROLLER VERSION 2.0 */
 router.post("/video", userAuth, upload.fields([{ name: 'video', maxCount: 10, optional: true }, { name: 'cover', maxCount: 10, optional: true }]), videoApis2.uploadVideo);
+router.post("/uploadPicturePost", userAuth, upload.fields([{ name: 'images', maxCount: 1, optional: true }]), videoApis2.uploadPicturePost);
 
 
 
@@ -28,6 +29,11 @@ router.get('/getMyVideos', userAuth, videoApis2.getMyVideos)
 router.get("/video", userAuth, validate(videoValidation.getVideo), videoApis2.getVideo);
 router.patch("/video/:videoId", userAuth, validate(videoValidation.updateVideo), videoApis2.updateVideo);
 router.delete("/video", userAuth, validate(videoValidation.deleteVideo), videoApis2.deleteVideo);
+router.get("/getAllPicturePost/:user_id", videoApis2.getAllPicturePost);
+
+
+
+
 
 router.post("/like/:video_id", userAuth, validate(videoValidation.likeVideo), videoApis2.likeVideo);
 router.post("/comment/:video_id", userAuth, validate(videoValidation.commentVideo), videoApis2.commentVideo);
@@ -37,8 +43,9 @@ router.get("/allComments/:video_id", userAuth, validate(videoValidation.allComme
 router.post('/giftVideo', userAuth, validate(videoValidation.giftVideo), videoApis2.giftVideo);
 router.get("/searchAllVideos", userAuth, validate(videoValidation.searchAllVideos), videoApis2.searchAllVideos);
 router.get("/searchVideosFromProfile", userAuth, validate(videoValidation.searchVideosFromProfile), videoApis2.searchVideosFromProfile);
+
+
 router.get("/userInvolvedVideosById/:user_id", userAuth, videoApis2.userInvolvedVideosById);
 router.get("/stats/:video_id", userAuth, validate(videoValidation.videoStats), videoApis2.videoStats);
 
 module.exports = router;
- 

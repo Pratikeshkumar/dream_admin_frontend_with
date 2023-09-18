@@ -14,7 +14,7 @@ exports.userAuth = async (req, res, next) => {
 
 
     let userData = await User.findOne({
-      where: { email: decoded.email, username: decoded.username }
+      where: { email: decoded.email }
     });
     userData = JSON.parse(JSON.stringify(userData));
 
@@ -26,7 +26,7 @@ exports.userAuth = async (req, res, next) => {
     logger.error(error);
 
     return next(error);
-  } 
+  }
 };
 
 exports.adminAuth = async (req, res, next) => {

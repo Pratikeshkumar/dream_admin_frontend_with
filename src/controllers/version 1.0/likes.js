@@ -93,7 +93,28 @@ const getUserAllLike = async (req, res) => {
 }
 
 
+
+const getAllLikeOfVideoByVideoId = async (req, res) => {
+    logger.info('INFO -> GETTING ALL LIKE OF VIDEO BY VIDEO ID API CALLED')
+    try {
+        const { video_id } = req.params;
+        let likes = await Like.findAll({
+            where: { video_id: video_id }
+        })
+        likes = JSON.parse(JSON.stringify(likes))
+        res.status(200).json({
+            message: 'success',
+            payload: likes
+        })
+    } catch (error) {
+        logger.error(error)
+        res.status(500).json({ message: 'error generating while getting all like of the video', error })
+    }
+}
+
+
 module.exports = {
     addLike,
-    getUserAllLike
+    getUserAllLike,
+    getAllLikeOfVideoByVideoId
 }

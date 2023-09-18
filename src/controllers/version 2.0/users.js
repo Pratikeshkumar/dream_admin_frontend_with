@@ -1,4 +1,4 @@
-const { User, Avatar, Transaction, Gift, Video, UserRelationship, Like, Message, UserInteraction } = require("../../models");
+const { User, Avatar, Transaction, Gift, Video, UserRelationship, Like, Message, UserInteraction, Language, Hobbies, VideoView, ProfileVisit } = require("../../models");
 const fs = require('fs');
 const errorHandler = require("../../utils/errorObject");
 const { JWT_KEY } = process.env;
@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken");
 const cloudinary = require('../../config/cloudinary');
 const { Op, literal } = require('sequelize');
 const sequelize = require('sequelize')
+const { s3 } = require('../../config/aws');
+
 
 
 const signup = async (req, res, next) => {
@@ -190,7 +192,7 @@ const userInfoById = async (req, res, next) => {
         {
           model: Video,
           as: 'videos',
-          attributes: ['id', 'description', 'video', 'thum', 'view', 'diamond_value'],
+          attributes: ['id', 'description', 'video', 'thum', 'view', 'diamond_value', 'like', 'view', 'created'],
         },
         {
           model: User,
@@ -613,6 +615,7 @@ const getMyAllChatedPerson = async (req, res) => {
   try {
     const { id } = req.userData;
 
+
     const uniqueUsers = await getUniqueUsers(id);
     res.status(201).json({ uniqueUsers });
   } catch (error) {
@@ -719,6 +722,315 @@ const addUserInteractionTime = async (req, res) => {
   }
 }
 
+const changeProfilePicture = async (req, res) => {
+  logger.info('INFO -> PROFILE PICTURE CHANGING API CALLED')
+  try {
+    const { id } = req.userData;
+    const image = req.files['images'] ? req.files['images'][0].originalname : null
+    const imagePath = req.files['images'] ? req.files['images'][0].path : null
+    // uploading image to aws bucket
+    const uploadPicture = {
+      Bucket: 'dreamapplication',
+      Key: `images/${image}`,
+      Body: fs.createReadStream(imagePath)
+    };
+    const uri = `https://dpcst9y3un003.cloudfront.net/images/${image}`
+    const [updatedRows] = await User.update(
+      { profile_pic: uri },
+      { where: { id } }
+    );
+    res.status(200).json({
+      message: 'success'
+    })
+    s3.upload(uploadPicture, (err, data) => {
+      if (err) {
+        logger.error('Error uploading picture:', err);
+      } else {
+        logger.info('picture uploaded successfully:', data.Location);
+        fs.unlink(imagePath, (unlinkErr) => {
+          if (unlinkErr) {
+            logger.error('Error deleting local profile file:', unlinkErr);
+          } else {
+            logger.info('Local images file deleted:', imagePath);
+          }
+        });
+      }
+    });
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'error generated while changing the profile picture', error })
+  }
+}
+
+
+const changeProfileVideo = async (req, res) => {
+  logger.info('INFO -> PROFILE VIDEO CHANGING API CALLED')
+  try {
+    const { id } = req.userData;
+    const videos = req.files['videos'] ? req.files['videos'][0].originalname : null
+    const videoPath = req.files['videos'] ? req.files['videos'][0].path : null
+
+    const uploadVideo = {
+      Bucket: 'dreamapplication',
+      Key: `images/${videos}`,
+      Body: fs.createReadStream(videoPath)
+    };
+
+    const uri = `https://dpcst9y3un003.cloudfront.net/images/${videos}`
+
+    console.log(uri)
+    const [updatedRows] = await User.update(
+      { profile_video: uri },
+      { where: { id } }
+    );
+    res.status(200).json({
+      message: 'success'
+    })
+
+    s3.upload(uploadVideo, (err, data) => {
+      if (err) {
+        logger.error('Error uploading profile video:', err);
+      } else {
+        logger.info('profile video uploaded successfully:', data.Location);
+        fs.unlink(videoPath, (unlinkErr) => {
+          if (unlinkErr) {
+            logger.error('Error deleting local video file:', unlinkErr);
+          } else {
+            logger.info('Local profile video file deleted:', videoPath);
+          }
+        });
+      }
+    });
+
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'error generated while changing the profile video', error })
+  }
+}
+
+
+const checkUsernameAvaliable = async (req, res) => {
+  logger.info('INFO -> USERNAME AVAILABLE API CALLED');
+  try {
+    const { value } = req.params;
+
+    // Check if a user with the given username exists
+    const user = await User.findOne({
+      where: {
+        username: value
+      }
+    });
+
+    if (user) {
+      // Username is not available
+      res.json({
+        message: 'Username is not available',
+        available: false
+      });
+    } else {
+      // Username is available
+      res.json({
+        message: 'Username is available',
+        available: true
+      });
+    }
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({
+      message: 'Error occurred while checking the username availability',
+      error
+    });
+  }
+};
+
+
+
+
+const getLanguageAllLanguageList = async (req, res) => {
+  logger.info('INFO -> GETTING ALL LIST OF LANGUAGE DATA API CALLED')
+  try {
+    const { page_no, page_size } = req.params;
+
+    const pageNo = parseInt(page_no);
+    const pageSize = parseInt(page_size);
+
+    // Calculate the offset for pagination
+    const offset = (pageNo - 1) * pageSize;
+
+    // Query the database with limit and offset for pagination
+    const language_result = await Language.findAll({
+      limit: pageSize,
+      offset: offset,
+    });
+
+    // Return paginated results
+    res.json({
+      message: 'Successfully retrieved the list of data',
+      data: language_result,
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({
+      message: 'Error occurred while getting the list of data',
+      error: error.message,
+    });
+  }
+};
+
+
+const searchLanguage = async (req, res) => {
+  logger.info('INFO -> SEARCHING LANGUAGE API CALLED');
+  try {
+    const { search_text } = req.params;
+    const result = await Language.findAll({
+      where: {
+        name: {
+          [Op.like]: `${search_text}%`,
+        },
+      },
+      attributes: ['id', 'name']
+    });
+
+    res.status(200).json({
+      message: 'Languages found successfully',
+      data: result,
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({
+      message: 'Error generated while searching languages',
+      error,
+    });
+  }
+};
+
+
+
+const getAllHobbiesList = async (req, res) => {
+  logger.info('INFO -> GETTING ALL LIST OF HOBBIES DATA API CALLED')
+  try {
+    const { page_no, page_size } = req.params;
+
+    const pageNo = parseInt(page_no);
+    const pageSize = parseInt(page_size);
+
+    // Calculate the offset for pagination
+    const offset = (pageNo - 1) * pageSize;
+
+    // Query the database with limit and offset for pagination
+    const language_result = await Hobbies.findAll({
+      limit: pageSize,
+      offset: offset,
+    });
+
+    // Return paginated results
+    res.json({
+      message: 'Successfully retrieved the list of data',
+      data: language_result,
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({
+      message: 'Error occurred while getting the list of data',
+      error: error.message,
+    });
+  }
+};
+
+
+const searchHobbies = async (req, res) => {
+  logger.info('INFO -> SEARCHING HOBBIES API CALLED');
+  try {
+    const { search_text } = req.params;
+    const result = await Hobbies.findAll({
+      where: {
+        name: {
+          [Op.like]: `${search_text}%`,
+        },
+      },
+      attributes: ['id', 'name']
+    });
+
+    res.status(200).json({
+      message: 'Languages found successfully',
+      data: result,
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({
+      message: 'Error generated while searching hobbies',
+      error,
+    });
+  }
+};
+
+
+const addView = async (req, res) => {
+  logger.info('INFO -> ADD VIEW API CALLED')
+  try {
+
+    const {
+      video_id,
+      viewers_id
+    } = req.body;
+
+    let result = await VideoView.create({
+      video_id,
+      viewers_id
+    })
+
+    result = JSON.parse(JSON.stringify(result))
+    if (!result) throw errorHandler('error generated while executing.')
+
+
+    res.status(200).json({
+      message: 'succcess',
+      payload: result
+    })
+
+  } catch (error) {
+    logger.error(error)
+    res.json({ message: 'error generated while adding view', error })
+  }
+}
+
+
+
+const addProfileVisit = async (req, res) => {
+  logger.info('INFO -> ADDING PROFILE VISIT API CALLED')
+  try {
+
+    const {
+      visitor_user_id,
+      visited_user_id,
+      promotion_id
+    } = req.body;
+
+    let results = await ProfileVisit.create({
+      promotion_id,
+      visitor_user_id,
+      visited_user_id
+    })
+    if (!results) throw errorHandler('error generated while executing.')
+
+    results = JSON.parse(JSON.stringify(results))
+
+    res.status(200).json({
+      message: 'succcess',
+      payload: results
+    })
+
+
+  } catch (error) {
+    logger.error(error)
+    res.json({ message: 'error generated while adding view', error })
+  }
+}
+
+
+
+
+
 
 
 
@@ -741,5 +1053,14 @@ module.exports = {
   getAllMessages,
   getMyAllChatedPerson,
   getAllFollowingsUsers,
-  addUserInteractionTime
+  addUserInteractionTime,
+  changeProfilePicture,
+  changeProfileVideo,
+  checkUsernameAvaliable,
+  getLanguageAllLanguageList,
+  searchLanguage,
+  getAllHobbiesList,
+  searchHobbies,
+  addView,
+  addProfileVisit
 };
