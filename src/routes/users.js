@@ -52,6 +52,9 @@ router.get('/infoById/:user_id', validate(userValidation.userInfoById), userApis
 router.get('/getAllMessages/:chatedPerson', userAuth, userApis2.getAllMessages)
 router.get('/getMyAllChatedPerson', userAuth, userApis2.getMyAllChatedPerson)
 
+router.post('/updatePicture', upload.fields([{ name: 'images', maxCount: 1 }]), userApis2.updatePicture)
+
+
 /****************************** AVATAR */
 
 router.get('/avatar', userApis2.getAvatar)

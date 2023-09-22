@@ -214,7 +214,7 @@ const userInfoById = async (req, res, next) => {
         {
           model: Video,
           as: 'video',
-          attributes: ['id', 'description', 'video', 'thum', 'view', 'diamond_value'],
+          attributes: ['id', 'description', 'video', 'thum', 'view', 'diamond_value', 'like', 'view', 'created'],
         },
         {
           model: User,
@@ -1030,6 +1030,60 @@ const addProfileVisit = async (req, res) => {
 
 
 
+const updatePicture = async (req, res) => {
+  logger.info('INFO -> UPDATE PICTURE API CALLED')
+  try {
+    const image = req.files['images'] ? req.files['images'][0].originalname : null
+    const imagePath = req.files['images'] ? req.files['images'][0].path : null
+
+    const { id } = req.body;
+
+    console.log(id)
+
+    console.log(imagePath)
+
+
+
+    let result = await Video.update(
+      { thum: `images/${image}` },
+      { where: { id } }
+    )
+
+    result = JSON.parse(JSON.stringify(result))
+
+    console.log(result)
+
+
+
+    const uploadPicture = {
+      Bucket: 'dreamapplication',
+      Key: `images/${image}`,
+      Body: fs.createReadStream(imagePath)
+    };
+
+    s3.upload(uploadPicture, (err, data) => {
+      if (err) {
+        logger.error('Error uploading picture:', err);
+      } else {
+        logger.info('picture uploaded successfully:', data.Location);
+        fs.unlink(imagePath, (unlinkErr) => {
+          if (unlinkErr) {
+            logger.error('Error deleting local video file:', unlinkErr);
+          } else {
+            logger.info('Local video file deleted:', imagePath);
+          }
+        });
+      }
+    });
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: 'error generated while updating profile picture', error })
+  }
+}
+
+
+
 
 
 
@@ -1062,5 +1116,6 @@ module.exports = {
   getAllHobbiesList,
   searchHobbies,
   addView,
-  addProfileVisit
+  addProfileVisit,
+  updatePicture
 };

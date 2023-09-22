@@ -239,7 +239,7 @@ const getUserInteractions = async (req, res) => {
     res.status(200).json({
       message: "Success",
       payload: result,
-      total_time_spended: Math.round(total_time_spended / (1000 * 60 * 60))
+      total_time_spended: Math.round(total_time_spended / (1000 * 60))
     });
 
   } catch (error) {
