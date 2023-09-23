@@ -6,6 +6,7 @@ const errorHandler = require("../../utils/errorObject");
 const sequelize = require('sequelize');
 const { sq } = require('../../config/db');
 const { s3 } = require('../../config/aws')
+const {literal} = require('sequelize')
 
 const uploadVideo = async (req, res, next) => {
   logger.info("INFO -> VIDEO UPLOADING API CALLED");
@@ -416,9 +417,9 @@ const getAllUserVideos = async (req, res, next) => {
     const pageSize = parseInt(req.query.pageSize, 10) || 5; // Get the number of items per page (default to 5 if not provided)
 
     // Calculate the offset based on the page and page size
-    const offset = (page - 1) * pageSize; // Corrected offset calculation
+    const offset = (page - 1) * pageSize;
 
-    // Query for videos with pagination
+    // Query for random videos with pagination
     const videos = await Video.findAndCountAll({
       include: [
         {
@@ -431,16 +432,16 @@ const getAllUserVideos = async (req, res, next) => {
           attributes: ['id', 'reciever_id', 'sender_id'],
         },
       ],
-      limit: pageSize, // Number of items per page
-      offset, // Offset to skip items based on the page
+      limit: pageSize,
+      offset,
+      order: literal('RAND()'), 
     });
-
 
     return res.status(200).json({
       success: true,
-      message: "Successfully fetched videos!",
-      videos: videos.rows, // The actual video data
-      totalVideos: videos.count, // Total number of videos (useful for pagination)
+      message: "Successfully fetched random videos!",
+      videos: videos.rows,
+      totalVideos: videos.count,
       currentPage: page,
       pageSize: pageSize,
     });
@@ -450,6 +451,7 @@ const getAllUserVideos = async (req, res, next) => {
     return next(error);
   }
 };
+
 
 
 
