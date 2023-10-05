@@ -13,10 +13,10 @@ const { s3 } = require('./src/config/aws')
 const { Avatar, User, Hobbies, PostComment, Language } = require('./src/models')
 const axios = require('axios')
 const cheerio = require('cheerio')
+const nms = require('./src/config/nms')
 
 
-
-
+nms.run()
 
 
 

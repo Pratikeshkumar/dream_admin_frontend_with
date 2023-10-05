@@ -31,6 +31,7 @@ const ProfileVisit = require('./profile_visit')
 const Language = require('./language')
 const VideoView = require('./video_view')
 const PicturePost = require('./picture_post')
+const Occupations = require('./occupations')
 
 
 CommentRose.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
@@ -205,5 +206,6 @@ module.exports = {
   Language,
   ProfileVisit,
   VideoView,
-  PicturePost
+  PicturePost,
+  Occupations
 };
