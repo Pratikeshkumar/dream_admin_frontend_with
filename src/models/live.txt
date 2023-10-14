@@ -1,0 +1,27 @@
+1. topic - associated to topic.
+2. description - string
+3. live_gifts: boolean (gifts are enable in the stream)
+4. audience_control - boolean (means user can control the audience. if true means they are only avalibale for 18+ users.)
+5. ranking: boolean (if true, means the ranking (arrangment) are avalibale for the user )
+6. allow_comment: boolean (if true, means the comments are allow for the stream).
+7. filter_comment: boolean (if true, means they unethical comments are not not avalible here).
+8. mute_voice: Number (means when the user started the stream then how much time after the voice started.)
+9. supervisors_role: {
+   1. He can mute the all comments in the live: boolean,
+   2. He can temoporarily mute user comments in the live: boolean
+}
+10. secreterial_role: {
+    1. He can mute all comments in the live: boolean
+    2. He can temoporarily mute user comment in the live: boolean
+    3. He can delete the user's comment in the live: boolean
+    4. He can temoporarily block the user in the live: boolean
+}
+11. administration_role: {
+    1. He can mute all comment in the live: boolean
+    2. He can delete the user's comment in the live: boolean
+    3. He can temoporarily block the user in the live: boolean
+    4. He can expel users in the live: boolean
+    5. He can turn off the live while: boolean
+    6. mute voice guests.
+    7. Kick the guest out of the live post.
+}

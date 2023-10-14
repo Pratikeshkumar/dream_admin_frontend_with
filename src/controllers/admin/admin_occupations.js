@@ -4,26 +4,61 @@
 // delete occuaption
 
 const logger = require('../../utils/logger')
-const {Occupations} = require('../../models')
+const { Occupations } = require('../../models')
+
+
 
 const addOccupations = async (req, res) => {
     logger.info('INFO -> ADDING OCCUPATIONS API CALLED');
     try {
-        const { name, description, parentId } = req.body;
+        const industryData = req.body;
 
-        // Create a new occupation
-        const newOccupation = await Occupations.create({
-            name,
-            description,
-            parentId, // If parentId is provided, it will create a nested occupation
+
+        // console.log(industryData)
+
+
+        const occuaption = industryData[0]?.occupations?.map(item => ({ pr: 1, item: item?.name }))
+
+        console.log(occuaption)
+
+
+
+
+        // if (!industryData || !industryData.industry || !industryData.occupations || industryData.occupations.length === 0) {
+        //     return res.status(400).json({ message: 'Invalid industry data' });
+        // }
+
+        // Create the parent occupation (industry)
+        let newIndustry = await Occupations.create({
+            name: industryData[0].industry,
         });
 
-        res.status(201).json({ message: 'Occupation added successfully', data: newOccupation });
+
+        newIndustry = JSON.parse(JSON.stringify(newIndustry))
+
+        const parentId = newIndustry?.id;
+
+        console.log('parentId', parentId)
+
+        const occu = await Occupations.bulkCreate(industryData[0]?.occupations?.map(item => ({ name: item.name, parentId: parentId })))
+
+
+
+        res.status(201).json({ message: 'Occupation added successfully' });
     } catch (error) {
         logger.error(error);
         res.status(500).json({ message: 'Error generated while processing your request', error });
     }
-}
+};
+
+
+
+
+
+
+
+
+
 
 const getOccupations = async (req, res) => {
     logger.info('INFO -> GETTING OCCUPATIONS API CALLED');

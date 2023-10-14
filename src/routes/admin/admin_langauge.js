@@ -7,7 +7,7 @@ const { adminAuth } = require('../../middlewares/auth')
 
 
 router.post('./addLanguage', adminAuth, adminLanguageApi.addLanguage)
-router.get('/addLanguage/:page/:perPage', adminAuth, adminLanguageApi.getLanguage)
+router.get('/getLanguage', adminLanguageApi.getLanguage)
 router.put('/updateLanguage/:id', adminAuth, adminLanguageApi.updateLanguage)
 router.delete('/deleteLanguage/id', adminAuth, adminLanguageApi.deleteLanguage)
 
