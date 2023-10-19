@@ -1,8 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=ABeeZee&display=swap');
-#header {
-   
-   
-  }
+
+
+/* .header{
+  width: "100%";
+  background-color:green;
+  
+} */
+
   #header p {
     margin-top: 12px;
   }

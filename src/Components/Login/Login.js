@@ -33,7 +33,8 @@ export default class Login extends Component {
     const data = {email, password}
     authApi.adminLogin(data)
     .then((r) => {
-      localStorage.setItem('token', r?.auth_token)
+      console.log(r,"rrrrr")
+      localStorage.setItem('token', r.auth_token)
       this.setState({
         loggedIn: true
       })

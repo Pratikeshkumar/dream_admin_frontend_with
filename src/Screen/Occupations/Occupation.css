@@ -1,0 +1,91 @@
+/* Occupation.css */
+
+.family-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+.family-form {
+  background-color: #e6cccc;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  width: 700px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button[type="button"] {
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  margin-left: 5px;
+  cursor: pointer;
+  margin-top: 2%;
+}
+
+button[type="button"]:hover {
+  background-color: #0056b3;
+}
+
+.submit-button {
+  background-color: #28a745;
+  margin-top: 2%;
+}
+
+.submit-button:hover {
+  background-color: #1a682c;
+}
+
+.occupation-list {
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+table th {
+  background-color: #f5f5f5;
+}
+
+button[type="button"] {
+  background-color: #dc3545;
+}
+
+button[type="button"]:hover {
+  background-color: #bd2130;
+}
+
+p {
+  text-align: center;
+  font-style: italic;
+  color: #777;
+}

@@ -35,7 +35,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className='header' style={{ backgroundColor: '#fff' }}>
+    <div className='header' style={{  }}>
       <ProSidebar collapsed={menuCollapse}>
 
         <SidebarHeader>
