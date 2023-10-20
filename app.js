@@ -10,14 +10,13 @@ const errorHandler = require('./src/middlewares/errorHandler');
 const log = require('./src/utils/logger');
 const AWS = require('aws-sdk')
 const { s3 } = require('./src/config/aws')
-const { Avatar, User, Hobbies, PostComment, Language } = require('./src/models')
+const { Avatar, User, Hobbies, PostComment, Language, Topic } = require('./src/models')
 const axios = require('axios')
 const cheerio = require('cheerio')
-const nms = require('./src/config/nms')
+const nms = require('./src/live_handler/index')
 
 
 nms.run()
-
 
 
 const router = require("./src/routes/index");

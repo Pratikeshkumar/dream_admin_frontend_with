@@ -1038,11 +1038,6 @@ const updatePicture = async (req, res) => {
 
     const { id } = req.body;
 
-    console.log(id)
-
-    console.log(imagePath)
-
-
 
     let result = await Video.update(
       { thum: `images/${image}` },
@@ -1051,7 +1046,6 @@ const updatePicture = async (req, res) => {
 
     result = JSON.parse(JSON.stringify(result))
 
-    console.log(result)
 
 
 

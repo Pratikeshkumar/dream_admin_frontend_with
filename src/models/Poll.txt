@@ -1,3 +1,0 @@
-1. question: string
-2. options: JSON(a: 1, b: 2, c: 5, d: 656)
-3. duration_of_poll: enum(5m, 10m, 30m)

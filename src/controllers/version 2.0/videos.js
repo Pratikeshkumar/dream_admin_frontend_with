@@ -6,7 +6,7 @@ const errorHandler = require("../../utils/errorObject");
 const sequelize = require('sequelize');
 const { sq } = require('../../config/db');
 const { s3 } = require('../../config/aws')
-const {literal} = require('sequelize')
+const { literal } = require('sequelize')
 
 const uploadVideo = async (req, res, next) => {
   logger.info("INFO -> VIDEO UPLOADING API CALLED");
@@ -421,6 +421,7 @@ const getAllUserVideos = async (req, res, next) => {
 
     // Query for random videos with pagination
     const videos = await Video.findAndCountAll({
+      where: { block: false },
       include: [
         {
           model: User,
@@ -434,7 +435,7 @@ const getAllUserVideos = async (req, res, next) => {
       ],
       limit: pageSize,
       offset,
-      order: literal('RAND()'), 
+      order: literal('RAND()'),
     });
 
     return res.status(200).json({

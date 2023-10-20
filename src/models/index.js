@@ -32,6 +32,8 @@ const Language = require('./language')
 const VideoView = require('./video_view')
 const PicturePost = require('./picture_post')
 const Occupations = require('./occupations')
+const Topic = require('./topic')
+const LiveSettings = require('./live_settings')
 
 
 CommentRose.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
@@ -172,6 +174,12 @@ VideoView.belongsTo(User)
 
 
 
+User.hasMany(LiveSettings)
+LiveSettings.belongsTo(User)
+
+
+
+
 
 module.exports = {
   Admin,
@@ -207,5 +215,7 @@ module.exports = {
   ProfileVisit,
   VideoView,
   PicturePost,
-  Occupations
+  Occupations,
+  Topic,
+  LiveSettings
 };
