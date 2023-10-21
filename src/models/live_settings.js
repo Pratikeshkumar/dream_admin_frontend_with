@@ -16,7 +16,6 @@ const LiveSettings = sq.define("live_settings", {
             model: User,
             key: 'id'
         },
-        as: 'user'
     },
     topic: {
         type: DataTypes.STRING,

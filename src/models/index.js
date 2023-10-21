@@ -174,8 +174,8 @@ VideoView.belongsTo(User)
 
 
 
-User.hasMany(LiveSettings)
-LiveSettings.belongsTo(User)
+User.hasMany(LiveSettings, { foreignKey: 'user_id', as: 'user' })
+LiveSettings.belongsTo(User, { foreignKey: 'user_id', as: 'user' })
 
 
 
