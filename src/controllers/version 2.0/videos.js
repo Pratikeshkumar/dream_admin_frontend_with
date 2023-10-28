@@ -1,4 +1,4 @@
-const { Video, Comment, CommentReply, Tag, Like, User, Gift, NewVideo, City, Country, VideoCountry, VideoCity, TaggingUser, TaggingText, PicturePost } = require("../../models");
+const { Video, Comment, CommentReply, Tag, Like, User, Gift, NewVideo, City, Country, VideoCountry, VideoCity, TaggingUser, TaggingText, PicturePost, VideoView } = require("../../models");
 const cloudinary = require("../../config/cloudinary");
 const fs = require("fs");
 const logger = require("../../utils/logger");
@@ -432,11 +432,18 @@ const getAllUserVideos = async (req, res, next) => {
           as: 'likes',
           attributes: ['id', 'reciever_id', 'sender_id'],
         },
+        {
+          model: VideoView,
+          as: 'views',
+          attributes: ['id'],
+        },
       ],
       limit: pageSize,
       offset,
       order: literal('RAND()'),
     });
+
+
 
     return res.status(200).json({
       success: true,
@@ -445,6 +452,7 @@ const getAllUserVideos = async (req, res, next) => {
       totalVideos: videos.count,
       currentPage: page,
       pageSize: pageSize,
+      
     });
   } catch (error) {
     logger.error(error);

@@ -62,6 +62,14 @@ Like.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
 Like.belongsTo(Video, { foreignKey: 'video_id', as: 'video' });
 
 
+Video.hasMany(VideoView, { foreignKey: 'video_id', as: 'views' })
+VideoView.belongsTo(Video, { foreignKey: 'video_id', as: 'views' })
+
+User.hasMany(VideoView)
+VideoView.belongsTo(User)
+
+
+
 
 User.hasMany(Video, { foreignKey: "user_id" });
 Video.hasMany(Like, { foreignKey: 'video_id', as: 'likes' });
@@ -163,13 +171,6 @@ VideoCountry.belongsTo(Video, { foreignKey: 'post_id', as: 'video' });
 VideoCountry.belongsTo(Country, { foreignKey: 'countriesId', as: 'country' });
 User.hasMany(UserInteraction)
 UserInteraction.belongsTo(User)
-
-
-Video.hasMany(VideoView)
-VideoView.belongsTo(Video)
-
-User.hasMany(VideoView)
-VideoView.belongsTo(User)
 
 
 
