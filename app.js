@@ -14,9 +14,49 @@ const { Avatar, User, Hobbies, PostComment, Language, Topic } = require('./src/m
 const axios = require('axios')
 const cheerio = require('cheerio')
 const nms = require('./src/live_handler/index')
+const { kafka, consumer, admin } = require('./src/config/kafka')
 
 
 nms.run()
+
+const tryConneect = async () => {
+  await consumer.connect()
+  const producer = kafka.producer()
+  await producer.connect()
+  console.log("producer conneted successfully ")
+}
+
+const listTopic = async () => {
+  try {
+    await admin.connect();
+    const topics = await admin.listTopics()
+    console.log(topics)
+    await admin.disconnect();
+  } catch (error) {
+    console.error('Error listing Kafka topics:', error);
+  }
+}
+
+listTopic();
+
+tryConneect()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const router = require("./src/routes/index");
