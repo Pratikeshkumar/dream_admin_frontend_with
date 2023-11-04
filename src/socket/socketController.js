@@ -11,6 +11,7 @@ const {
 const onlinePeopleList = [];
 
 module.exports = (io) => {
+  
   io.on('connection', (socket) => {
     console.log('New client connected');
 
