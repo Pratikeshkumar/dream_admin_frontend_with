@@ -1,12 +1,99 @@
-// Modal.js
 import React, { useEffect, useState, useRef } from "react";
 import "./AllUser_Modal_View.css";
 
 function Modal({ isOpen, onClose, user }) {
   const allUserVideoApis = require("../../../apis/all_user_video");
   // New state for admin-controlled like count
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState();
+  const [like, setLike] = useState();
+  const [isEditingLike, setIsEditingLike] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+
+
+
+
+
+  const handleBlock = async () => {
+    if (selectedVideo) {
+
+      setIsLoading(true); // Set loading to true when the blocking process starts
+      try {
+        // Make an API request to block the selected video
+        await allUserVideoApis.blockVideo(selectedVideo.id);
+
+        // Update the selected video's 'block' status
+        setSelectedVideo((prevSelectedVideo) => ({
+          ...prevSelectedVideo,
+          block: true,
+        }));
+      } catch (error) {
+        console.error('Error blocking video:', error);
+      } finally {
+        setIsLoading(false); // Reset loading when the blocking process completes (whether it succeeds or fails)
+      }
+    }
+  };
+
+
+  // Function to handle unblocking a video
+  const handleUnblock = async () => {
+    if (selectedVideo) {
+      setIsLoading(true); // Set loading to true when the unblocking process starts
+      try {
+        // Make an API request to unblock the selected video
+        await allUserVideoApis.UnblockVideo(selectedVideo.id); // Assuming you have an API function to unblock a video
+
+        // Update the selected video's 'block' status
+        setSelectedVideo((prevSelectedVideo) => ({
+          ...prevSelectedVideo,
+          block: false,
+        }));
+      } catch (error) {
+        console.error('Error unblocking video:', error);
+      } finally {
+        setIsLoading(false); // Reset loading when the unblocking process completes (whether it succeeds or fails)
+      }
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const saveLike = async () => {
+
+    if (selectedVideo) {
+      setIsLoading(true);
+      try {
+        const response = await allUserVideoApis.updateLikeVideos(selectedVideo.id, like);
+        setSelectedVideo((prevSelectedVideo) => ({
+          ...prevSelectedVideo,
+          like: like,
+        }));
+        // Exit editing mode
+        setIsEditingLike(false);
+        setIsLoading(false);
+
+      } catch (error) {
+        console.error('Error updating like count:', error);
+      }
+    }
+  }
+
+
+  const startLikeEdit = () => {
+    setIsEditingLike(true);
+  }
 
   const videoDetailsRef = useRef(null);
   console.log(selectedVideo, "SEEEEJJJJJJJJJJJJJJJJJ");
@@ -87,14 +174,37 @@ function Modal({ isOpen, onClose, user }) {
                     setSelectedVideo(video); // Set the selected video when the button is clicked
                     scrollToVideoDetails();
                   }}
+                  style={{ marginLeft: "7%", backgroundColor: "silver" }}
+
                 >
                   Details
                 </button>
                 <button
-                  style={{ marginLeft: "2%", backgroundColor: "red" }}
+                  style={{ marginLeft: "1%", backgroundColor: "red" }}
+                  onClick={() => handleDelete()}
+                >
+                  Delete
+                </button>
+                <button
+                  style={{ marginLeft: "1%", backgroundColor: "red" }}
+                  onClick={() => {
+                    if (selectedVideo && selectedVideo.block) {
+                      handleUnblock(selectedVideo.id); // Call the unblock function for the selected video
+                    } else {
+                      handleBlock(selectedVideo.id); // Call the block function for the selected video
+                    }
+                  }}
+                >
+                  {/* {selectedVideo && selectedVideo.block === true ? "Unblock" : "Block"} */}
+                  {selectedVideo && selectedVideo.block === true ? "Unblock" : "Block"}
+                </button>
+
+
+                <button
+                  style={{ marginLeft: "1%", backgroundColor: "pink" }}
                   onClick={() => handleDelete(selectedVideo.id)}
                 >
-                  Delete video
+                  Send Gift
                 </button>
               </div>
             ))}
@@ -105,7 +215,7 @@ function Modal({ isOpen, onClose, user }) {
                 Close
               </button>
               <h2>Video Details</h2>
-              <table>
+              <table className="video-details-table">
                 <tbody>
                   <tr>
                     <td>ID:</td>
@@ -119,25 +229,52 @@ function Modal({ isOpen, onClose, user }) {
                     <td>Diamond Value:</td>
                     <td>{selectedVideo.diamond_value}</td>
                   </tr>
-
                   <tr>
                     <td>Privacy Type:</td>
                     <td>{selectedVideo.privacy_type}</td>
                   </tr>
                   <tr>
                     <td>Like:</td>
-                    <td>{selectedVideo.like}</td>
                     <td>
-                      <button>edit like </button>
+                      {isLoading ? (
+                        <div className="loader"></div>
+                      ) : isEditingLike ? (
+                        <div className="like-edit">
+                          <input
+                            type="number"
+                            value={like}
+                            onChange={(e) => setLike(e.target.value)}
+                          />
+                          <button className="like-save-button" onClick={saveLike}>
+                            Save
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="like-info">
+                          {selectedVideo.like}
+                          <button
+                            className="edit-like-button"
+                            style={{ marginLeft: "25%" }}
+                            onClick={startLikeEdit}
+                          >
+                            Edit Like
+                          </button>
+                        </div>
+                      )}
+
                     </td>
                   </tr>
-
                   <tr>
-                    <td>comment:</td>
+                    <td>Comment:</td>
                     <td>{selectedVideo.comment}</td>
                   </tr>
+                  {/* <tr>
+                    <td>Views:</td>
+                    <td>{selectedVideo.view}</td>
+                  </tr> */}
                 </tbody>
               </table>
+
             </div>
           )}
 

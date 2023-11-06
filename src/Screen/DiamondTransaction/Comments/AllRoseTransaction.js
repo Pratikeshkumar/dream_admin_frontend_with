@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import IncludeSideBar from '../../../Components/Sidebar/IncludeSideBar';
-// Import the function that fetches the Diamond Transaction data
+import React, { useState, useEffect } from 'react';
+// Assuming getRoseTransaction is the function that fetches the transaction data
 
-function VideoTransactions() {
-  const getVideoGift = require('../../../apis/diamond_transaction')
+const getCommentRoseApis = require('../../../apis/diamond_transaction')
+
+function AllRoseTransaction() {
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await getVideoGift.getVideoGiftTransaction();
-        console.log(response.data.transaction); // Check the structure of the response
-
-        // Assuming response is an array of transactions
+        const response = await getCommentRoseApis.getRoseTransaction();
         setTransactions(response.data.transaction);
       } catch (error) {
-        console.error("Error fetching Diamond Transactions:", error);
+        console.error("Error fetching transactions:", error);
       }
     };
 
     fetchTransactions();
   }, []);
+
 
   const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt);
@@ -28,20 +26,18 @@ function VideoTransactions() {
   };
 
   return (
-
     <div>
-      <h2>Diamond Transactions in Videos</h2>
+      <h2>All Rose Transactions</h2>
       <table>
         <thead>
           <tr>
             <th>Transaction ID</th>
             <th>Created At</th>
-
-            <th>Sender ID</th>
-            <th>Receiver ID</th>
             <th>Video ID</th>
+            <th>Comment ID</th>
+            <th>Receiver ID</th>
+            <th>Sender ID</th>
             <th>Diamonds</th>
-
             {/* Add additional headers for more properties if needed */}
           </tr>
         </thead>
@@ -50,20 +46,18 @@ function VideoTransactions() {
             <tr key={transaction.id}>
               <td>{transaction.id}</td>
               <td>{formatCreatedAt(transaction.createdAt)}</td>
-
-              <td>{transaction.sender_id}</td>
-              <td>{transaction.reciever_id}</td>
               <td>{transaction.video_id}</td>
+              <td>{transaction.comment_id}</td>
+              <td>{transaction.reciever_id}</td>
+              <td>{transaction.sender_id}</td>
               <td>{transaction.diamonds}</td>
-
               {/* Add additional table data for more properties if needed */}
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-
   );
 }
 
-export default VideoTransactions;
+export default AllRoseTransaction;

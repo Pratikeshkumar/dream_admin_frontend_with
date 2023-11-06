@@ -142,6 +142,7 @@ function Countries() {
     setIsLoading(true);
     try {
       const result = await countriesApis.getAllCountries();
+      console.log(result.data)
       const userData = result.data;
       const filteredUsers = userData.filter((user) => {
         return (

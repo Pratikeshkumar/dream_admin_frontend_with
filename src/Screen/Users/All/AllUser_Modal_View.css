@@ -66,7 +66,7 @@
 .video-thumbnail {
   width: 100%;
   height: 0;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 42%; /* Adjust the padding-bottom to control the video size */
   position: relative;
   background-color: #f4f4f4;
 }
@@ -100,7 +100,7 @@
   background-color: #ff0000; /* Background color */
   color: #fff; /* Text color */
   border: none;
-  padding: 10px 20px;
+  padding: 5px 5px;
   border-radius: 5px;
   cursor: pointer;
   /* Add more styles as needed */
@@ -108,4 +108,17 @@
 
 .close-button:hover {
   background-color: #dd0000; /* Change color on hover */
+}
+.loader {
+  width: 30px;
+  height: 30px;
+  border: 4px solid transparent;
+  border-top: 4px solid #850606; /* Blue color for the loader */
+  border-radius: 50%;
+  animation: spin 2s linear infinite; /* Rotate the loader */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

@@ -1,0 +1,175 @@
+
+/* Style for the header */
+.header {
+  font-size: 24px; /* You can adjust the font size as needed */
+  font-weight: bold;
+  background-color: #030f01; /* Background color for the header */
+  color: #fff; /* Text color */
+  padding: 10px; /* Padding around the header */
+  text-align: center; /* Center-align the text within the header */
+}
+
+
+
+/* Define your card style */
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 10px; /* Adjust margin for spacing between cards */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  width: calc(16.66% - 20px); /* Adjust for six cards in one row */
+  display: inline-block;
+  vertical-align: top;
+  text-align: center; 
+  flex-direction: row;/* Center the contents within each card */
+  justify-content:center;
+  align-items: center;
+}
+  /* Style for images within the card */
+  .card img {
+    max-width: 50%;
+    height: auto;
+  }
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* Adjust as needed */
+  }
+
+  /* GiftScreen.css */
+
+/* Form container */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 0 auto; /* Center horizontally */
+    background-color: #f9f9f9;
+    width: 100%; /* Adjust the width as needed */
+    /* Limit the maximum width */
+  }
+  
+  /* Form input fields */
+  .form-container input[type="text"],
+  .form-container input[type="number"],
+  .form-container select,
+  .form-container button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #333;
+  }
+  
+  /* Button style */
+  .form-container button[type="submit"] {
+    background-color: #a9280b;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .form-container button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Label style */
+  .form-container label {
+    font-weight: bold;
+  }
+  /* GiftScreen.css */
+
+/* Category buttons container */
+.category-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  /* Category buttons */
+  .category-buttons button {
+    background-color: #a817bb;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .category-buttons button:hover {
+    background-color: #0056b3;
+  }
+/* Default button style */
+.button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  /* Active button style */
+  .button.active {
+    background-color: #eb1c09; /* Change to your desired active color */
+    color: #fff;
+  }
+    
+  /* Style for the delete button */
+.delete-button {
+    background-color: #570d04; /* Red color, you can change it */
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  /* Style for the details within each card */
+.card .card-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Style for each detail row within a card */
+.card .card-details > div {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  padding: 5px 0;
+}
+/* Style for the "Add Gift" button */
+.add-gift-button {
+  background-color: #d205d2;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-gift-button:hover {
+  background-color: #0056b3;
+}
+
+
+  
+  
+  

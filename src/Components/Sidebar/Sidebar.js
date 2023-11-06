@@ -127,6 +127,12 @@ const Sidebar = () => {
               <MenuItem icon={<BsListOl />}>
                 <Link to="/diamond_transactions/live_transaction">Live </Link>
               </MenuItem>
+              <MenuItem icon={<BsListOl />}>
+                <Link to="/diamond_transactions/messages_transaction">Messages </Link>
+              </MenuItem>
+              <MenuItem icon={<BsListOl />}>
+                <Link to="/diamond_transactions/comment_transaction">Comments </Link>
+              </MenuItem>
             </SubMenu>
 
 

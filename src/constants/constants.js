@@ -14,8 +14,8 @@ const Visibility = Object.freeze({
 // const SERVER_DOMAIN = 'http://192.168.43.139:3000';
 // const SERVER_API_URL = 'http://192.168.43.139:3000';
 
-const SERVER_DOMAIN = 'http://192.168.1.11:3000';
-const SERVER_API_URL = 'http://192.168.1.11:3000';
+const SERVER_DOMAIN = 'http://192.168.1.9:3000';
+const SERVER_API_URL = 'http://192.168.1.9:3000';
 
 // const SERVER_DOMAIN = 'http://192.168.105.21:3000';
 // const SERVER_API_URL = 'http://192.168.105.21:3000';

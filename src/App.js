@@ -24,6 +24,8 @@ import Failure from './Screen/BankTransaction/Failure/Failure'
 import AllTransaction from './Screen/DiamondTransaction/All/AllTransactions'
 import VideoTransaction from './Screen/DiamondTransaction/Video/VideoTransactions'
 import LiveTransaction from './Screen/DiamondTransaction/Live/LiveTransactions'
+import AllRoseTransaction from './Screen/DiamondTransaction/Comments/AllRoseTransaction'
+import AllMessageTransaction from './Screen/DiamondTransaction/Messages/AllMessageTransaction'
 
 import AllPromotion from './Screen/Promotions/All/AllPromotions'
 import LivePromotion from './Screen/Promotions/Live/LivePromotions'
@@ -240,6 +242,25 @@ function App() {
             return (
               <>
                 {isAuthenticated ? <LiveTransaction {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+           <Route
+          path='/diamond_transactions/comment_transaction'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <AllRoseTransaction {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+
+          <Route
+          path='/diamond_transactions/messages_transaction'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <AllMessageTransaction {...props} /> : <Navigate to={'/'} />}
               </>
             )
           }} />
