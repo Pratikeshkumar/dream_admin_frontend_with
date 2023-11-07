@@ -5,12 +5,14 @@ import {
 } from '../constants/constants'
 
 const adminLogin = async (data) => {
+    console.log(data)
     const url = `${SERVER_API_URL}/admin/auth/signin`
     const result = await axios.post(url, data)
     return result.data
 }
 
 const forgotPassword = async (data) => {
+    console.log(data,"data")
     const url = `${SERVER_API_URL}/admin/auth/forgotPassword`
     const result = await axios.post(url, data)
     return result
