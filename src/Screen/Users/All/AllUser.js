@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import VideoModal from './VideoModal';
 import './AllUser.css'
+import IncludeSideBar from '../../../Components/Sidebar/IncludeSideBar'
+
 
 const AllUser = () => {
   const allUserApis = require("../../../apis/users");
-  
+
   const [userData, setUserData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -182,12 +184,12 @@ const AllUser = () => {
     border: '1px solid #ddd',
     padding: '8px',
     textAlign: 'center'
-};
+  };
 
   const tdEmailStyle = {
     ...tdStyle,
     width: '150px', // Set the desired width for the email cell
-};
+  };
 
 
 
@@ -195,12 +197,8 @@ const AllUser = () => {
 
 
   return (
+    <IncludeSideBar>
     <div>
-
-
-
-
-      <p>hello from user</p>
       <input
         type="text"
         placeholder="Search by username"
@@ -249,11 +247,11 @@ const AllUser = () => {
               <td>{user.gender}</td>
               <td>
                 {user.active === 0 ? "Blocked" : (
-                 <div style={{ display: 'flex', gap: '10px' }}>
-                 <button onClick={() => handleViewVideo(user.id)}>View Video</button>
-                 <button onClick={() => handleUsage(user.id)}>Usage</button>
-                 <button onClick={() => handleBlockUser(user.id)}>Block User</button>
-               </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button onClick={() => handleViewVideo(user.id)}>View Video</button>
+                    <button onClick={() => handleUsage(user.id)}>Usage</button>
+                    <button onClick={() => handleBlockUser(user.id)}>Block User</button>
+                  </div>
                 )}
               </td>
             </tr>
@@ -312,6 +310,7 @@ const AllUser = () => {
         <button onClick={handleNext}>Next</button>
       </div>
     </div>
+    </IncludeSideBar>
   );
 };
 

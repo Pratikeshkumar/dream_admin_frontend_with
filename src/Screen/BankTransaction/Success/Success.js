@@ -23,7 +23,7 @@ function Success() {
   }, []);
 
   return (
-   
+    <IncludeSideBar>
       <div>
         <h2>Success Transaction Details</h2>
         <table>
@@ -55,6 +55,7 @@ function Success() {
           </tbody>
         </table>
       </div>
+      </IncludeSideBar>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // Assuming getRoseTransaction is the function that fetches the transaction data
+import IncludeSideBar from '../../../Components/Sidebar/IncludeSideBar'
 
 const getCommentRoseApis = require('../../../apis/diamond_transaction')
 
@@ -26,6 +27,7 @@ function AllRoseTransaction() {
   };
 
   return (
+    <IncludeSideBar> 
     <div>
       <h2>All Rose Transactions</h2>
       <table>
@@ -57,6 +59,7 @@ function AllRoseTransaction() {
         </tbody>
       </table>
     </div>
+    </IncludeSideBar>
   );
 }
 

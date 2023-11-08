@@ -73,6 +73,7 @@ function Languages() {
 
 
   return (
+    <IncludeSideBar>
     <div className={styles['languages-container']}>
       <p>Here we are displaying the details of Languages:</p>
 
@@ -149,6 +150,7 @@ function Languages() {
       </div>
 
     </div>
+    </IncludeSideBar>
   );
 }
 

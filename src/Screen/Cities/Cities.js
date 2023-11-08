@@ -122,6 +122,7 @@ function Cities() {
   }, []);
 
   return (
+    <IncludeSideBar>
     <div>
       <div className="Header" > Cities</div>
       <div>
@@ -241,6 +242,7 @@ function Cities() {
         </table>
       )}
     </div>
+    </IncludeSideBar>
   );
 }
 

@@ -28,41 +28,41 @@ function VideoTransactions() {
   };
 
   return (
+    <IncludeSideBar>
+      <div>
+        <h2>Diamond Transactions in Videos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Created At</th>
 
-    <div>
-      <h2>Diamond Transactions in Videos</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Transaction ID</th>
-            <th>Created At</th>
+              <th>Sender ID</th>
+              <th>Receiver ID</th>
+              <th>Video ID</th>
+              <th>Diamonds</th>
 
-            <th>Sender ID</th>
-            <th>Receiver ID</th>
-            <th>Video ID</th>
-            <th>Diamonds</th>
-
-            {/* Add additional headers for more properties if needed */}
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map(transaction => (
-            <tr key={transaction.id}>
-              <td>{transaction.id}</td>
-              <td>{formatCreatedAt(transaction.createdAt)}</td>
-
-              <td>{transaction.sender_id}</td>
-              <td>{transaction.reciever_id}</td>
-              <td>{transaction.video_id}</td>
-              <td>{transaction.diamonds}</td>
-
-              {/* Add additional table data for more properties if needed */}
+              {/* Add additional headers for more properties if needed */}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {transactions.map(transaction => (
+              <tr key={transaction.id}>
+                <td>{transaction.id}</td>
+                <td>{formatCreatedAt(transaction.createdAt)}</td>
 
+                <td>{transaction.sender_id}</td>
+                <td>{transaction.reciever_id}</td>
+                <td>{transaction.video_id}</td>
+                <td>{transaction.diamonds}</td>
+
+                {/* Add additional table data for more properties if needed */}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </IncludeSideBar>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 // Assuming allVideoApis is an instance of an API object
+import IncludeSideBar from '../../../Components/Sidebar/IncludeSideBar'
 
 function BlockedVideos() {
   const allVideoApis = require('../../../apis/all_user_video');
@@ -48,6 +49,7 @@ function BlockedVideos() {
 
 
   return (
+    <IncludeSideBar> 
     <div>
       <p>Here we are displaying the Blocked videos details</p>
 
@@ -98,6 +100,7 @@ function BlockedVideos() {
         </table>
       )}
     </div>
+    </IncludeSideBar>
   );
 }
 

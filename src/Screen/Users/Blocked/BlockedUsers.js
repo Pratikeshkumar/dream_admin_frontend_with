@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import IncludeSideBar from '../../../Components/Sidebar/IncludeSideBar'
 
 function BlockedUsers() {
     const allUserApis = require("../../../apis/users");
@@ -41,6 +42,7 @@ function BlockedUsers() {
     };
 
     return (
+        <IncludeSideBar> 
         <div>
             <p>Blocked User Details:</p>
             <table>
@@ -70,6 +72,7 @@ function BlockedUsers() {
                 </tbody>
             </table>
         </div>
+        </IncludeSideBar>
     );
 }
 

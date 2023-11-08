@@ -100,6 +100,7 @@ function AvatarScreen() {
   };
 
   return (
+    <IncludeSideBar>
     <div>
       <div className="Header"> List of all Avatars</div>
 
@@ -163,6 +164,7 @@ function AvatarScreen() {
         </div>
       )}
     </div>
+    </IncludeSideBar>
   );
 }
 

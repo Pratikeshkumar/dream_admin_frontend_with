@@ -210,6 +210,7 @@ function Countries() {
   };
 
   return (
+    <IncludeSideBar> 
     <div>
       <div className="Header">List of All Countries</div>
       <button
@@ -459,6 +460,7 @@ function Countries() {
         </div>
       )}
     </div>
+    </IncludeSideBar>
   );
 }
 

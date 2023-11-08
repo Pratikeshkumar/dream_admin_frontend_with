@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import IncludeSideBar from '../../../Components/Sidebar/IncludeSideBar'
 
 // Loader component
 function Loader() {
@@ -93,6 +94,7 @@ function AllVideos() {
     ));
 
   return (
+    <IncludeSideBar>
     <div>
       <h2>All Videos</h2>
       {loading ? ( // Conditional rendering based on the loading state
@@ -206,6 +208,7 @@ function AllVideos() {
         )}
       </div>
     </div>
+    </IncludeSideBar>
   );
 }
 

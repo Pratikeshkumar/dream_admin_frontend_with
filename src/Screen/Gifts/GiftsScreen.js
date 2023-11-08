@@ -98,6 +98,7 @@ function GiftsScreen() {
 
 
   return (
+    <IncludeSideBar> 
     <div>
      <div className="header">Gift Section</div>
      <button onClick={toggleFormVisibility} className="add-gift-button">
@@ -210,6 +211,7 @@ function GiftsScreen() {
       </div>
 
     </div>
+    </IncludeSideBar>
   );
 }
 

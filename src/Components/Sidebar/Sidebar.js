@@ -40,7 +40,7 @@ const Sidebar = () => {
 
         <SidebarHeader>
           <div className="logotext" style={{alignItems: 'center', justifyContent: 'center', display: 'flex'}}>
-            <p style={{fontSize: 25}}>{menuCollapse ? <FaUserCircle /> : 'Admin Panel'}</p>
+            <p style={{fontSize: 25}}>{menuCollapse ? <FaUserCircle /> : ' Dream Admin Panel'}</p>
           </div>
           <div className="closemenu" onClick={menuIconClick}>
             {menuCollapse ? <FiArrowRightCircle /> : <FiArrowLeftCircle />}

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './Occupation.css'; // Import your CSS file
+import IncludeSideBar from '../../Components/Sidebar/IncludeSideBar';
+
 const occupationApi = require("../../apis/occupation");
+
 
 const Occupation = () => {
   const [parent, setParent] = useState('');
@@ -192,6 +195,7 @@ const Occupation = () => {
   
 
   return (
+    <IncludeSideBar>
     <div className="family-form-container">
       <form onSubmit={handleSubmit} className="family-form">
         <div className="form-group">
@@ -232,6 +236,7 @@ const Occupation = () => {
         )}
       </div>
     </div>
+    </IncludeSideBar>
   );
 };
 

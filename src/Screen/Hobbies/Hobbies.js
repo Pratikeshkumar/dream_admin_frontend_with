@@ -177,7 +177,7 @@ const Hobbies = () => {
   const [hobbies, setHobbies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1); // Current page
-  const itemsPerPage = 15; 
+  const itemsPerPage = 15;
   const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -230,7 +230,7 @@ const Hobbies = () => {
     setIsLoading(true);
     try {
       const response = await hobbiesapi.getAllhobbies();
-      console.log(response.data,"response")
+      console.log(response.data, "response")
       const userData = response.data;
 
       setTotalItems(response.data.length);
@@ -244,7 +244,7 @@ const Hobbies = () => {
       setHobbies(filteredUsers);
     } catch (error) {
       console.error("Error fetching hobbies:", error);
-      
+
     } finally {
       setIsLoading(false);
     }
@@ -294,7 +294,7 @@ const Hobbies = () => {
     }
   };
 
-  
+
 
   const handleAddNewHobby = async () => {
     try {
@@ -310,117 +310,119 @@ const Hobbies = () => {
   };
 
   return (
+    <IncludeSideBar>
       <>
-      <div className="hobbies-container">
-        <div className="Header">Hobbies</div>
-        <div>
-        <input
-         className="search-input"
-          type="text"
-          placeholder="Search by name"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button className="search-button" onClick={() => setCurrentPage(1)}>Search</button>
-      </div>
-        {isLoading ? (
-         <div className="loader">
-         <div className="bounce1"></div>
-         <div className="bounce2"></div>
-       </div>
-        ) : (
+        <div className="hobbies-container">
+          <div className="Header">Hobbies</div>
           <div>
-            <table className="hobbies-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Category</th>
-                  <th>Action</th>
-                 
-                </tr>
-              </thead>
-              <tbody>
-                {usersOnCurrentPage.map((user, index) => (
-                  <tr key={index}>
-                    <td>{user.id}</td>
-                    <td>{user.name}</td>
-                    <td>{user.category}</td>
-                    <td>
-                    
-                      <button className="delete-button" onClick={() => openUpdateModal(user)}>Edit</button>
-                      <button className="delete-button"  onClick={() => handleDelete(user.id)}>Delete</button>
-                  
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            <div className="pagination">
-            {paginationButtons}
-            {showNextButton && (
-              <button onClick={() => handlePageChange(currentPage + 1)}>
-                Next
-              </button>
-            )}
+            <input
+              className="search-input"
+              type="text"
+              placeholder="Search by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="search-button" onClick={() => setCurrentPage(1)}>Search</button>
           </div>
+          {isLoading ? (
+            <div className="loader">
+              <div className="bounce1"></div>
+              <div className="bounce2"></div>
+            </div>
+          ) : (
+            <div>
+              <table className="hobbies-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Action</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {usersOnCurrentPage.map((user, index) => (
+                    <tr key={index}>
+                      <td>{user.id}</td>
+                      <td>{user.name}</td>
+                      <td>{user.category}</td>
+                      <td>
+
+                        <button className="delete-button" onClick={() => openUpdateModal(user)}>Edit</button>
+                        <button className="delete-button" onClick={() => handleDelete(user.id)}>Delete</button>
+
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Pagination */}
+              <div className="pagination">
+                {paginationButtons}
+                {showNextButton && (
+                  <button onClick={() => handlePageChange(currentPage + 1)}>
+                    Next
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Add New Hobby Form */}
+          <div className="add-hobby-form">
+            <h3>Add New Hobby</h3>
+            <label>
+              Name:
+              <input
+                type="text"
+                name="name"
+                value={newHobby.name}
+                onChange={(e) => setNewHobby({ ...newHobby, name: e.target.value })}
+              />
+            </label>
+            <label>
+              Category:
+              <input
+                type="text"
+                name="category"
+                value={newHobby.category}
+                onChange={(e) => setNewHobby({ ...newHobby, category: e.target.value })}
+              />
+            </label>
+            <button onClick={handleAddNewHobby}>Add Hobby</button>
+          </div>
+        </div>
+
+        {/* Update Modal */}
+        {isUpdateModalOpen && (
+          <div className="update-modal">
+            <h3>Edit Hobby</h3>
+            <label>
+              Name:
+              <input
+                type="text"
+                name="name"
+                value={updatedHobby.name}
+                onChange={handleUpdateInputChange}
+              />
+            </label>
+            <label>
+              Category:
+              <input
+                type="text"
+                name="category"
+                value={updatedHobby.category}
+                onChange={handleUpdateInputChange}
+              />
+            </label>
+            <button onClick={handleUpdateSubmit}>Update</button>
+            <button onClick={closeUpdateModal}>Cancel</button>
           </div>
         )}
-
-        {/* Add New Hobby Form */}
-        <div className="add-hobby-form">
-          <h3>Add New Hobby</h3>
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={newHobby.name}
-              onChange={(e) => setNewHobby({ ...newHobby, name: e.target.value })}
-            />
-          </label>
-          <label>
-            Category:
-            <input
-              type="text"
-              name="category"
-              value={newHobby.category}
-              onChange={(e) => setNewHobby({ ...newHobby, category: e.target.value })}
-            />
-          </label>
-          <button onClick={handleAddNewHobby}>Add Hobby</button>
-        </div>
-      </div>
-
-      {/* Update Modal */}
-      {isUpdateModalOpen && (
-        <div className="update-modal">
-          <h3>Edit Hobby</h3>
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={updatedHobby.name}
-              onChange={handleUpdateInputChange}
-            />
-          </label>
-          <label>
-            Category:
-            <input
-              type="text"
-              name="category"
-              value={updatedHobby.category}
-              onChange={handleUpdateInputChange}
-            />
-          </label>
-          <button onClick={handleUpdateSubmit}>Update</button>
-          <button onClick={closeUpdateModal}>Cancel</button>
-        </div>
-      )}
-   </>
+      </>
+    </IncludeSideBar>
   );
 };
 

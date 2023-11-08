@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './PushNotification.css';
+import IncludeSideBar from '../../Components/Sidebar/IncludeSideBar'
 
 const AdminNotificationPanel = () => {
   const AllNotificationUser = require('../../apis/notification')
@@ -131,6 +132,7 @@ const AdminNotificationPanel = () => {
   };
 
   return (
+    <IncludeSideBar> 
     <div>
       <h2>Admin Notification Panel</h2>
 
@@ -280,6 +282,7 @@ const AdminNotificationPanel = () => {
         </div>
       </form>
     </div>
+    </IncludeSideBar>
   );
 };
 
