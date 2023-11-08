@@ -34,6 +34,7 @@ const PicturePost = require('./picture_post')
 const Occupations = require('./occupations')
 const Topic = require('./topic')
 const LiveSettings = require('./live_settings')
+const Promotion = require('./promotions')
 
 
 CommentRose.belongsTo(User, { foreignKey: 'reciever_id', as: 'receiver' });
@@ -179,6 +180,11 @@ User.hasMany(LiveSettings, { foreignKey: 'user_id', as: 'user' })
 LiveSettings.belongsTo(User, { foreignKey: 'user_id', as: 'user' })
 
 
+User.hasMany(Promotion, { foreignKey: 'user_id' })
+Promotion.belongsTo(User, { foreignKey: 'user_id' })
+
+Video.hasMany(Promotion, { foreignKey: 'video_id' })
+Promotion.belongsTo(Video, { foreignKey: 'video_id' })
 
 
 
@@ -218,5 +224,6 @@ module.exports = {
   PicturePost,
   Occupations,
   Topic,
-  LiveSettings
+  LiveSettings,
+  Promotion
 };

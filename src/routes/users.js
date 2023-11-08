@@ -27,6 +27,7 @@ router.get('/getLanguageAllLanguageList/:page_no/:page_size', userApis2.getLangu
 router.get('/searchLanguage/:search_text', userApis2.searchLanguage)
 router.get('/getAllHobbiesList/:page_no/:page_size', userApis2.getAllHobbiesList)
 router.get('/searchHobbies/:search_text', userApis2.searchHobbies)
+router.get('/sendNotification', userApis2.sendNotification)
 
 
 /************************************* VERSION 2.0 */

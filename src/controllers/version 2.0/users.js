@@ -8,6 +8,8 @@ const cloudinary = require('../../config/cloudinary');
 const { Op, literal } = require('sequelize');
 const sequelize = require('sequelize')
 const { s3 } = require('../../config/aws');
+const { admin } = require('../../../firebaseAdmin')
+const uuid = require('uuid')
 
 
 
@@ -1079,6 +1081,138 @@ const updatePicture = async (req, res) => {
 
 
 
+const sendNotification = async (req, res) => {
+  logger.info('INFO -> SENDING NOTIFICATION API CALLED')
+  try {
+    const {
+      title, // html with one tag and style
+      subtitle, // html with one tag and style
+      body, // html with one tag and style
+      color, // color value
+      importance, // HIGH, DEFAULT, LOW, MIN, NONE,
+      sound_enabled, // boolean,
+      vibration_enabled, // boolean
+      id // array
+    } = req.body;
+
+    const channelId = uuid.v4()
+    let largeIcon = req?.files['large_icon'][0]?.originalname;
+    let large_icon_path = req?.files['large_icon'][0]?.path
+    let bigPicture = req?.files['big_picture'][0]?.originalname;
+    let big_picture_path = req?.files['big_picture'][0]?.path
+
+    if (largeIcon) {
+      const uploadLargeIocn = {
+        Bucket: 'dreamapplication',
+        Key: `notification/${largeIcon}`,
+        Body: fs.createReadStream(large_icon_path)
+      };
+      s3.upload(uploadLargeIocn, (err, data) => {
+        if (err) {
+          logger.error('Error uploading video:', err);
+        } else {
+          logger.info('Video uploaded successfully:', data.Location);
+          fs.unlink(large_icon_path, (unlinkErr) => {
+            if (unlinkErr) {
+              logger.error('Error deleting local video file:', unlinkErr);
+            } else {
+              logger.info('Local video file deleted:', large_icon_path);
+            }
+          });
+        }
+      });
+    }
+
+
+    if (bigPicture) {
+      const uploadBigPicture = {
+        Bucket: 'dreamapplication',
+        Key: `notification/${bigPicture}`,
+        Body: fs.createReadStream(big_picture_path)
+      };
+      s3.upload(uploadBigPicture, (err, data) => {
+        if (err) {
+          logger.error('Error uploading video:', err);
+        } else {
+          logger.info('Video uploaded successfully:', data.Location);
+          fs.unlink(big_picture_path, (unlinkErr) => {
+            if (unlinkErr) {
+              logger.error('Error deleting local video file:', unlinkErr);
+            } else {
+              logger.info('Local video file deleted:', big_picture_path);
+            }
+          });
+        }
+      });
+    }
+
+
+    const large_icon = `https://dpcst9y3un003.cloudfront.net/notification/${largeIcon}`,
+      big_picture = `https://dpcst9y3un003.cloudfront.net/notification/${bigPicture}`
+
+
+
+    let result = await User.findAll({
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+      attributes: ['device_token'],
+    });
+    const deviceTokens = result.map(user => user.device_token);
+
+
+
+    await admin.messaging().sendEachForMulticast({
+      tokens: deviceTokens,
+      data: {
+        notifee: JSON.stringify({
+          title: title,
+          subtitle: subtitle,
+          body: body,
+          android: {
+            channelId: channelId,
+            largeIcon: large_icon,
+            importance: `AndroidImportance.${importance}`,
+            color: color ? color : '#020202',
+            sound: sound_enabled ? 'sound' : null,
+            vibrationPattern: [300, 500],
+            style: {
+              type: AndroidStyle.BIGPICTURE,
+              picture: big_picture
+            },
+          }
+        }),
+        channelId: {
+          id: channelId,
+          name: channelId,
+          badge: true,
+          importance: `AndroidImportance.${importance}`,
+          sound: sound_enabled ? 'sound' : null,
+          vibration: vibration_enabled,
+          vibrationPattern: [300, 500],
+        }
+      }
+
+    })
+
+    result = JSON.parse(JSON.stringify(result))
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: 'Notification sended successfully'
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).json({ message: 'Error generated while processing your request' })
+  }
+}
+
+
+
+
 
 
 
@@ -1111,5 +1245,6 @@ module.exports = {
   searchHobbies,
   addView,
   addProfileVisit,
-  updatePicture
+  updatePicture,
+  sendNotification
 };

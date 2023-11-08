@@ -14,6 +14,7 @@ const payment = require('./payments')
 const admin = require('./admin/index')
 const topic = require('./topic')
 const live_stream = require('./live_stream')
+const promotion = require('./promotion')
 
 router.use("/users", users);
 router.use("/videos", videos);
@@ -28,6 +29,7 @@ router.use('/payments', payment)
 router.use('/admin', admin)
 router.use('/topic', topic)
 router.use('/live_stream', live_stream)
+router.use('/promotion', promotion)
 
 
 module.exports = router;
