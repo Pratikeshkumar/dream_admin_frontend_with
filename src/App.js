@@ -56,6 +56,7 @@ import useAuth from './useAuth'
 import { SERVER_API_URL, SERVER_DOMAIN } from './constants/constants'
 
 import axios from 'axios'
+import Employee from './Screen/Employee/Employee'
 
 
 function App() {
@@ -108,6 +109,17 @@ function App() {
               </>
             )
           }} />
+
+        <Route
+          path='/employee'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <Employee {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+
 
 
 
@@ -245,7 +257,7 @@ function App() {
               </>
             )
           }} />
-           <Route
+        <Route
           path='/diamond_transactions/comment_transaction'
           Component={({ ...props }) => {
             return (
@@ -255,7 +267,7 @@ function App() {
             )
           }} />
 
-          <Route
+        <Route
           path='/diamond_transactions/messages_transaction'
           Component={({ ...props }) => {
             return (

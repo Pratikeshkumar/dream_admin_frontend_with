@@ -52,6 +52,10 @@ const Sidebar = () => {
               <Link to="/dashboard">Dashboard</Link>
             </MenuItem>
 
+            <MenuItem active={true} icon={<FiHome />}>
+              <Link to="/employee">Employee</Link>
+            </MenuItem>
+
 
             <SubMenu icon={<FaUserMd />} title="Users">
 

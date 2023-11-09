@@ -189,22 +189,29 @@ const VideoModal = ({ showVideoModal, handleCloseVideoModal, videoData, setVideo
 
 
     const handleBlockVideo = async (index) => {
-        try {
-
-
+        // Ask for confirmation before blocking the video
+        const confirmed = window.confirm("Are you sure you want to block this video?");
+      
+        if (confirmed) {
+          try {
             const updatedVideoData = [...videoData];
-            updatedVideoData[index].block = true; // Set the 'blocked' field to true
-
-            // Simulating an API call to block the video (replace this with actual API call)
+            updatedVideoData[index].block = true; // Set the 'block' field to true
+      
+            // Simulating an API call to block the video (replace this with your actual API call)
             await allUserVideoApis.blockVideo(videoData[index].id);
-
+      
             setVideoData(updatedVideoData);
-
-        } catch (error) {
-
+          } catch (error) {
             console.error('Error blocking video:', error);
+            // Implement error handling logic as needed
+          }
+        } else {
+          // If the user cancels the action, you can perform any other action here or simply return
+          console.log('Block action canceled by the user.');
+          return;
         }
-    };
+      };
+      
 
 
 
