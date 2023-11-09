@@ -37,10 +37,11 @@ jobs:
           script: |
             # Checkout code on the EC2 instance
             cd dream_admin_frontend_with
+            echo "hello"
             git checkout .
             git pull origin master
             yarn 
             yarn build
             # Restart your Node.js application (you may need to customize this for your specific setup)
-            pm2 restart my-react-app
+            pm2 restart static-page-server-3000
 
