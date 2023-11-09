@@ -5,7 +5,7 @@ import {
 } from '../constants/constants'
 
 const adminLogin = async (data) => {
-    console.log(data)
+   
     const url = `${SERVER_API_URL}/admin/auth/signin`
     const result = await axios.post(url, data)
     return result.data
@@ -24,8 +24,23 @@ const completePasswordReset = async (data) => {
     return result
 }
 
+
+
+const getAdminInfo = async () => {
+    const getToken = localStorage.getItem("token");
+    const config = {
+        headers: { Authorization: `Bearer ${getToken}` },
+      };
+    const url = `${SERVER_API_URL}/admin/auth/getAdminInfo`
+    const result = await axios.get(url, config)
+    return result.data
+}
+
+
+
 export {
     adminLogin,
     forgotPassword,
-    completePasswordReset
+    completePasswordReset,
+    getAdminInfo
 }

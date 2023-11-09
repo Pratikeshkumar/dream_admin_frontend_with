@@ -54,6 +54,7 @@ import BlockedUser from './Screen/Users/Blocked/BlockedUsers'
 import LogOut from './Components/Login/LogOut'
 import useAuth from './useAuth'
 import { SERVER_API_URL, SERVER_DOMAIN } from './constants/constants'
+import Profile from './Screen/Profile/Profile'
 
 import axios from 'axios'
 import Employee from './Screen/Employee/Employee'
@@ -472,6 +473,16 @@ function App() {
             return (
               <>
                 {isAuthenticated ? <RecentReports {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+
+        <Route
+          path='/profile'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <Profile {...props} /> : <Navigate to={'/'} />}
               </>
             )
           }} />

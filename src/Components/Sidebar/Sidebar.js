@@ -24,23 +24,24 @@ import { BiCommentAdd } from 'react-icons/bi';
 import { FcCalendar } from 'react-icons/fc';
 import { RiFileAddLine } from 'react-icons/ri';
 import 'react-pro-sidebar/dist/css/styles.css';
+import useAuth from '../../useAuth'
 
 import './Sidebar.css';
 
 const Sidebar = () => {
   const [menuCollapse, setMenuCollapse] = useState(false);
-
+  const { user, isAuthenticated } = useAuth()
   const menuIconClick = () => {
     menuCollapse ? setMenuCollapse(false) : setMenuCollapse(true);
   };
 
   return (
-    <div className='header' style={{  }}>
+    <div className='header' style={{}}>
       <ProSidebar collapsed={menuCollapse}>
 
         <SidebarHeader>
-          <div className="logotext" style={{alignItems: 'center', justifyContent: 'center', display: 'flex'}}>
-            <p style={{fontSize: 25}}>{menuCollapse ? <FaUserCircle /> : ' Dream Admin Panel'}</p>
+          <div className="logotext" style={{ alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+            <p style={{ fontSize: 25 }}>{menuCollapse ? <FaUserCircle /> : ' Dream Admin Panel'}</p>
           </div>
           <div className="closemenu" onClick={menuIconClick}>
             {menuCollapse ? <FiArrowRightCircle /> : <FiArrowLeftCircle />}
@@ -52,9 +53,7 @@ const Sidebar = () => {
               <Link to="/dashboard">Dashboard</Link>
             </MenuItem>
 
-            <MenuItem active={true} icon={<FiHome />}>
-              <Link to="/employee">Employee</Link>
-            </MenuItem>
+
 
 
             <SubMenu icon={<FaUserMd />} title="Users">
@@ -215,9 +214,28 @@ const Sidebar = () => {
 
 
 
+            {user?.role === 'superadmin' ? (
+              <MenuItem active={true} icon={<FiHome />}>
+                <Link to="/employee">Employee</Link>
+              </MenuItem>
+            ) : null}
 
 
 
+            <SubMenu icon={<ImNewspaper />} title="Profile">
+              <MenuItem active={true} icon={<FiHome />}>
+                <Link to="/profile"> Your Profile</Link>
+              </MenuItem>
+              <MenuItem active={true} icon={<FiHome />}>
+                <Link to="/profile"> {user?.role === 'superadmin' ? 'Employees' : 'My'} Transactions</Link>
+              </MenuItem>
+              {user?.role === 'superadmin' && (
+                <MenuItem active={true} icon={<FiHome />}>
+                  <Link to="/profile"> My Transactions</Link>
+                </MenuItem>
+              )}
+
+            </SubMenu>
 
             <SubMenu icon={<ImNewspaper />} title="Generate Report">
               <MenuItem icon={<RiFileAddLine />}>

@@ -4,7 +4,7 @@ import Sidebar from './Sidebar'
 const IncludeSideBar = ({ children }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'row', width: "100%" }}>
-            <div style={{}}>
+            <div style={{ zIndex: 0 }}>
                 <Sidebar />
             </div>
 
