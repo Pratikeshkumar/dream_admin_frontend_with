@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 const GiftListingsapi = require("../../../apis/gift_listing");
 
 const SendGiftModal = ({ showSendGiftModal, closeSendGiftModal }) => {
+
+
+    const allUserApis = require("../../../apis/users");
+
+
     const [giftList, setGiftList] = useState([]);
     const [activeCategory, setActiveCategory] = useState('functional');
     const [activeButton, setActiveButton] = useState('functional');
-    
+
 
 
     const modalStyle = {
@@ -77,7 +82,7 @@ const SendGiftModal = ({ showSendGiftModal, closeSendGiftModal }) => {
 
     const sendGift = (giftId) => {
         console.log(`Sending gift with ID: ${giftId}`);
-        // Add your logic for sending the gift here
+
     };
 
     return (
@@ -85,8 +90,8 @@ const SendGiftModal = ({ showSendGiftModal, closeSendGiftModal }) => {
             <div className="modal-content" style={modalContentStyle}>
                 <span className="close" onClick={closeSendGiftModal}>&times;</span>
                 <h2 style={{ textAlign: 'center', color: 'black', marginBottom: '20px' }}>Welcome to Gift Section</h2>
-                
-                <div style={{ textAlign: 'center',marginBottom:"2%" }}>
+
+                <div style={{ textAlign: 'center', marginBottom: "2%" }}>
                     <button style={{
                         backgroundColor: activeButton === 'functional' ? 'red' : 'blue',
                         color: 'white',

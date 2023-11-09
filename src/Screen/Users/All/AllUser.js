@@ -140,26 +140,35 @@ const AllUser = () => {
   // function for handling the active user to unactive 
 
   const handleBlockUser = async (userId) => {
-    const updatedUserData = userData.map(user => {
-      if (user.id === userId && user.active === 1) {
-        return { ...user, active: 0 };
+    // Ask for confirmation before blocking the user
+    const confirmed = window.confirm("Are you sure you want to block this user?");
+  
+    if (confirmed) {
+      const updatedUserData = userData.map(user => {
+        if (user.id === userId && user.active === 1) {
+          return { ...user, active: 0 };
+        }
+        return user;
+      });
+  
+      // Update local state with the updated user data
+      setUserData(updatedUserData);
+  
+      try {
+        const response = await allUserApis.updateResourceActiveStatus(userId, 0);
+        console.log('User status updated successfully:', response);
+        // Perform any necessary action after a successful update on the server
+      } catch (error) {
+        console.error('Error updating user status:', error);
+       
       }
-      return user;
-    });
-
-    setUserData(updatedUserData);
-
-    try {
-      const response = await allUserApis.updateResourceActiveStatus(userId, 0);
-      console.log('User status updated successfully:', response);
-      // Perform any necessary action after a successful update on the server
-    } catch (error) {
-      console.error('Error updating user status:', error);
-      // Revert the local update if the server update fails
-      // Implement a rollback mechanism if necessary
+    } else {
+    
+      console.log('Block action canceled by the user.');
+      return;
     }
   };
-
+  
 
 
 
@@ -265,6 +274,7 @@ const AllUser = () => {
         handleCloseVideoModal={handleCloseVideoModal}
         videoData={videoData}
         setVideoData={updateVideoData}
+
       />
       {interactionData.length > 0 && (
         <div id="user-interaction-details">

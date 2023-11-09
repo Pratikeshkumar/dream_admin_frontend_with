@@ -1,15 +1,24 @@
 import { SERVER_API_URL } from "../constants/constants";
 import axios from "axios";
 
-// const getAllUsers = async (page, perPage) => {
-//   const getToken = localStorage.getItem("token");
-//   const config = {
-//     headers: { Authorization: `Bearer ${getToken}` },
-//   };
-//   const url = `${SERVER_API_URL}/admin/users/getUsers/${page}/${perPage}`;
-//   const result = await axios.get(url, config);
-//   return result.data;
-// };
+const getAllBasicUsers = async () => {
+  const getToken = localStorage.getItem("token");
+  const config = {
+    headers: { Authorization: `Bearer ${getToken}` },
+  };
+  const url = `${SERVER_API_URL}/admin/users/getBasicUsers`;
+  const result = await axios.get(url, config);
+  return result.data;
+};
+const getAllPremiumUsers = async () => {
+  const getToken = localStorage.getItem("token");
+  const config = {
+    headers: { Authorization: `Bearer ${getToken}` },
+  };
+  const url = `${SERVER_API_URL}/admin/users/getPremiumUsers`;
+  const result = await axios.get(url, config);
+  return result.data;
+};
 
 const getAllUsers = async (page,searchTerm = '') => {
   try {
@@ -111,4 +120,23 @@ const getUserVideos = async (id) => {
   }
 };
 
-export { getAllUsers,deleteUser,updateResourceActiveStatus,getBlockUsers ,updateUserStatus,getUserVideos};
+const SendGift = async (data) => {
+  console.log(data,"datainuserfrontend")
+  try {
+    const getToken = localStorage.getItem("token");
+    const config = {
+      headers: { Authorization: `Bearer ${getToken}` },
+    };
+    const url = `${SERVER_API_URL}/admin/users/sendGift`;
+    
+    
+    const response = await axios.post(url, data, config);
+    // console.log(response,"response")
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export { getAllUsers,deleteUser,updateResourceActiveStatus,getBlockUsers ,updateUserStatus,getUserVideos,SendGift,getAllBasicUsers,getAllPremiumUsers};
