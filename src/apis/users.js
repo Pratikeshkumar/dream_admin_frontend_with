@@ -53,8 +53,9 @@ const deleteUser = async (id) => {
   }
 };
 
-const updateResourceActiveStatus = async (id, isActive) => {
- 
+
+
+const updateResourceActiveStatus = async (id, isActive, role) => {
   const getToken = localStorage.getItem('token');
   const config = {
     headers: { Authorization: `Bearer ${getToken}` },
@@ -62,8 +63,8 @@ const updateResourceActiveStatus = async (id, isActive) => {
   const url = `${SERVER_API_URL}/admin/users/updateUserActiveStatus/${id}`;
 
   try {
-    const result = await axios.patch(url, {isActive}, config);
-    console.log(result,"resultfromfrontend")
+    const result = await axios.patch(url, { isActive, role }, config);
+    console.log(result, "resultfromfrontend");
     return result.data;
   } catch (error) {
     throw error; // Propagate the error for handling in your component
@@ -138,5 +139,32 @@ const SendGift = async (data) => {
   }
 };
 
+const getAllUsersPost = async (id) => {
+  console.log(id,"fromfrontend")
+  const getToken = localStorage.getItem("token");
+  const config = {
+    headers: { Authorization: `Bearer ${getToken}` },
+  };
+  const url = `${SERVER_API_URL}/admin/users/getuser_photo_post/${id}`;
+  const result = await axios.get(url, config);
+  return result.data;
+};
 
-export { getAllUsers,deleteUser,updateResourceActiveStatus,getBlockUsers ,updateUserStatus,getUserVideos,SendGift,getAllBasicUsers,getAllPremiumUsers};
+const changeUserAccountType = async (id, account_type) => {
+  console.log(id,account_type,"changeAccount_typeFrontend")
+  const getToken = localStorage.getItem('token');
+  const config = {
+    headers: { Authorization: `Bearer ${getToken}` },
+  };
+  const url = `${SERVER_API_URL}/admin/users/changeUserAccount_type/${id}`;
+
+  try {
+    const result = await axios.patch(url, {account_type}, config);
+    console.log(result, "resultfromfrontend");
+    return result.data;
+  } catch (error) {
+    throw error; // Propagate the error for handling in your component
+  }
+};
+
+export { getAllUsers,deleteUser,updateResourceActiveStatus,getBlockUsers ,updateUserStatus,getUserVideos,SendGift,getAllBasicUsers,getAllPremiumUsers,getAllUsersPost,changeUserAccountType};

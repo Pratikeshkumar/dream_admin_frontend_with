@@ -55,9 +55,15 @@ import LogOut from './Components/Login/LogOut'
 import useAuth from './useAuth'
 import { SERVER_API_URL, SERVER_DOMAIN } from './constants/constants'
 import Profile from './Screen/Profile/Profile'
+import Employee from './Screen/Employee/Employee'
+import My_transaction from './Screen/Profile/My_transaction'
+import Employees_transaction from './Screen/Profile/Employees_transaction'
+import AdminProfile from './Screen/AdminProfile/AdminProfile'
+import AssistantManager from './Screen/AssistantManager/AssistantManager'
+import Manager from './Screen/Manager/Manager'
 
 import axios from 'axios'
-import Employee from './Screen/Employee/Employee'
+
 
 
 function App() {
@@ -111,15 +117,7 @@ function App() {
             )
           }} />
 
-        <Route
-          path='/employee'
-          Component={({ ...props }) => {
-            return (
-              <>
-                {isAuthenticated ? <Employee {...props} /> : <Navigate to={'/'} />}
-              </>
-            )
-          }} />
+
 
 
 
@@ -279,7 +277,7 @@ function App() {
           }} />
 
 
-        <Route
+        {/* <Route
           path='/promotions/all_promotions'
           Component={({ ...props }) => {
             return (
@@ -287,7 +285,7 @@ function App() {
                 {isAuthenticated ? <AllPromotion {...props} /> : <Navigate to={'/'} />}
               </>
             )
-          }} />
+          }} /> */}
         <Route
           path='/promotions/live_promotions'
           Component={({ ...props }) => {
@@ -429,6 +427,46 @@ function App() {
               </>
             )
           }} />
+
+        <Route
+          path='/employee'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <Employee {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+           <Route
+          path='/adminProfile'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <AdminProfile {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+            <Route
+          path='/managerProfile'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <Manager {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+            <Route
+          path='/assistantManagerProfile'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <AssistantManager {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+
+
+
         <Route
           path='/privacy_policy'
           Component={({ ...props }) => {
@@ -486,6 +524,25 @@ function App() {
               </>
             )
           }} />
+        <Route
+          path='/profile/superadmin_my_transaction'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <My_transaction {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+        <Route
+          path='/profile/superadmmin_employees_transaction'
+          Component={({ ...props }) => {
+            return (
+              <>
+                {isAuthenticated ? <Employees_transaction {...props} /> : <Navigate to={'/'} />}
+              </>
+            )
+          }} />
+
 
 
         <Route

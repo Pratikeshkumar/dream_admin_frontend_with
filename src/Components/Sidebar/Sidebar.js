@@ -121,9 +121,9 @@ const Sidebar = () => {
             </SubMenu>
 
             <SubMenu icon={<FaUserAlt />} title="Diamond Transaction">
-              <MenuItem icon={<MdPersonAddAlt1 />}>
+              {/* <MenuItem icon={<MdPersonAddAlt1 />}>
                 <Link to="/diamond_transactions/all_transaction">All Transactions</Link>
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem icon={<BsListOl />}>
                 <Link to="/diamond_transactions/video_transaction">Video</Link>
               </MenuItem>
@@ -140,9 +140,9 @@ const Sidebar = () => {
 
 
             <SubMenu icon={<FaUserAlt />} title="Promotions">
-              <MenuItem icon={<MdPersonAddAlt1 />}>
+              {/* <MenuItem icon={<MdPersonAddAlt1 />}>
                 <Link to="/promotions/all_promotions">All</Link>
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem icon={<MdPersonAddAlt1 />}>
                 <Link to="/promotions/live_promotions">Live</Link>
               </MenuItem>
@@ -220,33 +220,57 @@ const Sidebar = () => {
               </MenuItem>
             ) : null}
 
-
-
-            <SubMenu icon={<ImNewspaper />} title="Profile">
-              <MenuItem active={true} icon={<FiHome />}>
-                <Link to="/profile"> Your Profile</Link>
-              </MenuItem>
-              <MenuItem active={true} icon={<FiHome />}>
-                <Link to="/profile"> {user?.role === 'superadmin' ? 'Employees' : 'My'} Transactions</Link>
-              </MenuItem>
-              {user?.role === 'superadmin' && (
+            {user?.role === 'superadmin' ? (
+              <SubMenu icon={<ImNewspaper />} title="Profile">
                 <MenuItem active={true} icon={<FiHome />}>
-                  <Link to="/profile"> My Transactions</Link>
+                  <Link to="/profile"> Your Profile</Link>
                 </MenuItem>
-              )}
+                <MenuItem active={true} icon={<FiHome />}>
+                  <Link to="/profile/superadmmin_employees_transaction"> {user?.role === 'superadmin' ? 'Employees' : 'My'} Transactions</Link>
+                </MenuItem>
 
-            </SubMenu>
+
+                <MenuItem active={true} icon={<FiHome />}>
+                  <Link to="/profile/superadmin_my_transaction"> My Transactions</Link>
+                </MenuItem>
+
+              </SubMenu>
+            ) : null}
+
+
+            {user?.role === 'admin' ? (
+              <MenuItem active={true} icon={<FiHome />}>
+                <Link to="/adminProfile">Admin Profile</Link>
+              </MenuItem>
+            ) : null}
+
+
+            {user?.role === 'manager' ? (
+              <MenuItem active={true} icon={<FiHome />}>
+                <Link to="/managerProfile">Manager Profile</Link>
+              </MenuItem>
+            ) : null}
+
+            {user?.role === 'assistant manager' ? (
+              <MenuItem active={true} icon={<FiHome />}>
+                <Link to="/assistantManagerProfile">Assistant Manager </Link>
+              </MenuItem>
+            ) : null}
+
+
+
+
 
             <SubMenu icon={<ImNewspaper />} title="Generate Report">
-              <MenuItem icon={<RiFileAddLine />}>
+              {/* <MenuItem icon={<RiFileAddLine />}>
                 <Link to="/generate_reports/new_reports">New Reports</Link>
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem icon={<GrList />}>
                 <Link to="/generate_reports/all_reports">All Reports</Link>
               </MenuItem>
-              <MenuItem icon={<FcCalendar />}>
+              {/* <MenuItem icon={<FcCalendar />}>
                 <Link to="/generate_reports/recent_reports">Recent Report</Link>
-              </MenuItem>
+              </MenuItem> */}
             </SubMenu>
           </Menu>
         </SidebarContent>

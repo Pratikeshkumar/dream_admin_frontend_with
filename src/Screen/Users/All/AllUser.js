@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import VideoModal from './VideoModal';
+import PhotoModal from './PhotoModal';
 import './AllUser.css'
 import IncludeSideBar from '../../../Components/Sidebar/IncludeSideBar'
+import useAuth from '../../../useAuth'
 
 
 const AllUser = () => {
   const allUserApis = require("../../../apis/users");
-
+  const { user } = useAuth()
+  const role = user ? user.role : null;
+    console.log(role,"roooolllee")
   const [userData, setUserData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -19,6 +23,9 @@ const AllUser = () => {
   const [interactionTime3Month, setInteractionTime3Month] = useState(0);
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(false);
+  const [photoData, setPhotoData] = useState(null);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+
 
 
 
@@ -64,7 +71,7 @@ const AllUser = () => {
 
   const handleViewVideo = async (userId) => {
     try {
-      setLoading(true); // Set loading to true when starting the request
+      setLoading(true);
 
       const response = await allUserApis.getUserVideos(userId);
       setVideoData(response);
@@ -72,9 +79,29 @@ const AllUser = () => {
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
-      setLoading(false); // Set loading to false when request completes (success or error)
+      setLoading(false);
     }
   };
+
+  const handleViewPhoto = async (userId) => {
+    try {
+      setLoading(true);
+      const response = await allUserApis.getAllUsersPost(userId);
+      console.log(response, "responsefrom alluser")
+      setPhotoData(response.photos);
+      setShowPhotoModal(true);
+    } catch (error) {
+      console.error("Error fetching user photos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleClosePhotoModal = () => {
+    setShowPhotoModal(false);
+    setPhotoData(null);
+
+  };
+
 
 
   const handleUsage = (userId) => {
@@ -93,6 +120,18 @@ const AllUser = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleCloseUsageDetails = () => {
+    // Scroll back to the top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Clear the interaction data and close the section
+    setInteractionData([]);
+    setInteractionTime1Day(0);
+    setInteractionTime15Days(0);
+    setInteractionTime1Month(0);
+    setInteractionTime3Month(0);
   };
 
   // Calculate interaction times for different durations
@@ -142,9 +181,11 @@ const AllUser = () => {
   // function for handling the active user to unactive 
 
   const handleBlockUser = async (userId) => {
+   
+
     // Ask for confirmation before blocking the user
     const confirmed = window.confirm("Are you sure you want to block this user?");
-  
+
     if (confirmed) {
       const updatedUserData = userData.map(user => {
         if (user.id === userId && user.active === 1) {
@@ -152,25 +193,26 @@ const AllUser = () => {
         }
         return user;
       });
-  
+
       // Update local state with the updated user data
       setUserData(updatedUserData);
-  
+
       try {
+        console.log('Calling updateResourceActiveStatus with role:', role);
         const response = await allUserApis.updateResourceActiveStatus(userId, 0);
         console.log('User status updated successfully:', response);
         // Perform any necessary action after a successful update on the server
       } catch (error) {
         console.error('Error updating user status:', error);
-       
+
       }
     } else {
-    
+
       console.log('Block action canceled by the user.');
       return;
     }
   };
-  
+
 
 
 
@@ -189,6 +231,7 @@ const AllUser = () => {
 
 
 
+
   const tdStyle = {
     border: '1px solid #ddd',
     padding: '8px',
@@ -200,126 +243,130 @@ const AllUser = () => {
     width: '150px', // Set the desired width for the email cell
   };
 
-
-
-
-
-
   return (
     <IncludeSideBar>
-    <div>
-      <input
-        type="text"
-        placeholder="Search by username"
-        value={searchTerm}
-        onChange={(e) => handleSearch(e.target.value)}
-      />
-      {loading && (
-        <div className="loader-container">
-          <div className="loader"></div>
-        </div>
-      )}
+      <div>
+        <input
+          type="text"
+          placeholder="Search by username"
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+        {loading && (
+          <div className="loader-container">
+            <div className="loader"></div>
+          </div>
+        )}
 
 
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Profile Pic</th>
-            <th>Username</th>
-            <th>Account Type</th>
-            <th>Nickname</th>
-            <th>Email</th>
-            <th>Gender</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userData.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>
-                <img
-                  //   src={`https://dpcst9y3un003.cloudfront.net/${user.profile_pic}`}
-                  src={user.profile_pic}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "20%",
-                  }}
-                />
-              </td>
-              <td>{user.username}</td>
-              <td>{user.account_type}</td>
-              <td>{user.nickname}</td>
-              <td style={tdEmailStyle}>{user.email}</td>
-              <td>{user.gender}</td>
-              <td>
-                {user.active === 0 ? "Blocked" : (
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <button onClick={() => handleViewVideo(user.id)}>View Video</button>
-                    <button onClick={() => handleUsage(user.id)}>Usage</button>
-                    <button onClick={() => handleBlockUser(user.id)}>Block User</button>
-                  </div>
-                )}
-              </td>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Profile Pic</th>
+              <th>Username</th>
+              <th>Account Type</th>
+              <th>Nickname</th>
+              <th>Email</th>
+              <th>Gender</th>
+              <th>Action</th>
             </tr>
+          </thead>
+          <tbody>
+            {userData.map((user) => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>
+                  <img
+                    //   src={`https://dpcst9y3un003.cloudfront.net/${user.profile_pic}`}
+                    src={user.profile_pic}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "20%",
+                    }}
+                  />
+                </td>
+                <td>{user.username}</td>
+                <td>{user.account_type}</td>
+                <td>{user.nickname}</td>
+                <td style={tdEmailStyle}>{user.email}</td>
+                <td>{user.gender}</td>
+                <td>
+                  {user.active === 0 ? "Blocked" : (
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button onClick={() => handleViewVideo(user.id)}>View Video</button>
+                      <button onClick={() => handleUsage(user.id)}>Usage</button>
+                      <button onClick={() => handleBlockUser(user.id)}>Block User</button>
+                      <button onClick={() => handleViewPhoto(user.id)}>Photo</button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <VideoModal
+          showVideoModal={showVideoModal}
+          handleCloseVideoModal={handleCloseVideoModal}
+          videoData={videoData}
+          setVideoData={updateVideoData}
+
+        />
+        <PhotoModal
+          showPhotoModal={showPhotoModal}
+          handleClosePhotoModal={handleClosePhotoModal}
+          photoData={photoData}
+        />
+        {interactionData.length > 0 && (
+          <div id="user-interaction-details">
+            <button onClick={handleCloseUsageDetails} style={{ float: 'right', marginBottom: '10px' }}>
+              Close
+            </button>
+            <h2>User Usage</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Time Range</th>
+                  <th>Interaction Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* <tr>
+                  <td>Last 1 Day</td>
+                  <td>{interactionTime1Day} seconds</td>
+                </tr> */}
+                <tr>
+                  <td>Last 15 Days</td>
+                  <td>{interactionTime15Days} seconds</td>
+                </tr>
+                <tr>
+                  <td>Last 1 Month</td>
+                  <td>{interactionTime1Month} seconds</td>
+                </tr>
+                <tr>
+                  <td>Last 3 Month</td>
+                  <td>{interactionTime3Month} seconds</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="pagination">
+          <button onClick={handlePrevious}>Previous</button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={currentPage === index + 1 ? "active" : ""}
+            >
+              {index + 1}
+            </button>
           ))}
-        </tbody>
-      </table>
-      <VideoModal
-        showVideoModal={showVideoModal}
-        handleCloseVideoModal={handleCloseVideoModal}
-        videoData={videoData}
-        setVideoData={updateVideoData}
-
-      />
-      {interactionData.length > 0 && (
-        <div id="user-interaction-details">
-          <h2>User Usage</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Time Range</th>
-                <th>Interaction Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Last 1 Day</td>
-                <td>{interactionTime1Day} seconds</td>
-              </tr>
-              <tr>
-                <td>Last 15 Days</td>
-                <td>{interactionTime15Days} seconds</td>
-              </tr>
-              <tr>
-                <td>Last 1 Month</td>
-                <td>{interactionTime1Month} seconds</td>
-              </tr>
-              <tr>
-                <td>Last 3 Month</td>
-                <td>{interactionTime3Month} seconds</td>
-              </tr>
-            </tbody>
-          </table>
+          <button onClick={handleNext}>Next</button>
         </div>
-      )}
-
-      <div className="pagination">
-        <button onClick={handlePrevious}>Previous</button>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={currentPage === index + 1 ? "active" : ""}
-          >
-            {index + 1}
-          </button>
-        ))}
-        <button onClick={handleNext}>Next</button>
       </div>
-    </div>
     </IncludeSideBar>
   );
 };

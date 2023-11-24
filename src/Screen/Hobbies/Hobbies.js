@@ -12,6 +12,7 @@ const Hobbies = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  
   const [updatedHobby, setUpdatedHobby] = useState({
     id: null,
     name: "",
@@ -155,11 +156,32 @@ const Hobbies = () => {
             />
             <button className="search-button" onClick={() => setCurrentPage(1)}>Search</button>
           </div>
+          <div className="add-hobby-form">
+            <h4>Add New Hobby</h4>
+            <label style={{padding:"2%"}}>
+              Name:
+              <input
+                type="text"
+                name="name"
+                value={newHobby.name}
+                onChange={(e) => setNewHobby({ ...newHobby, name: e.target.value })}
+              />
+            </label>
+            <label>
+              Category:
+              <input
+                type="text"
+                name="category"
+                value={newHobby.category}
+                onChange={(e) => setNewHobby({ ...newHobby, category: e.target.value })}
+              />
+            </label>
+            <button onClick={handleAddNewHobby}>Add Hobby</button>
+          </div>
           {isLoading ? (
-            <div className="loader">
-              <div className="bounce1"></div>
-              <div className="bounce2"></div>
-            </div>
+            <div className="loader-container">
+            <div className="loader"></div>
+          </div>
           ) : (
             <div>
               <table className="hobbies-table">
@@ -202,33 +224,12 @@ const Hobbies = () => {
           )}
 
           {/* Add New Hobby Form */}
-          <div className="add-hobby-form">
-            <h3>Add New Hobby</h3>
-            <label>
-              Name:
-              <input
-                type="text"
-                name="name"
-                value={newHobby.name}
-                onChange={(e) => setNewHobby({ ...newHobby, name: e.target.value })}
-              />
-            </label>
-            <label>
-              Category:
-              <input
-                type="text"
-                name="category"
-                value={newHobby.category}
-                onChange={(e) => setNewHobby({ ...newHobby, category: e.target.value })}
-              />
-            </label>
-            <button onClick={handleAddNewHobby}>Add Hobby</button>
-          </div>
+         
         </div>
 
         {/* Update Modal */}
         {isUpdateModalOpen && (
-          <div className="update-modal">
+          <div style={modalStyle} className="update-modal">
             <h3>Edit Hobby</h3>
             <label>
               Name:
@@ -256,6 +257,16 @@ const Hobbies = () => {
     </IncludeSideBar>
   );
 };
+const modalStyle = {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  padding: "20px",
+  backgroundColor: "#fff",
+  boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
+};
+
 
 export default Hobbies;
 

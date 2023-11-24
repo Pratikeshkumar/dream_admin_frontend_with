@@ -4,6 +4,11 @@ import IncludeSideBar from '../../Components/Sidebar/IncludeSideBar'
 
 
 const Employee = () => {
+
+  const addmoneysuperadminApis = require('../../apis/super_admin_transaction');
+  const EmployeeApis = require('../../apis/employee')
+
+
   const [showForm, setShowForm] = useState(false); // State to toggle form visibility
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -14,13 +19,13 @@ const Employee = () => {
   const [gender, setGender] = useState('');
   const [role, setRole] = useState('');
   const [loading, setLoading] = useState(false);
-
-
-
+  const [amount, setAmount] = useState('');
   const [employees, setEmployees] = useState([]);
   const [selectedRole, setSelectedRole] = useState('All');
+  const [showAmountInputMap, setShowAmountInputMap] = useState({});
+  const [cancelInputMap, setCancelInputMap] = useState({});
 
-  const EmployeeApis = require('../../apis/employee')
+
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -87,7 +92,7 @@ const Employee = () => {
   }, []);
 
 
-  //functio to activate and deactivate the code 
+  //function to activate and deactivate the code 
 
   const activateEmployee = async (id) => {
     try {
@@ -153,26 +158,83 @@ const Employee = () => {
 
 
 
-
-
-
-
-
   const toggleFormVisibility = () => {
     setShowForm(!showForm);
   };
 
+  const toggleAmountInput = (id) => {
+    setShowAmountInputMap((prevMap) => ({
+      ...prevMap,
+      [id]: !prevMap[id],
+    }));
+    setCancelInputMap((prevMap) => ({
+      ...prevMap,
+      [id]: false,
+    }));
+  };
+
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value);
+  };
+
+  const handleSendMoney = async (id) => {
+
+    try {
+      setLoading(true);
+      toggleAmountInput(); // Toggle the amount input visibility
+
+      // Implement logic to send money through the API using the entered amount and employee id
+      // Use the 'amount' and 'id' state variables for sending money
+
+      // Assuming sendMoneyApis.sendMoneyToEmployee is a function that sends the API request
+      const response = await addmoneysuperadminApis.SendMoneyToAdmin({ id, amount });
+
+      console.log('API response:', response);
+
+      // Handle the response as needed, update UI, etc.
+      // For example, you might want to show a success message to the user
+
+    } catch (error) {
+      console.error('Error sending money:', error);
+      // Handle errors, show error message, etc.
+    } finally {
+      toggleAmountInput(id);
+      setAmount('');
+      
+      setLoading(false);
+    }
+  };
+
+  const handleCancelAmountInput = (id) => {
+    setAmount('');
+    setShowAmountInputMap((prevMap) => ({
+      ...prevMap,
+      [id]: false,
+    }));
+    setCancelInputMap((prevMap) => ({
+      ...prevMap,
+      [id]: true,
+    }));
+  };
+
+
+
+
+
+
+
+
+
   return (
     <IncludeSideBar>
       <div>
-        <button style={{marginTop:"2%",marginLeft:"80%"}}
-        onClick={toggleFormVisibility} className="add-employee-btn">
+        <button style={{ marginTop: "2%", marginLeft: "80%" }}
+          onClick={toggleFormVisibility} className="add-employee-btn">
           {showForm ? 'Hide Form' : 'Add Employee'}
         </button>
-        <select  style={{marginLeft:"78%",marginTop:"4%"}}
-        value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+        <select style={{ marginLeft: "78%", marginTop: "4%" }}
+          value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
           <option value="All">All</option>
-          <option value="superadmin">superadmin</option>
           <option value="admin">admin</option>
           <option value="manager">manager</option>
           <option value="assistant manager">assistant manager</option>
@@ -233,7 +295,6 @@ const Employee = () => {
                 Role:
                 <select value={role} onChange={(e) => setRole(e.target.value)}>
                   <option value="">Select Role</option>
-                  <option value="superadmin">Super Admin</option>
                   <option value="admin">Admin</option>
                   <option value="manager">Manager</option>
                   <option value="assistant manager">Assistant Manager</option>
@@ -244,15 +305,15 @@ const Employee = () => {
             </form>
           </div>
         )}
-  {loading ? (
-        <div className="loader-container">
-          <div className="loader"></div>
-        </div>
-      ) : null}
+        {loading ? (
+          <div className="loader-container">
+            <div className="loader"></div>
+          </div>
+        ) : null}
 
 
         <div>
-          <h2 style={{marginLeft:"40%",marginBottom:"4%"}}>Employee List</h2>
+          <h2 style={{ marginLeft: "40%", marginBottom: "4%" }}>Employee List</h2>
           <table>
             <thead>
               <tr>
@@ -262,7 +323,7 @@ const Employee = () => {
                 <th>role</th>
                 <th>action</th>
                 <th>Delete</th>
-                {/* Add more table headers if needed */}
+                <th> Send Log</th>
               </tr>
             </thead>
             <tbody>
@@ -281,6 +342,23 @@ const Employee = () => {
                   </td>
                   <td>
                     <button onClick={() => deleteEmployee(employee.id)}>Delete</button>
+                  </td>
+                  <td>
+                    {showAmountInputMap[employee.id] && !cancelInputMap[employee.id] && (
+                      <div>
+                        <input
+                          type="number"
+                          placeholder="Enter amount"
+                          value={amount}
+                          onChange={(e) => handleAmountChange(e)}
+                        />
+                        <button onClick={() => handleSendMoney(employee.id)}>Confirm</button>
+                        <button onClick={() => handleCancelAmountInput(employee.id)}>Cancel</button>
+                      </div>
+                    )}
+                    {!showAmountInputMap[employee.id] && (
+                      <button onClick={() => toggleAmountInput(employee.id)}>Send Money</button>
+                    )}
                   </td>
 
                 </tr>

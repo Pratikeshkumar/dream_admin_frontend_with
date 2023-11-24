@@ -10,10 +10,10 @@ function VideoTransactions() {
     const fetchTransactions = async () => {
       try {
         const response = await getVideoGift.getVideoGiftTransaction();
-        console.log(response.data.transaction); // Check the structure of the response
+        console.log(response); // Check the structure of the response
 
         // Assuming response is an array of transactions
-        setTransactions(response.data.transaction);
+        setTransactions(response.data.transactions);
       } catch (error) {
         console.error("Error fetching Diamond Transactions:", error);
       }
@@ -37,8 +37,8 @@ function VideoTransactions() {
               <th>Transaction ID</th>
               <th>Created At</th>
 
-              <th>Sender ID</th>
-              <th>Receiver ID</th>
+              <th>Sender ID/E-mail/Username</th>
+              <th>Receiver ID/E-mail/Username</th>
               <th>Video ID</th>
               <th>Diamonds</th>
 
@@ -51,8 +51,8 @@ function VideoTransactions() {
                 <td>{transaction.id}</td>
                 <td>{formatCreatedAt(transaction.createdAt)}</td>
 
-                <td>{transaction.sender_id}</td>
-                <td>{transaction.reciever_id}</td>
+                <td>{transaction.sender_id}--{transaction.sender.email}--{transaction.sender.username}</td>
+                <td>{transaction.reciever_id}--{transaction.receiver.email}--{transaction.receiver.username}</td>
                 <td>{transaction.video_id}</td>
                 <td>{transaction.diamonds}</td>
 

@@ -124,10 +124,9 @@ function AvatarScreen() {
         </button>
       </div>
       {isLoading ? (
-        <div className="loader">
-          <div className="bounce1"></div>
-          <div className="bounce2"></div>
-        </div>
+        <div className="loader-container">
+        <div className="loader"></div>
+      </div>
       ) : (
         <div>
           <div className="avatar-rows">

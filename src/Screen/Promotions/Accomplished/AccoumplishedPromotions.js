@@ -24,7 +24,7 @@ function AccoumplishedPromotions() {
     <IncludeSideBar>
         <div>
             <p>
-                Here we are displaying the Accomplished Promotions.
+                Currently there are no promotions ongoing...
             </p>
         </div>
     </IncludeSideBar>

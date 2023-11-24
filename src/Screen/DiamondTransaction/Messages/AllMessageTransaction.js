@@ -10,7 +10,8 @@ function AllMessageTransaction() {
     const fetchTransactions = async () => {
       try {
         const response = await getMessageSubscription.getMessageSubscriptionTransaction();
-        setTransactions(response.data.transaction);
+        console.log(response)
+        setTransactions(response.data.transactions);
       } catch (error) {
         console.error("Error fetching MessageSubscription transactions:", error);
       }
@@ -39,8 +40,8 @@ function AllMessageTransaction() {
               <th>Expires</th>
               <th>Allowed Messages</th>
               <th>Diamonds</th>
-              <th>Receiver ID</th>
-              <th>Sender ID</th>
+              <th>Receiver ID/E-mail/Username</th>
+              <th>Sender ID/E-mail/Username</th>
               {/* Add additional headers for more properties if needed */}
             </tr>
           </thead>
@@ -52,8 +53,8 @@ function AllMessageTransaction() {
                 <td>{transaction.expire ? 'Yes' : 'No'}</td>
                 <td>{transaction.no_of_allowed_messages}</td>
                 <td>{transaction.no_of_diamond}</td>
-                <td>{transaction.reciever_id}</td>
-                <td>{transaction.sender_id}</td>
+                <td>{transaction.reciever_id}--{transaction.receiver.email}--{transaction.receiver.username}</td>
+                <td>{transaction.sender_id}--{transaction.sender.email}--{transaction.sender.username}</td>
                 {/* Add additional table data for more properties if needed */}
               </tr>
             ))}

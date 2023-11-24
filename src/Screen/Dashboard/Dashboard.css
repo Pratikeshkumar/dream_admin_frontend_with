@@ -1,0 +1,73 @@
+.dashboard-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 20px;
+  }
+  
+  .user-data-box {
+    background: linear-gradient(135deg, #d42cc9, #feb47b); /* Gradient from coral to light salmon */
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 20px;
+    width: 150px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: #ffffff; /* White text on the gradient background */
+  }
+  
+  .data {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .video-statistics {
+    margin-top: 20px;
+  }
+  
+  .video-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .video-table th, .video-table td {
+    border: 1px solid #dcdcdc;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .thumbnail {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .profile-picture {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  /* Additional Colors */
+  h4 {
+    color: #060708; /* Blue */
+  }
+  
+  select {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e88); /* Gradient from red to light red */
+    color: #ffffff;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  select:hover {
+    background: linear-gradient(135deg, #ff4757, #ff6b81); /* Darker red gradient on hover */
+  }
+  
+  /* Add more styles as needed */
+  

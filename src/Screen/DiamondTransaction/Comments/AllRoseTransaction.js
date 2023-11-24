@@ -11,7 +11,8 @@ function AllRoseTransaction() {
     const fetchTransactions = async () => {
       try {
         const response = await getCommentRoseApis.getRoseTransaction();
-        setTransactions(response.data.transaction);
+        console.log(response,"fromrose")
+        setTransactions(response.data.transactions);
       } catch (error) {
         console.error("Error fetching transactions:", error);
       }
@@ -37,8 +38,8 @@ function AllRoseTransaction() {
             <th>Created At</th>
             <th>Video ID</th>
             <th>Comment ID</th>
-            <th>Receiver ID</th>
-            <th>Sender ID</th>
+            <th>Receiver ID/E-mail/Username</th>
+            <th>Sender ID/E-mail/Username</th>
             <th>Diamonds</th>
             {/* Add additional headers for more properties if needed */}
           </tr>
@@ -50,8 +51,8 @@ function AllRoseTransaction() {
               <td>{formatCreatedAt(transaction.createdAt)}</td>
               <td>{transaction.video_id}</td>
               <td>{transaction.comment_id}</td>
-              <td>{transaction.reciever_id}</td>
-              <td>{transaction.sender_id}</td>
+              <td>{transaction.reciever_id}--{transaction.receiver.email}--{transaction.receiver.username}</td>
+              <td>{transaction.sender_id}--{transaction.sender.email}--{transaction.sender.username}</td>
               <td>{transaction.diamonds}</td>
               {/* Add additional table data for more properties if needed */}
             </tr>

@@ -4,8 +4,8 @@ import IncludeSideBar from '../../../Components/Sidebar/IncludeSideBar'
 // Loader component
 function Loader() {
   return (
-    <div className="loader">
-     
+    <div className="loader-container">
+      <div className="loader"></div>
     </div>
   );
 }

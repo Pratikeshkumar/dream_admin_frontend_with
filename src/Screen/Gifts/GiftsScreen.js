@@ -165,10 +165,10 @@ function GiftsScreen() {
           Functional
         </button>
         <button
-          className={`button ${activeCategory === "mood" ? "active" : ""}`}
+          className={`button ${activeCategory === "dream" ? "active" : ""}`}
           onClick={() => filterGifts("mood")}
         >
-          Mood
+         Dream
         </button>
         <button
           className={`button ${activeCategory === "vipGifts" ? "active" : ""}`}
