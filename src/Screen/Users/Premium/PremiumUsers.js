@@ -136,8 +136,8 @@ function PremiumUsers() {
                             <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>{selectedUser.account_type}</td>
                           </tr>
                           <tr>
-                            <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>UserName</td>
-                            <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>{selectedUser.username}</td>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>Wallet</td>
+                            <td style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>{selectedUser.wallet} coins</td>
                           </tr>
                           {/* Add more rows as needed */}
                         </tbody>

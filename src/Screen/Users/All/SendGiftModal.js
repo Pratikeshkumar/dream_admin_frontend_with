@@ -10,6 +10,7 @@ const SendGiftModal = ({ showSendGiftModal, closeSendGiftModal }) => {
     const [giftList, setGiftList] = useState([]);
     const [activeCategory, setActiveCategory] = useState('functional');
     const [activeButton, setActiveButton] = useState('functional');
+    console.log(giftList,"gvfygv")
 
 
 
@@ -129,6 +130,7 @@ const SendGiftModal = ({ showSendGiftModal, closeSendGiftModal }) => {
                             <th style={thStyle}>Gift Name</th>
                             <th style={thStyle}>Image</th>
                             <th style={thStyle}>Category</th>
+                            <th style={thStyle}>Cost</th>
                             <th style={thStyle}>Action</th>
                         </tr>
                     </thead>
@@ -146,6 +148,8 @@ const SendGiftModal = ({ showSendGiftModal, closeSendGiftModal }) => {
                                         />
                                     </td>
                                     <td style={tdStyle}>{gift.category}</td>
+                                    <td style={tdStyle}>{gift.cost} coins</td>
+
                                     <td style={tdStyle}>
                                         <button style={buttonStyle} onClick={() => sendGift(gift.id)}>Send</button>
                                     </td>

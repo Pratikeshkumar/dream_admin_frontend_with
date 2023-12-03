@@ -15,7 +15,7 @@ const getGiftListing = async (page, perPage) => {
 
 
 const addGiftListing = async (giftlisting) => {
-  console.log(giftlisting, "giftlisting");
+  console.log(giftlisting, "giftlistingnewonefronend");
   try {
     const getToken = localStorage.getItem("token");
     const config = {

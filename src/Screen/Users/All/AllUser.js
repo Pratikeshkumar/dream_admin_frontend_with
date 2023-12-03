@@ -10,7 +10,7 @@ const AllUser = () => {
   const allUserApis = require("../../../apis/users");
   const { user } = useAuth()
   const role = user ? user.role : null;
-    console.log(role,"roooolllee")
+    console.log(role,"role")
   const [userData, setUserData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

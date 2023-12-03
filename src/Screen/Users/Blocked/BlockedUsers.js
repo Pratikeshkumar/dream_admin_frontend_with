@@ -8,7 +8,7 @@ function BlockedUsers() {
     const getBlockedUsers = async () => {
         try {
             const response = await allUserApis.getBlockUsers();
-            console.log(response.data, "response from blocked users");
+            console.log(response, "response from blocked users");
             setUsers(response.data);
         } catch (error) {
             console.error("Error fetching users:", error);
