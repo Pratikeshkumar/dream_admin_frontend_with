@@ -7,22 +7,31 @@ function PremiumUsers() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
+  const [totalPages, setTotalPages] = useState(1);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+const [isFocused,setIsFocused]=useState(false)
+    const fetchUsers = async (page, searchTerm = '') => {
       try {
-        const response = await allUserApis.getAllPremiumUsers();
+        setIsLoading(true)
+
+        const response = await allUserApis.getAllPremiumUsers(page, searchTerm);
         setPremiumUsers(response.data);
+        setTotalPages(response.pagination.totalPages);
+        setFilteredUsers(response.data);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching users:', error);
         setIsLoading(false);
       }
     };
+    useEffect(() => {
 
-    fetchUsers();
-  }, []);
+    fetchUsers(currentPage,searchTerm);
+  }, [currentPage,searchTerm]);
 
+console.log(currentPage,'currentPage')
   const openModal = (user) => {
     setSelectedUser(user);
     setShowModal(true);
@@ -32,11 +41,60 @@ function PremiumUsers() {
     setSelectedUser(null);
     setShowModal(false);
   };
+  //pagination
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      // setCurrentPage((prevPage) => prevPage - 1);
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      // setCurrentPage((prevPage) => prevPage + 1);
+      setCurrentPage(currentPage + 1);
+      // console.log('nextpage',currentPage,totalPages)
+    }
+  };
+const handlesearch=(e)=>{
+  // const value=e.target.value
+  const searchTerm=e.target.value;
+  setSearchTerm(searchTerm)
+  const filterdata=premiumUsers.filter((userdata)=>
+  userdata.email.toLowerCase().includes(searchTerm.toLowerCase()) 
+  )
+  setFilteredUsers(filterdata)
+  console.log(filterdata,'userdatauserdata')
+
+}
+const handleFocus = () => {
+  setIsFocused(true);
+};
+const handleBlur = () => {
+  setIsFocused(false);
+};
 
   return (
     <IncludeSideBar>
       <div>
         <h1>Premium Users</h1>
+
+        <input
+        type="text"
+        placeholder='Search by email ID'
+        value={searchTerm}
+        onChange={handlesearch}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        style={{
+          borderWidth: isFocused ? '10px' : '1px',
+            borderStyle: 'solid',
+            borderColor: isFocused ? 'green' : 'white',
+        }}
+        />
         {isLoading ? (
           <div className="loader-container">
             <div className="loader"></div>
@@ -53,7 +111,7 @@ function PremiumUsers() {
                 </tr>
               </thead>
               <tbody>
-                {premiumUsers.map((user) => (
+                {filteredUsers.map((user) => (
                   <tr key={user.id}>
                     <td>{user.id}</td>
                     <td>{user.email}</td>
@@ -63,9 +121,15 @@ function PremiumUsers() {
                     </td>
                   </tr>
                 ))}
+               
               </tbody>
             </table>
-
+            <div style={{justifyContent:'center',alignItems:'center', marginTop:'20px'}}>
+                {
+                  filteredUsers.length === 0 && 
+                  <p style={{color:'#000'}}> No Data Available</p>
+                }
+               </div>
             {showModal && (
               <div
                 style={{
@@ -149,6 +213,24 @@ function PremiumUsers() {
             )}
           </div>
         )}
+        <div style={{ display: 'flex', marginLeft: '5%', marginTop: '20px' }} className="pagination">
+          <button onClick={handlePrevious} style={{ backgroundColor: 'red' }}>Previous</button>
+              {
+                Array.from({length:totalPages},(_,index)=>(
+                  <button
+                  key={index+1}
+                  onClick={()=>{handlePageChange(index + 1)}}
+                  className={currentPage===index+1?'Active':''}
+                  >
+                    {index+1}
+                  </button>
+                ))
+              }
+
+          <button onClick={handleNext} style={{  backgroundColor: 'green' }}>Next</button>
+        </div>
+
+
       </div>
     </IncludeSideBar>
   );

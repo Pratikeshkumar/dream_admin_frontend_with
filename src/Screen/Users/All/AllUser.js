@@ -10,7 +10,7 @@ const AllUser = () => {
   const allUserApis = require("../../../apis/users");
   const { user } = useAuth()
   const role = user ? user.role : null;
-    console.log(role,"roooolllee")
+  console.log(role, "roooolllee")
   const [userData, setUserData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -25,10 +25,17 @@ const AllUser = () => {
   const [loading, setLoading] = useState(false);
   const [photoData, setPhotoData] = useState(null);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [userid, setuserid] = useState(null)
 
-
-
-
+  const [likedata, setlikedata] = useState([])
+  const [commentdata, setcommentdata] = useState([])
+  const [diamonddata, setdiamonddata] = useState([])
+  const [sharedata, setsharedata] = useState([])
+  const [interactionType, setInteractionType] = useState(null);
+  const [senddiamonddata, setsenddiamonddata] = useState([])
+  const [sendlikedata, setsendlikedata] = useState([])
+  const [recivedcommentdata,setrecivedcommentdata]=useState([])
+  const[recivesharedata,setrecivesharedata]=useState([])
   const getUsers = async (page, searchTerm = '') => {
     try {
       setLoading(true);
@@ -96,6 +103,8 @@ const AllUser = () => {
       setLoading(false);
     }
   };
+
+console.log(photoData,'photoDataphotoData')
   const handleClosePhotoModal = () => {
     setShowPhotoModal(false);
     setPhotoData(null);
@@ -106,6 +115,7 @@ const AllUser = () => {
 
   const handleUsage = (userId) => {
     const user = userData.find((user) => user.id === userId);
+    setuserid(userId)
     if (user && user.user_interactions) {
       const currentTime = new Date();
       setInteractionData(user.user_interactions);
@@ -181,7 +191,7 @@ const AllUser = () => {
   // function for handling the active user to unactive 
 
   const handleBlockUser = async (userId) => {
-   
+
 
     // Ask for confirmation before blocking the user
     const confirmed = window.confirm("Are you sure you want to block this user?");
@@ -242,6 +252,101 @@ const AllUser = () => {
     ...tdStyle,
     width: '150px', // Set the desired width for the email cell
   };
+
+  // const getlikedata = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await allUserApis.getlikeintraction(userid);
+  //     setlikedata(response.payload)
+  //   //  console.log(response.payload,'response')
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //   } finally {
+  //     setLoading(false); // Hide loader after data retrieval (success or failure)
+  //   }
+  // };
+  // const getcommentdata = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await allUserApis.getcommentintraction(userid);
+  //     setcommentdata(response.payload)
+  //   //  console.log(response.payload,'response')
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //   } finally {
+  //     setLoading(false); // Hide loader after data retrieval (success or failure)
+  //   }
+  // };
+  const fetchData = async (interactionType) => {
+    try {
+      setLoading(true);
+
+      if (interactionType === 'like') {
+        const response = await allUserApis.getlikeintraction(userid);
+        setlikedata(response.payload);
+        if (response.payload.ninty_days === 0) {
+          alert('Like Data is not avialble')
+        }
+      } else if (interactionType === 'comment') {
+        const response = await allUserApis.getcommentintraction(userid);
+        setcommentdata(response.payload);
+        if (response.payload.ninty_days === 0) {
+          alert('Comment  Data is not avialble')
+        }
+      } else if (interactionType === 'Diamond') {
+        const response = await allUserApis.getdiamondintraction(userid)
+        // console.log(response,'responsediamond')
+        setdiamonddata(response.payload)
+        if (response.payload.ninty_days === 0) {
+          alert('Diamond Data is not avialble')
+        }
+      } else if (interactionType === 'Share') {
+        const response = await allUserApis.getshareintraction(userid)
+        // console.log(response,'responsegetshareintraction')
+        setsharedata(response.payload)
+        if (response.payload.ninty_days === 0) {
+          // Show alert message when data is available
+          alert('Share Data is not available!');
+        }
+      } else if (interactionType === 'Send Diamond') {
+        const response = await allUserApis.getsenddiamond(userid)
+        setsenddiamonddata(response.payload)
+        if (response.payload.ninty_days === 0) {
+          alert('Sended Diamond Data is not available')
+        }
+      } else if (interactionType === 'Send Like') {
+        const response = await allUserApis.getsendlikeintraction(userid)
+        setsendlikedata(response.payload)
+        if (response.payload.ninty_days === 0) {
+          alert('Sended like Data is not available')
+        }
+      }else if(interactionType==='recived comment'){
+        const response=await allUserApis.getrecivedcommetintraction(userid)
+        // console.log(response.payload,'recived comment')
+        setrecivedcommentdata(response.payload)
+        if(response.payload.ninty_days===0){
+          alert('Comment Data is not available')
+        }
+      }else if (interactionType==='recive share'){
+        const response=await allUserApis.getrecivedshare(userid)
+        setrecivesharedata(response.payload)
+        if(response.payload.ninty_days===0){
+          alert('Recived share Data is Not available')
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (interactionType) {
+      fetchData(interactionType);
+    }
+  }, [interactionType]);
+
 
   return (
     <IncludeSideBar>
@@ -306,6 +411,17 @@ const AllUser = () => {
             ))}
           </tbody>
         </table>
+        <div>
+          <button onClick={() => setInteractionType('like')}>Recived Like</button>
+          <button onClick={() => setInteractionType('Send Like')}>Send Like</button>
+
+          <button onClick={() => setInteractionType('comment')}> Reply Comment</button>
+          <button onClick={()=>setInteractionType('recived comment')}>Recived Comment</button>
+          <button onClick={() => setInteractionType('Diamond')}>Recived Diamond</button>
+          <button onClick={() => setInteractionType('Send Diamond')}>Send Diamond</button>
+          <button onClick={() => setInteractionType('Share')}>Send Share</button>
+          <button onClick={()=>setInteractionType('recive share')}>Recived Share</button>
+        </div>
         <VideoModal
           showVideoModal={showVideoModal}
           handleCloseVideoModal={handleCloseVideoModal}
@@ -323,7 +439,14 @@ const AllUser = () => {
             <button onClick={handleCloseUsageDetails} style={{ float: 'right', marginBottom: '10px' }}>
               Close
             </button>
+
             <h2>User Usage</h2>
+            {/* <div>
+              <button onClick={getlikedata}>Like</button>
+              <button> Comments</button>
+              <button>Share</button>
+
+              </div> */}
             <table>
               <thead>
                 <tr>
@@ -353,6 +476,290 @@ const AllUser = () => {
           </div>
         )}
 
+
+        {/* //like intraction data  */}
+
+
+        {likedata.ninty_days > 0 && interactionType === 'like' && (
+          <div id="user-interaction-details">
+            <button onClick={handleCloseUsageDetails} style={{ float: 'right', marginBottom: '10px' }}>
+              Close
+            </button>
+
+            <h2>User Usage</h2>
+            {/* <div>
+              <button onClick={getlikedata}>Like</button>
+              <button> Comments</button>
+              <button>Share</button>
+
+              </div> */}
+            <table>
+              <thead>
+                <tr>
+                  <th>Time Range</th>
+                  <th>Number Of Like During Interaction Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* <tr>
+                  <td>Last 1 Day</td>
+                  <td>{interactionTime1Day} seconds</td>
+                </tr> */}
+                <tr>
+                  <td>Last 15 Days</td>
+                  <td>{likedata.fifteen_days} Like</td>
+                </tr>
+                <tr>
+                  <td>Last 1 Month</td>
+                  <td>{likedata.thirty_days} Like</td>
+                </tr>
+                <tr>
+                  <td>Last 3 Month</td>
+                  <td>{likedata.ninty_days} Like</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {
+          sendlikedata.ninty_days > 0 && interactionType === 'Send Like' && (
+            <div id="user-interaction-details">
+              <button onClick={handleCloseUsageDetails} style={{ float: 'right', marginBottom: '10px' }}>
+                Close
+              </button>
+
+              <h2>User Usages</h2>
+              <table>
+                <thead>
+                  <th>Time Range</th>
+                  <th>Number Of Send Like During Interaction Time</th>
+
+                </thead>
+                <tbody>
+                <tr>
+                  <td>Last 15 Days</td>
+                  <td>{sendlikedata.fifteen_days} like Sended by User </td>
+                </tr>
+                <tr>
+                  <td>Last 1 Month</td>
+                  <td>{sendlikedata.thirty_days} like Sended by User</td>
+                </tr>
+                <tr>
+                  <td>Last 3 Month</td>
+                  <td>{sendlikedata.ninty_days} like Sended by User</td>
+                </tr>
+
+                </tbody>
+              </table>
+            </div>
+          )
+        }
+
+
+        {commentdata.ninty_days > 0 && interactionType === 'comment' && (
+          <div id="user-interaction-details">
+            <button onClick={handleCloseUsageDetails} style={{ float: 'right', marginBottom: '10px' }}>
+              Close
+            </button>
+
+            <h2>User Usage</h2>
+            {/* <div>
+              <button onClick={getlikedata}>Like</button>
+              <button> Comments</button>
+              <button>Share</button>
+
+              </div> */}
+            <table>
+              <thead>
+                <tr>
+                  <th>Time Range</th>
+                  <th>Number Of Comments During Interaction Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* <tr>
+                  <td>Last 1 Day</td>
+                  <td>{interactionTime1Day} seconds</td>
+                </tr> */}
+                <tr>
+                  <td>Last 15 Days</td>
+                  <td>{commentdata.fifteen_days} Comments</td>
+                </tr>
+                <tr>
+                  <td>Last 1 Month</td>
+                  <td>{commentdata.thirty_days} Comments</td>
+                </tr>
+                <tr>
+                  <td>Last 3 Month</td>
+                  <td>{commentdata.ninty_days} Comments</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+
+{
+  recivedcommentdata.ninty_days > 0 && interactionType ==='recived comment' && (
+    <div id="user-interaction-details">
+            <h2>User Usage</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Time Range</th>
+                  <th>Number Of Recived Comment During Interaction Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* <tr>
+                  <td>Last 1 Day</td>
+                  <td>{interactionTime1Day} seconds</td>
+                </tr> */}
+                <tr>
+                  <td>Last 15 Days</td>
+                  <td>{recivedcommentdata.fifteen_days} comment</td>
+                </tr>
+                <tr>
+                  <td>Last 1 Month</td>
+                  <td>{recivedcommentdata.thirty_days} comment</td>
+                </tr>
+                <tr>
+                  <td>Last 3 Month</td>
+                  <td>{recivedcommentdata.ninty_days} comment</td>
+                </tr>
+              </tbody>
+            </table>
+      </div>
+  )
+}
+
+        {diamonddata.ninty_days > 0 && interactionType === 'Diamond' && (
+          <div id="user-interaction-details">
+            <h2>User Usage</h2>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Time Range</th>
+                  <th>Number Of Diamond During Interaction Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* <tr>
+                  <td>Last 1 Day</td>
+                  <td>{interactionTime1Day} seconds</td>
+                </tr> */}
+                <tr>
+                  <td>Last 15 Days</td>
+                  <td>{diamonddata.fifteen_days} Diamond</td>
+                </tr>
+                <tr>
+                  <td>Last 1 Month</td>
+                  <td>{diamonddata.thirty_days} Diamond</td>
+                </tr>
+                <tr>
+                  <td>Last 3 Month</td>
+                  <td>{diamonddata.ninty_days} Diamond</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        )
+
+        }{
+          senddiamonddata.ninty_days > 0 && interactionType === 'Send Diamond' && (
+            <div id="user-interaction-details">
+              <h2>User Usage</h2>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time Range</th>
+                    <th>Number Of Diamond During Interaction Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <tr>
+                    <td>Last 15 Days</td>
+                    <td>{senddiamonddata.fifteen_days} Sended Diamond</td>
+                  </tr>
+                  <tr>
+                    <td>Last 1 Month</td>
+                    <td>{senddiamonddata.thirty_days} Sended Diamond</td>
+                  </tr>
+                  <tr>
+                    <td>Last 3 Month</td>
+                    <td>{senddiamonddata.ninty_days}  Sended Diamond</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )
+        }
+        {
+          sharedata.ninty_days > 0 && interactionType === 'Share' && (
+            <div id="user-interaction-details">
+              <h2>User Usage</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time Range</th>
+                    <th>Number Of Share During Interaction Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Last 15 Days</td>
+                    <td>{sharedata.fifteen_days} Share</td>
+                  </tr>
+                  <tr>
+                    <td>Last 1 Month</td>
+                    <td>{sharedata.thirty_days} share</td>
+                  </tr>
+                  <tr>
+                    <td>Last 3 Month</td>
+                    <td>{sharedata.ninty_days} share</td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          )
+        }
+        {
+          recivesharedata.ninty_days > 0 && interactionType === 'recive share' && (
+            <div id="user-interaction-details">
+              <h2>User Usage</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time Range</th>
+                    <th>Number Of Recived Share During Interaction Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Last 15 Days</td>
+                    <td>{recivesharedata.fifteen_days} Share</td>
+                  </tr>
+                  <tr>
+                    <td>Last 1 Month</td>
+                    <td>{recivesharedata.thirty_days} share</td>
+                  </tr>
+                  <tr>
+                    <td>Last 3 Month</td>
+                    <td>{recivesharedata.ninty_days} share</td>
+                  </tr>
+
+                </tbody>
+              </table>
+
+              </div>
+          )
+        }
         <div className="pagination">
           <button onClick={handlePrevious}>Previous</button>
           {Array.from({ length: totalPages }, (_, index) => (
