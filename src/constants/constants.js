@@ -14,11 +14,11 @@ const Visibility = Object.freeze({
 // const SERVER_DOMAIN = 'http://192.168.43.139:3000';
 // const SERVER_API_URL = 'http://192.168.43.139:3000';
 
-// const SERVER_DOMAIN = 'https://admin-backned.dreamlived.com';
-// const SERVER_API_URL = 'https://admin-backned.dreamlived.com';
+const SERVER_DOMAIN = 'https://admin-backned.dreamlived.com';
+const SERVER_API_URL = 'https://admin-backned.dreamlived.com';
 
-const SERVER_DOMAIN = 'http://192.168.1.37:3000';
-const SERVER_API_URL = 'http://192.168.1.37:3000';
+// const SERVER_DOMAIN = 'http://192.168.1.37:3000';
+// const SERVER_API_URL = 'http://192.168.1.37:3000';
 
 // const SERVER_DOMAIN = 'http://192.168.206.35:3000';
 // const SERVER_API_URL = 'http://192.168.206.35:3000';
